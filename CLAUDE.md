@@ -7,12 +7,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Common Development Tasks
 ```bash
 # Start development server
-npm run dev
+npm run dev -- -p 3000
 
 # Build for production
 npm run build
 
-# Start production server
+# Start production server (binds to 0.0.0.0:5000)
 npm start
 
 # Run linting
@@ -285,6 +285,8 @@ src/
 - Ensure `"use client"` directive on all CDP components
 - Verify CORS allowlist in CDP Portal matches your domain
 - Use supported Node.js versions (20 or 22, not 21)
+- When exporting private keys, use `currentUser.evmAccounts[0]` for EOA address (not `useEvmAddress()` which returns Smart Account)
+- Private keys from CDP come as binary data and need hex conversion for display
 
 ### Smart Contract Deployment
 - Verify RPC URL and chain ID match target network
@@ -295,3 +297,28 @@ src/
 - Manifest file must be accessible at `/manifest.json`
 - Icons must be available in `/public` directory
 - HTTPS required for PWA features in production
+
+## Important Implementation Details
+
+### CDP Smart Accounts Architecture
+When using Smart Accounts (`createAccountOnLogin: "evm-smart"`):
+- `currentUser.evmAccounts[0]` = EOA (Externally Owned Account) - the underlying account
+- `currentUser.evmSmartAccounts[0]` = Smart Account address
+- `useEvmAddress()` returns Smart Account if available, otherwise EOA
+- Private key export requires EOA address: `useExportEvmAccount({ evmAccount: currentUser.evmAccounts[0] })`
+- EOA owns and controls the Smart Account
+
+### Private Key Export Security
+Follow CDP security best practices from `/embedded-docs/security-export.md`:
+- Always show security warning before export
+- Require explicit user confirmation
+- Use clipboard copy (safer than displaying)
+- Clear private key from state after use
+- Convert binary key data to hex: `'0x' + Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('')`
+- Never log private keys to console
+
+### Context7 MCP Integration
+Use Context7 MCP for fetching up-to-date library documentation:
+- `mcp__context7__resolve-library-id`: Convert library name to Context7 ID
+- `mcp__context7__get-library-docs`: Fetch documentation with library ID
+- Always use when experiencing CDP errors or needing latest API reference

@@ -121,7 +121,7 @@ const claimFunds = async (claimToken: string) => {
 }
 ```
 
-### 🌐 **Multi-Network Support**
+### 🌐 **Network**
 ```typescript
 // Environment-driven network configuration
 const config = {
@@ -192,14 +192,10 @@ const config = {
 
 4. **Run locally**
    ```bash
-   npm run dev
+   npm run dev -- -p 3000
    ```
 
-### Option 3: Docker
-```bash
-docker build -t between-friends .
-docker run -p 3000:3000 between-friends
-```
+
 
 ## 📱 Mobile-First PWA
 
@@ -374,31 +370,47 @@ interface Transaction {
 
 ## 🚦 Environment Setup
 
-### Development (Base Sepolia)
+### Development (Base Sepolia Testnet)
 ```env
+# Testnet Configuration
 NEXT_PUBLIC_BASE_CHAIN_ID=84532
 NEXT_PUBLIC_BASE_RPC_URL=https://sepolia.base.org
+NEXT_PUBLIC_USDC_CONTRACT=0x036CbD53842c5426634e7929541eC2318f3dCF7e
 NEXT_PUBLIC_SIMPLIFIED_ESCROW_ADDRESS=0x1C182dDa2DE61c349bc516Fa8a63a371cA4CE184
 ```
 
 ### Production (Base Mainnet)
 ```env
+# Mainnet Configuration
 NEXT_PUBLIC_BASE_CHAIN_ID=8453
 NEXT_PUBLIC_BASE_RPC_URL=https://mainnet.base.org
+NEXT_PUBLIC_USDC_CONTRACT=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
 NEXT_PUBLIC_SIMPLIFIED_ESCROW_ADDRESS=your-mainnet-address
 ```
+
+### Network Configuration Details
+
+**Base Sepolia (Testnet):**
+- Chain ID: `84532`
+- RPC URL: `https://sepolia.base.org`
+- USDC Contract: `0x036CbD53842c5426634e7929541eC2318f3dCF7e`
+- Purpose: Development and testing
+- Faucet: [Base Sepolia Faucet](https://bridge.base.org/deposit)
+
+**Base Mainnet:**
+- Chain ID: `8453`
+- RPC URL: `https://mainnet.base.org`
+- USDC Contract: `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`
+- Purpose: Production deployments
+- Bridge: [Base Bridge](https://bridge.base.org)
 
 ## 🧪 Testing
 
 ```bash
-# Frontend tests
-npm run test
-
-# Smart contract tests (Foundry)
-forge test
-
-# E2E tests
-npm run test:e2e
+#  checking for errors and types
+npm run lint
+npm run type-check
+npm run build
 ```
 
 **Test scenarios covered:**
@@ -422,11 +434,9 @@ Simply click the "Run on Replit" button above to deploy instantly. Replit handle
 ```bash
 # Build static files
 npm run build
-npm run start
+npm run dev -- -p 3000
 
-# Or Docker
-docker build -t between-friends .
-docker run -p 5000:5000 between-friends
+
 ```
 
 **Environment Variables for Production:**
@@ -510,7 +520,7 @@ Can you deploy your own payment app in under 2 minutes? Let's find out!
 
 ---
 
-**Made by [@must_be_ash] (https://x.com/Must_be_Ash)**
+**Made by [@must_be_ash] (https://x.com/Must_be_Ash) and Audited by [HeimLabs](https://x.com/heimlabs)**
 
 This is made by me and not an official CDP app. It's not perfect and it's not meant to be the end product though it's fully functional and production ready. I made this as your starting point so you don't have to start from scratch. It's meant to get you started to build your next idea 🤍
 
