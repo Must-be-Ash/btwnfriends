@@ -77,21 +77,23 @@ export function AccountInfoWithAvatar({
                 <p className="text-sm font-medium text-gray-900">{user?.displayName || 'User'}</p>
               </div>
 
-              <button
-                onClick={handleExportKeys}
-                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center rounded-xl mx-1 mt-1"
-              >
-                <Key className="w-4 h-4 mr-2" />
-                Export Keys
-              </button>
+              <div className="px-2">
+                <button
+                  onClick={handleExportKeys}
+                  className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center transition-colors rounded-lg mt-1"
+                >
+                  <Key className="w-4 h-4 mr-2" />
+                  Export Keys
+                </button>
 
-              <button
-                onClick={handleLogout}
-                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center rounded-xl mx-1"
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Sign Out
-              </button>
+                <button
+                  onClick={handleLogout}
+                  className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center transition-colors rounded-lg"
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Sign Out
+                </button>
+              </div>
             </div>
           )}
         </div>
