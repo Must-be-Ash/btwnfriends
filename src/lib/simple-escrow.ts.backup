@@ -1,0 +1,204 @@
+// Simple escrow system using admin-release pattern
+// This is gas-free for users since admin releases funds
+
+import { encodeFunctionData, keccak256, toBytes, parseUnits } from 'viem'
+
+// SimpleEscrow contract ABI - only the functions we need
+const SIMPLE_ESCROW_ABI = [
+  {
+    name: 'deposit',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [
+      { name: 'transferId', type: 'bytes32' },
+      { name: 'amount', type: 'uint256' },
+      { name: 'claimSecretHash', type: 'bytes32' },
+      { name: 'timeoutDays', type: 'uint256' }
+    ],
+    outputs: []
+  },
+  {
+    name: 'adminRelease',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [
+      { name: 'transferId', type: 'bytes32' },
+      { name: 'claimSecret', type: 'string' },
+      { name: 'recipient', type: 'address' }
+    ],
+    outputs: []
+  }
+] as const
+
+export interface EscrowTransfer {
+  transferId: string
+  senderAddress: string
+  recipientEmail: string
+  amount: string
+  status: 'pending' | 'claimed' | 'refunded'
+  createdAt: Date
+}
+
+export async function createEscrowTransfer(params: {
+  transferId: string
+  senderAddress: string
+  recipientEmail: string
+  amount: string
+}): Promise<{ success: boolean; error?: string }> {
+  try {
+    // This would typically store in database and send notification email
+    console.log('Creating escrow transfer:', params)
+    return { success: true }
+  } catch (error) {
+    console.error('Error creating escrow transfer:', error)
+    return { success: false, error: 'Failed to create escrow transfer' }
+  }
+}
+
+export async function claimEscrowTransfer(params: {
+  transferId: string
+  recipientAddress: string
+  recipientEmail: string
+}): Promise<{ success: boolean; txHash?: string; error?: string }> {
+  try {
+    // Admin releases funds to recipient address
+    // This is handled by the /api/admin/release endpoint
+    console.log('Claiming escrow transfer:', params)
+    return { success: true, txHash: '0x...' }
+  } catch (error) {
+    console.error('Error claiming escrow transfer:', error)
+    return { success: false, error: 'Failed to claim transfer' }
+  }
+}
+
+export async function refundEscrowTransfer(params: {
+  transferId: string
+  senderAddress: string
+}): Promise<{ success: boolean; txHash?: string; error?: string }> {
+  try {
+    // Admin refunds to sender address
+    console.log('Refunding escrow transfer:', params)
+    return { success: true, txHash: '0x...' }
+  } catch (error) {
+    console.error('Error refunding escrow transfer:', error)
+    return { success: false, error: 'Failed to refund transfer' }
+  }
+}
+
+// Contract addresses - only SimpleEscrow contracts
+function getSimpleEscrowAddress(): string {
+  const isDevelopment = process.env.NODE_ENV === 'development'
+  
+  if (isDevelopment) {
+    // Testnet: Use NEXT_PUBLIC_SIMPLE_ESCROW_ADDRESS
+    return process.env.NEXT_PUBLIC_SIMPLE_ESCROW_ADDRESS || '0x81b3504d839F1344d402eb60EB6bfc2E2B8DD7D7'
+  } else {
+    // Mainnet: Use NEXT_PUBLIC_SIMPLE_ESCROW_ADDRESS_MAINNET
+    return process.env.NEXT_PUBLIC_SIMPLE_ESCROW_ADDRESS_MAINNET || '0xFE652f8DD0a20CC5Ef0287B8827924A0F6bc06dF'
+  }
+}
+
+export const SIMPLE_ESCROW_ADDRESS = getSimpleEscrowAddress()
+
+export function generateTransferId(): string {
+  return `transfer_${Date.now()}_${Math.random().toString(36).substring(2)}`
+}
+
+export interface EscrowDepositRequest {
+  to: `0x${string}`
+  value: bigint
+  data: `0x${string}`
+  chainId: number
+  type: "eip1559"
+}
+
+export function prepareSimpleEscrowDeposit(params: {
+  transferId: string
+  recipientEmail: string
+  amount: string
+  claimToken: string
+}): EscrowDepositRequest {
+  console.log('Preparing escrow deposit:', params)
+  console.log('🔑 Claim token for deposit:', params.claimToken)
+  
+  // Validate required parameters
+  if (!params.claimToken) {
+    throw new Error('claimToken is required for escrow deposit')
+  }
+  
+  // Convert transferId to bytes32
+  const transferIdBytes32 = keccak256(toBytes(params.transferId))
+  
+  // Convert amount to USDC units (6 decimals)
+  const amountWei = parseUnits(params.amount, 6)
+  
+  // Create claim secret hash (email + claimToken)
+  const claimSecret = `${params.recipientEmail}${params.claimToken}`
+  console.log('🔑 Claim secret for deposit:', claimSecret)
+  const claimSecretHash = keccak256(toBytes(claimSecret))
+  
+  // Default timeout: 7 days
+  const timeoutDays = BigInt(7)
+  
+  // Encode the deposit function call
+  const data = encodeFunctionData({
+    abi: SIMPLE_ESCROW_ABI,
+    functionName: 'deposit',
+    args: [transferIdBytes32, amountWei, claimSecretHash, timeoutDays]
+  })
+  
+  return {
+    to: SIMPLE_ESCROW_ADDRESS as `0x${string}`,
+    value: BigInt(0),
+    data: data as `0x${string}`,
+    chainId: process.env.NODE_ENV === 'development' ? 84532 : 8453,
+    type: "eip1559"
+  }
+}
+
+export async function prepareSimpleEscrowAdminRelease(params: {
+  transferId: string
+  recipientAddress: string
+  amount: string
+  claimSecret: string
+}): Promise<EscrowDepositRequest> {
+  console.log('Preparing admin release:', params)
+  
+  // Convert transferId to bytes32
+  const transferIdBytes32 = keccak256(toBytes(params.transferId))
+  
+  // Encode the adminRelease function call
+  const data = encodeFunctionData({
+    abi: SIMPLE_ESCROW_ABI,
+    functionName: 'adminRelease',
+    args: [transferIdBytes32, params.claimSecret, params.recipientAddress as `0x${string}`]
+  })
+  
+  return {
+    to: SIMPLE_ESCROW_ADDRESS as `0x${string}`,
+    value: BigInt(0),
+    data: data as `0x${string}`,
+    chainId: process.env.NODE_ENV === 'development' ? 84532 : 8453,
+    type: "eip1559"
+  }
+}
+
+export async function isSimpleEscrowClaimable(transferId: string): Promise<{
+  claimable: boolean
+  reason?: string
+  expiryDate?: Date
+}> {
+  try {
+    // This would check the escrow contract state
+    console.log('Checking escrow claimable status for:', transferId)
+    return {
+      claimable: true
+    }
+  } catch (error) {
+    console.error('Error checking if escrow is claimable:', error)
+    return {
+      claimable: false,
+      reason: 'Error checking escrow status'
+    }
+  }
+}

@@ -1,0 +1,68 @@
+~/workspace$ git push -f origin main
+Enumerating objects: 385, done.
+Counting objects: 100% (385/385), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (231/231), done.
+Writing objects: 100% (385/385), 1.97 MiB | 11.18 MiB/s, done.
+Total 385 (delta 134), reused 348 (delta 110), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (134/134), done.
+remote: fatal: did not receive expected object 5540e6baf4fc9ee9014e2ff7c3c87d1b652c46f8
+error: remote unpack failed: index-pack failed
+To https://github.com/Must-be-Ash/btwnfriends.com
+ ! [remote rejected] main -> main (failed)
+error: failed to push some refs to 'https://github.com/Must-be-Ash/btwnfriends.com'
+~/workspace$ git status | grep -E "\.env"
+~/workspace$ git remote add origin https://github.com/Must-be-Ash/btwnfriends.com.git
+git branch -M main
+git push -u origin main
+error: remote origin already exists.
+Enumerating objects: 385, done.
+Counting objects: 100% (385/385), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (231/231), done.
+Writing objects: 100% (385/385), 1.97 MiB | 10.65 MiB/s, done.
+Total 385 (delta 133), reused 348 (delta 110), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (133/133), done.
+remote: fatal: did not receive expected object 5540e6baf4fc9ee9014e2ff7c3c87d1b652c46f8
+error: remote unpack failed: index-pack failed
+To https://github.com/Must-be-Ash/btwnfriends.com
+ ! [remote rejected] main -> main (failed)
+error: failed to push some refs to 'https://github.com/Must-be-Ash/btwnfriends.com'
+~/workspace$ echo "# btwnfriends.com" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/Must-be-Ash/btwnfriends.com.git
+git push -u origin main
+Reinitialized existing Git repository in /home/runner/workspace/.git/
+[main 92cff5b] first commit
+ 1 file changed, 1 insertion(+)
+error: remote origin already exists.
+Enumerating objects: 388, done.
+Counting objects: 100% (388/388), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (234/234), done.
+Writing objects: 100% (388/388), 1.97 MiB | 10.32 MiB/s, done.
+Total 388 (delta 136), reused 348 (delta 110), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (136/136), done.
+remote: fatal: did not receive expected object 5540e6baf4fc9ee9014e2ff7c3c87d1b652c46f8
+error: remote unpack failed: index-pack failed
+To https://github.com/Must-be-Ash/btwnfriends.com
+ ! [remote rejected] main -> main (failed)
+error: failed to push some refs to 'https://github.com/Must-be-Ash/btwnfriends.com'
+~/workspace$ git remote add origin https://github.com/Must-be-Ash/btwnfriends.com.git git remote -v
+error: unknown switch `v'
+usage: git remote add [<options>] <name> <url>
+
+    -f, --[no-]fetch      fetch the remote branches
+    --[no-]tags           import all tags and associated objects when fetching
+                          or do not fetch any tag at all (--no-tags)
+    -t, --[no-]track <branch>
+                          branch(es) to track
+    -m, --[no-]master <branch>
+                          master branch
+    --[no-]mirror[=(push|fetch)]
+                          set up remote as a mirror to push to or fetch from
+
+~/workspace$ 

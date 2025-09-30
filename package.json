@@ -1,0 +1,55 @@
+{
+  "name": "between-friends",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Between Friends - Your Pal shouldn't be taxing you.",
+  "scripts": {
+    "dev": "next dev -H 0.0.0.0 -p 5000",
+    "build": "next build",
+    "start": "next start -H 0.0.0.0 -p 5000",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@coinbase/cdp-core": "^0.0.33",
+    "@coinbase/cdp-hooks": "^0.0.33",
+    "@coinbase/cdp-react": "^0.0.33",
+    "@coinbase/cdp-sdk": "^1.38.0",
+    "@vercel/analytics": "^1.5.0",
+    "autoprefixer": "^10.4.21",
+    "clsx": "^2.1.1",
+    "dotenv": "^17.2.1",
+    "framer-motion": "^12.23.12",
+    "jsonwebtoken": "^9.0.2",
+    "jsqr": "^1.4.0",
+    "lucide-react": "^0.539.0",
+    "mongodb": "^6.3.0",
+    "next": "^14.2.31",
+    "next-pwa": "^5.6.0",
+    "qrcode": "^1.5.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "resend": "^3.2.0",
+    "tailwind-merge": "^2.5.2",
+    "uuid": "^10.0.0",
+    "viem": "^2.19.6",
+    "workbox-webpack-plugin": "^7.3.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/node": "^20.14.10",
+    "@types/qrcode": "^1.5.5",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@types/uuid": "^10.0.0",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "14.2.8",
+    "postcss": "^8.4.39",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.5.3"
+  },
+  "engines": {
+    "node": ">=20.0.0 <23.0.0"
+  }
+}
