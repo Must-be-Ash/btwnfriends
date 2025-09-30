@@ -6,8 +6,7 @@ import { useCurrentUser } from '@coinbase/cdp-hooks'
 import { ContactList } from '@/components/contacts/ContactList'
 import { useContacts } from '@/hooks/useContacts'
 import { Contact } from '@/types'
-import { useDeviceContacts } from '@/hooks/useDeviceContacts'
-import { ArrowLeft, Smartphone, Users, Search, Star } from 'lucide-react'
+import { ArrowLeft, Users, Search, Star } from 'lucide-react'
 import { LoadingScreen } from '@/components/shared/LoadingScreen'
 import { NavigationDock } from '@/components/navigation/NavigationDock'
 
@@ -25,16 +24,10 @@ export default function ContactsPage() {
     error,
     searchResults,
     isSearching,
-    refreshContacts,
     toggleFavorite,
     searchContacts,
     clearSearch
   } = useContacts(currentUser?.userId || null)
-
-  const {
-    syncContacts,
-    isLoading: isSyncing
-  } = useDeviceContacts()
 
   if (!currentUser) {
     return <LoadingScreen message="Loading..." />
@@ -48,14 +41,6 @@ export default function ContactsPage() {
     } else {
       setView('all')
       clearSearch()
-    }
-  }
-
-  const handleDeviceSync = async () => {
-    if (!currentUser?.userId) return
-    const result = await syncContacts(currentUser.userId)
-    if (result.success) {
-      await refreshContacts()
     }
   }
 
@@ -181,26 +166,18 @@ export default function ContactsPage() {
             )}
           </div>
 
-          {/* Add Contact Suggestion */}
+          {/* Empty State */}
           {!isLoading && contacts.length === 0 && (
             <div className="bg-white/20 backdrop-blur-xl rounded-2xl p-8 border border-white/30 shadow-2xl text-center">
               <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Users className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-lg font-semibold text-white mb-2">
-                Build Your Contact List
+                No Contacts Yet
               </h3>
-              <p className="text-white/70 mb-6">
-                Sync device contacts to make sending money easier.
+              <p className="text-white/70">
+                Send money to someone to add them to your contacts.
               </p>
-              <button
-                onClick={handleDeviceSync}
-                disabled={isSyncing}
-                className="flex items-center gap-2 mx-auto px-6 py-3 bg-white/20 text-white rounded-xl font-medium hover:bg-white/30 transition-colors disabled:opacity-50 border border-white/30"
-              >
-                <Smartphone className="w-5 h-5" />
-                {isSyncing ? 'Syncing...' : 'Sync Contacts'}
-              </button>
             </div>
           )}
         </div>
