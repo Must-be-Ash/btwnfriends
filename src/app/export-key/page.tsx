@@ -24,22 +24,7 @@ export default function ExportKeyPage() {
   // Get the EOA address (not smart account)
   const eoaAddress = currentUser?.evmAccounts?.[0]
 
-  // Redirect if not signed in (use useEffect to avoid SSR issues)
-  useEffect(() => {
-    if (isSignedIn === false) {
-      router.push('/')
-    }
-  }, [isSignedIn, router])
-
-  // Show loading states
-  if (isSignedIn === false) {
-    return <LoadingScreen message="Redirecting..." />
-  }
-
-  if (!currentUser || !eoaAddress) {
-    return <LoadingScreen message="Loading wallet..." />
-  }
-
+  // Define all hooks before any conditional returns
   const handleConfirmExport = useCallback(async () => {
     if (!eoaAddress) return
 
@@ -86,6 +71,22 @@ export default function ExportKeyPage() {
     setPrivateKey(null)
     router.push('/')
   }, [router])
+
+  // Redirect if not signed in (use useEffect to avoid SSR issues)
+  useEffect(() => {
+    if (isSignedIn === false) {
+      router.push('/')
+    }
+  }, [isSignedIn, router])
+
+  // Show loading states
+  if (isSignedIn === false) {
+    return <LoadingScreen message="Redirecting..." />
+  }
+
+  if (!currentUser || !eoaAddress) {
+    return <LoadingScreen message="Loading wallet..." />
+  }
 
   if (step === 'exporting') {
     return <LoadingScreen message="Exporting private key..." />
