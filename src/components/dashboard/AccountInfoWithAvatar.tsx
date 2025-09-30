@@ -2,7 +2,8 @@
 
 import { truncateText, copyToClipboard } from '@/lib/utils'
 import { useState } from 'react'
-import { LogOut } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { LogOut, Key } from 'lucide-react'
 
 interface UserProfile {
   userId: string
@@ -27,15 +28,16 @@ interface AccountInfoWithAvatarProps {
   currentUser: CDPUser | null
 }
 
-export function AccountInfoWithAvatar({ 
-  user, 
-  walletAddress, 
-  showLogoutMenu, 
-  setShowLogoutMenu, 
-  handleLogout, 
+export function AccountInfoWithAvatar({
+  user,
+  walletAddress,
+  showLogoutMenu,
+  setShowLogoutMenu,
+  handleLogout,
   menuRef,
-  currentUser 
+  currentUser
 }: AccountInfoWithAvatarProps) {
+  const router = useRouter()
   const [copiedAddress, setCopiedAddress] = useState(false)
 
   const handleCopyAddress = async () => {
@@ -44,6 +46,11 @@ export function AccountInfoWithAvatar({
       setCopiedAddress(true)
       setTimeout(() => setCopiedAddress(false), 2000)
     }
+  }
+
+  const handleExportKeys = () => {
+    setShowLogoutMenu(false)
+    router.push('/export-key')
   }
 
   return (
@@ -63,16 +70,24 @@ export function AccountInfoWithAvatar({
             </span>
           </button>
 
-          {/* Logout Menu */}
+          {/* User Menu */}
           {showLogoutMenu && (
             <div className="absolute right-0 top-12 w-48 backdrop-blur-xl bg-white/90 rounded-2xl shadow-2xl border border-white/30 py-2 z-50">
               <div className="px-4 py-2 border-b border-gray-200">
                 <p className="text-sm font-medium text-gray-900">{user?.displayName || 'User'}</p>
               </div>
-              
+
+              <button
+                onClick={handleExportKeys}
+                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center rounded-xl mx-1 mt-1"
+              >
+                <Key className="w-4 h-4 mr-2" />
+                Export Keys
+              </button>
+
               <button
                 onClick={handleLogout}
-                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center rounded-xl mx-1 mt-1"
+                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center rounded-xl mx-1"
               >
                 <LogOut className="w-4 h-4 mr-2" />
                 Sign Out
