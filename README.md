@@ -4,11 +4,11 @@
 
 Send money like sending an email. No crypto knowledge required. Built with [Coinbase Developer Platform](https://www.coinbase.com/developer-platform) Embedded Wallets.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/your-username/between-friends)
+[![Run on Replit](https://replit.com/badge/github/Must-be-Ash/btwnfriends.com)](https://replit.com/new/github/Must-be-Ash/btwnfriends.com)
 [![Get CDP API Key](https://img.shields.io/badge/Get_CDP_API_Key-0052FF?style=for-the-badge&logo=coinbase&logoColor=white)](https://portal.cdp.coinbase.com/access/api)
-[![Fork this repo](https://img.shields.io/badge/Fork_This_Repo-000000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/your-username/between-friends/fork)
+[![Fork this repo](https://img.shields.io/badge/Fork_This_Repo-000000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Must-be-Ash/btwnfriends.com/fork)
 
-> ⚡ **Ready to build?** [Get your free CDP API key](https://portal.cdp.coinbase.com/access/api) → [Fork this repo](https://github.com/your-username/between-friends/fork) → Deploy in 5 minutes
+> ⚡ **Ready to build?** [Get your free CDP API key](https://portal.cdp.coinbase.com/access/api) → [Fork this repo](https://github.com/Must-be-Ash/btwnfriends.com/fork) → Deploy in 5 minutes on Replit
 
 ## 🎯 What makes this special?
 
@@ -145,14 +145,14 @@ const config = {
 | **🏪 Point of Sale** | Add inventory, receipt printing | 3 hours |
 | **🎮 Gaming** | Add virtual currency, in-game purchases | 2 hours |
 
-**👆 [Fork this repo now](https://github.com/your-username/between-friends/fork)** and start building your custom payment solution!
+**👆 [Fork this repo now](https://github.com/Must-be-Ash/btwnfriends.com/fork)** and start building your custom payment solution!
 
 ---
 
 ## 🛠️ Quick Start
 
 ### Option 1: One-Click Deploy
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/your-username/between-friends)
+[![Run on Replit](https://replit.com/badge/github/Must-be-Ash/btwnfriends.com)](https://replit.com/new/github/Must-be-Ash/btwnfriends.com)
 
 ### Option 2: Local Development
 
@@ -164,8 +164,8 @@ const config = {
 
 2. **Clone and setup**
    ```bash
-   git clone https://github.com/your-username/between-friends
-   cd between-friends
+   git clone https://github.com/Must-be-Ash/btwnfriends.com
+   cd btwnfriends.com
    npm install
    ```
 
@@ -411,15 +411,12 @@ npm run test:e2e
 
 ## 🚀 Deployment
 
-### Vercel (Recommended)
-```bash
-# One-click deploy
-vercel --prod
-
-# Or manual
-npm run build
-vercel --prod
-```
+### Replit (Recommended)
+Simply click the "Run on Replit" button above to deploy instantly. Replit handles:
+- Automatic environment setup
+- Built-in PostgreSQL database option
+- One-click deployment to production
+- Custom domain support
 
 ### Traditional hosting
 ```bash
@@ -429,7 +426,7 @@ npm run start
 
 # Or Docker
 docker build -t between-friends .
-docker run -p 3000:3000 between-friends
+docker run -p 5000:5000 between-friends
 ```
 
 **Environment Variables for Production:**
@@ -500,15 +497,15 @@ Can you deploy your own payment app in under 2 minutes? Let's find out!
 
 **Step 1 (30 seconds):** [🔑 Get your free CDP API key](https://portal.cdp.coinbase.com/access/api)
 
-**Step 2 (30 seconds):** [⭐ Fork this repository](https://github.com/your-username/between-friends/fork) 
+**Step 2 (30 seconds):** [⭐ Fork this repository](https://github.com/Must-be-Ash/btwnfriends.com/fork) 
 
-**Step 3 (60 seconds):** [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/your-username/between-friends)
+**Step 3 (60 seconds):** [![Run on Replit](https://replit.com/badge/github/Must-be-Ash/btwnfriends.com)](https://replit.com/new/github/Must-be-Ash/btwnfriends.com)
 
 **Result:** 💸 **You're now accepting email-based payments globally!**
 
 
 
-[🔑 Get CDP API Key](https://portal.cdp.coinbase.com/access/api) • [⭐ Star this repo](https://github.com/your-username/between-friends) • [📚 Documentation](https://docs.cdp.coinbase.com) • [💬 Community](https://github.com/coinbase/cdp-react/discussions)
+[🔑 Get CDP API Key](https://portal.cdp.coinbase.com/access/api) • [⭐ Star this repo](https://github.com/Must-be-Ash/btwnfriends.com) • [📚 Documentation](https://docs.cdp.coinbase.com) • [💬 Community](https://github.com/coinbase/cdp-react/discussions)
 
 
 ---
