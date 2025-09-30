@@ -1,0 +1,298 @@
+mv .git .git.backup
+
+# 2. Initialize a fresh repository
+git init
+
+# 3. Add all files (your .env files are already in .gitignore, so they're safe)
+git add .
+
+# 4. Create first commit
+git commit -m "Initial commit - Replit configured payment app"
+
+# 5. Set branch to main
+git branch -M main
+
+# 6. Add your repository
+git remote add origin https://github.com/Must-be-Ash/btwnfriends.com.git
+
+# 7. Force push to GitHub
+git push -f origin main
+Initialized empty Git repository in /home/runner/workspace/.git/
+[main (root-commit) b62bc63] Initial commit - Replit configured payment app
+ 266 files changed, 42482 insertions(+)
+ create mode 100644 .env.example
+ create mode 100644 .eslintrc.json
+ create mode 100644 .git.backup/COMMIT_EDITMSG
+ create mode 100644 .git.backup/FETCH_HEAD
+ create mode 100644 .git.backup/HEAD
+ create mode 100644 .git.backup/config
+ create mode 100644 .git.backup/description
+ create mode 100755 .git.backup/hooks/applypatch-msg.sample
+ create mode 100755 .git.backup/hooks/commit-msg.sample
+ create mode 100755 .git.backup/hooks/fsmonitor-watchman.sample
+ create mode 100755 .git.backup/hooks/post-update.sample
+ create mode 100755 .git.backup/hooks/pre-applypatch.sample
+ create mode 100755 .git.backup/hooks/pre-commit.sample
+ create mode 100755 .git.backup/hooks/pre-merge-commit.sample
+ create mode 100755 .git.backup/hooks/pre-push.sample
+ create mode 100755 .git.backup/hooks/pre-rebase.sample
+ create mode 100755 .git.backup/hooks/pre-receive.sample
+ create mode 100755 .git.backup/hooks/prepare-commit-msg.sample
+ create mode 100755 .git.backup/hooks/push-to-checkout.sample
+ create mode 100755 .git.backup/hooks/sendemail-validate.sample
+ create mode 100755 .git.backup/hooks/update.sample
+ create mode 100644 .git.backup/index
+ create mode 100644 .git.backup/info/exclude
+ create mode 100644 .git.backup/objects/01/1e2c1e5f032a75bfe2c5629103294e212f8f5c
+ create mode 100644 .git.backup/objects/0a/417f299e3d74ee33fc96b093237979156017c7
+ create mode 100644 .git.backup/objects/0c/bf6133bffa2edf0c652ff58467e8292e8a683d
+ create mode 100644 .git.backup/objects/0e/a7a2d7c19430ec1aa7e607e86c7bdf292b35f9
+ create mode 100644 .git.backup/objects/0f/d66c996b955fc714064f2ec37f569b36a1d509
+ create mode 100644 .git.backup/objects/13/cfc1f08925d78f80733a94c5d5b15458b5d4ed
+ create mode 100644 .git.backup/objects/14/c7dd2bca41dbfbec359ef6ae97c0f4ac61fe4f
+ create mode 100644 .git.backup/objects/15/80954e61707246278884d7386f8db01860e98a
+ create mode 100644 .git.backup/objects/1d/9c534fba02c575639b3032382d3d341ff1c029
+ create mode 100644 .git.backup/objects/28/ddcb8af45da64243feef67948f3adc7d48361f
+ create mode 100644 .git.backup/objects/2a/deba1565349a7e3eeb26cbcd2897af01ebadb8
+ create mode 100644 .git.backup/objects/2e/d33c6894a3e87495e76360c845586035f004f6
+ create mode 100644 .git.backup/objects/32/ddd2bf8bfb4921300e4e76b4092ade2b29d448
+ create mode 100644 .git.backup/objects/37/6fa8a53017e5efd40cdbf085ae069dd6f5e32e
+ create mode 100644 .git.backup/objects/39/fb9e7e747954bf8ec4db27c721e0c09c03f27d
+ create mode 100644 .git.backup/objects/3f/449a092df81c9e7059b1d1978daaf22a7c8adf
+ create mode 100644 .git.backup/objects/40/4f3e6d51e54d57a51663b12151eec4d64a0b10
+ create mode 100644 .git.backup/objects/41/9bcf46d4c625da741308fcdf60505cc675d800
+ create mode 100644 .git.backup/objects/46/a0c7ebc2fa678fd34ee6649f80b2ddf910675e
+ create mode 100644 .git.backup/objects/51/8d24ff7d2388b931ad365f7e00cfb0d498af3d
+ create mode 100644 .git.backup/objects/55/7e8dcb0ba1dda53e5f5284732825b38c637a41
+ create mode 100644 .git.backup/objects/6a/a89ba9b3714e5dfe4203d524dabe0df7d8ec3a
+ create mode 100644 .git.backup/objects/6f/3aca287b3d6a506960c7ce87238bbc1af5d4f7
+ create mode 100644 .git.backup/objects/70/4fbad1aead4451e73d6da6d95c5863f0455775
+ create mode 100644 .git.backup/objects/7e/ed7f8ce198d24d526b637f34ffa701731329ca
+ create mode 100644 .git.backup/objects/87/b930ac6b533aa8a1f1b3a809dbc9d2238a5341
+ create mode 100644 .git.backup/objects/8a/27fc0be19ca8d32e0ab67dc3c6dd28a6c58e9b
+ create mode 100644 .git.backup/objects/8a/89fbda47896b36a656d8e314c87fbc3878668a
+ create mode 100644 .git.backup/objects/8b/819ba69fb059c44d948962f6552bcdae3e7467
+ create mode 100644 .git.backup/objects/8e/a34822b396f03a2adf695c3018cec29640711d
+ create mode 100644 .git.backup/objects/92/cff5be4afe901294886a21fd3750ca15f8c5d3
+ create mode 100644 .git.backup/objects/93/2f04f371f4a42a9411ea48a1abd51e73f5b86b
+ create mode 100644 .git.backup/objects/93/662f9da38d53ecbaf6514d462ad76e509c81ca
+ create mode 100644 .git.backup/objects/93/db5d99f3d0a8f8d30da75d4667f64646e63510
+ create mode 100644 .git.backup/objects/9c/269e5c3eaf1e073b014fe725aff0471c19b8aa
+ create mode 100644 .git.backup/objects/9e/d7a12ec0345ddee400e74ffb7a1205f40f6afd
+ create mode 100644 .git.backup/objects/ae/6a81160174a73e4c9481ebea9a3f08f42be435
+ create mode 100644 .git.backup/objects/b2/28e8b2afef190a95b3c56892480fa58c2e1d2c
+ create mode 100644 .git.backup/objects/bc/9c956150d374fcd95528a49f124f60a2d6cfcb
+ create mode 100644 .git.backup/objects/be/9e8612d3e4e4c0245ecd7350f71d149e7238dc
+ create mode 100644 .git.backup/objects/c5/ac7e92899e28750bbaafa3d3552c12f85a5251
+ create mode 100644 .git.backup/objects/cf/851dc42eaaa6dcb07093d487a9e781b311bb9f
+ create mode 100644 .git.backup/objects/d2/a4021c34360c6743309eed62bb7f667daf7f3c
+ create mode 100644 .git.backup/objects/d8/9bb0ffc1da59239fd3009e0305661f870b65d2
+ create mode 100644 .git.backup/objects/e0/c2b7e3520c9ca8e28ad92b20bc13c88d65137a
+ create mode 100644 .git.backup/objects/e2/effd7df8cec4f1477122e807470ab2bdc07d66
+ create mode 100644 .git.backup/objects/e6/5b90d646df33f0942fde7a10294f9ef58a1149
+ create mode 100644 .git.backup/objects/f7/58445363609bf1dbd9caf0bda3d9f679556f3b
+ create mode 100644 .git.backup/objects/f9/595044163489aa05249f9b682f3bf701361057
+ create mode 100644 .git.backup/objects/f9/f47e3de0676ca364e3bdac5bcae825e661c2e1
+ create mode 100644 .git.backup/objects/fb/45af65ff078338eaf356bba8af623608cae434
+ create mode 100644 .git.backup/objects/fb/bc9430e6ecf80b1c1653935735f783fbb903e8
+ create mode 100644 .git.backup/objects/pack/pack-8efcb60f532cbf1f28b16d98f845c8e45bea05f7.idx
+ create mode 100644 .git.backup/objects/pack/pack-8efcb60f532cbf1f28b16d98f845c8e45bea05f7.pack
+ create mode 100644 .git.backup/objects/pack/pack-8efcb60f532cbf1f28b16d98f845c8e45bea05f7.rev
+ create mode 100644 .git.backup/refs/heads/main
+ create mode 100644 .git.backup/refs/heads/replit-agent
+ create mode 100644 .git.backup/refs/replit/agent-ledger
+ create mode 100644 .git.backup/shallow
+ create mode 100644 .gitignore
+ create mode 100644 .gitmodules
+ create mode 100644 .replit
+ create mode 100644 CLAUDE.md
+ create mode 100644 DEPLOYMENT_GUIDE.md
+ create mode 100644 ETH_FUNDING_IMPLEMENTATION_PLAN.md
+ create mode 100644 QR_CODE_ANALYSIS.md
+ create mode 100644 README.md
+ create mode 100644 attached_assets/Pasted--workspace-git-push-f-origin-main-Enumerating-objects-385-done-Counting-objects-100-385-385-1759259378980_1759259378980.txt
+ create mode 100644 between-friends@0.1.0
+ create mode 100644 broadcast/DeployEscrow.sol/84532/run-1754955754.json
+ create mode 100644 broadcast/DeployEscrow.sol/84532/run-latest.json
+ create mode 100644 broadcast/DeploySimpleEscrow.s.sol/84532/run-1754962050.json
+ create mode 100644 broadcast/DeploySimpleEscrow.s.sol/84532/run-1754962168.json
+ create mode 100644 broadcast/DeploySimpleEscrow.s.sol/84532/run-latest.json
+ create mode 100644 broadcast/DeploySimpleEscrowMainnet.s.sol/8453/run-1755047319.json
+ create mode 100644 broadcast/DeploySimpleEscrowMainnet.s.sol/8453/run-latest.json
+ create mode 100644 broadcast/DeploySimplifiedEscrow.s.sol/84532/run-1755127733.json
+ create mode 100644 broadcast/DeploySimplifiedEscrow.s.sol/84532/run-1755196927.json
+ create mode 100644 broadcast/DeploySimplifiedEscrow.s.sol/84532/run-latest.json
+ create mode 100644 btwnfriends.com
+ create mode 100644 deploy_log.txt
+ create mode 100644 deployment_output.txt
+ create mode 100644 embedded-docs/cors-configuration.md
+ create mode 100644 embedded-docs/end-user-authentication.md
+ create mode 100644 embedded-docs/nextjs.md
+ create mode 100644 embedded-docs/onramp-integration.md
+ create mode 100644 embedded-docs/quickstart.md
+ create mode 100644 embedded-docs/react-components.md
+ create mode 100644 embedded-docs/react-hooks.md
+ create mode 100644 embedded-docs/security-export.md
+ create mode 100644 embedded-docs/smart-accounts.md
+ create mode 100644 embedded-docs/wagmi.md
+ create mode 100644 embedded-docs/welcome.md
+ create mode 100644 foundry.toml
+ create mode 100644 gas-fees.md
+ create mode 100644 generated-icon.png
+ create mode 100644 https:/www.btwnfriends.com
+ create mode 100644 layout.md
+ create mode 100644 next
+ create mode 100644 next.config.js
+ create mode 100644 onramp-docs/apple-pay-onramp-api.md
+ create mode 100644 onramp-docs/countries-&-currencies.md
+ create mode 100644 onramp-docs/generating-onramp-url.md
+ create mode 100644 onramp-docs/generating-quotes.md
+ create mode 100644 onramp-docs/one-click-buy-url.md
+ create mode 100644 onramp-docs/onramp-overview.md
+ create mode 100644 onramp-docs/payment-methods.md
+ create mode 100644 onramp-docs/session-token-authentication.md
+ create mode 100644 onramp-docs/transaction-status.md
+ create mode 100644 package-lock.json
+ create mode 100644 package.json
+ create mode 100644 paymaster/account-abstraction-basics.md
+ create mode 100644 paymaster/eip-7702-faqs.md
+ create mode 100644 paymaster/guides/build-sponsored-transaction-component.md
+ create mode 100644 paymaster/guides/paymaster-masterclass.md
+ create mode 100644 paymaster/guides/paymaster-proxy.md
+ create mode 100644 paymaster/guides/quickstart.md
+ create mode 100644 paymaster/guides/wagmi-viem-integration.md
+ create mode 100644 paymaster/json-rpc-api.md
+ create mode 100644 paymaster/quickstart.md
+ create mode 100644 paymaster/welcome.md
+ create mode 100644 postcss.config.js
+ create mode 100644 public/apple-touch-icon.png
+ create mode 100644 public/btwn-fnds-og/Asset 115@2x.png
+ create mode 100644 public/btwn-fnds-og/Asset 15@2x.png
+ create mode 100644 public/btwn-fnds-og/Asset 16@2x.png
+ create mode 100644 public/btwn-fnds-og/og.png
+ create mode 100644 public/favicon-96x96.png
+ create mode 100644 public/favicon.ico
+ create mode 100644 public/favicon.svg
+ create mode 100644 public/logo-yellow.png
+ create mode 100644 public/logo.png
+ create mode 100644 public/logo.svg
+ create mode 100644 public/manifest.json
+ create mode 100644 public/og.png
+ create mode 100644 public/site.webmanifest
+ create mode 100644 public/web-app-manifest-192x192.png
+ create mode 100644 public/web-app-manifest-512x512.png
+ create mode 100644 replit.md
+ create mode 100644 script/DeploySimpleEscrow.s.sol.backup
+ create mode 100644 script/DeploySimpleEscrowMainnet.s.sol.backup
+ create mode 100644 script/DeploySimplifiedEscrow.s.sol
+ create mode 100644 script/DeploySimplifiedEscrowMainnet.s.sol
+ create mode 100644 scripts/clean-database.js
+ create mode 100644 scripts/clean-paypall-db.js
+ create mode 100644 src/DeployEscrow.sol
+ create mode 100644 src/app/api/admin/release/route.ts
+ create mode 100644 src/app/api/contacts/favorite/route.ts
+ create mode 100644 src/app/api/contacts/route.ts
+ create mode 100644 src/app/api/contacts/sync-device/route.ts
+ create mode 100644 src/app/api/email-preview/route.ts
+ create mode 100644 src/app/api/pending-claims/route.ts
+ create mode 100644 src/app/api/recipients/lookup/route.ts
+ create mode 100644 src/app/api/refund/route.ts
+ create mode 100644 src/app/api/send/complete/route.ts
+ create mode 100644 src/app/api/send/route.ts
+ create mode 100644 src/app/api/send/sponsored/route.ts
+ create mode 100644 src/app/api/transactions/route.ts
+ create mode 100644 src/app/api/users/lookup-by-address/route.ts
+ create mode 100644 src/app/api/users/route.ts
+ create mode 100644 src/app/contacts/page.tsx
+ create mode 100644 src/app/globals.css
+ create mode 100644 src/app/history/page.tsx
+ create mode 100644 src/app/layout.tsx
+ create mode 100644 src/app/offline/page.tsx
+ create mode 100644 src/app/page.tsx
+ create mode 100644 src/app/pay/page.tsx
+ create mode 100644 src/app/privacy/page.tsx
+ create mode 100644 src/app/receive/page.tsx
+ create mode 100644 src/app/scan/page.tsx
+ create mode 100644 src/app/send/page.tsx
+ create mode 100644 src/app/tos/page.tsx
+ create mode 100644 src/components/ReceivePageContent.tsx
+ create mode 100644 src/components/auth/AuthPage.tsx
+ create mode 100644 src/components/auth/EmailInput.tsx
+ create mode 100644 src/components/auth/OTPInput.tsx
+ create mode 100644 src/components/auth/ProfileSetup.tsx
+ create mode 100644 src/components/contacts/ContactList.tsx
+ create mode 100644 src/components/contacts/ContactSearch.tsx
+ create mode 100644 src/components/dashboard/AccountInfo.tsx
+ create mode 100644 src/components/dashboard/AccountInfoWithAvatar.tsx
+ create mode 100644 src/components/dashboard/BalanceCard.tsx
+ create mode 100644 src/components/dashboard/Dashboard.tsx
+ create mode 100644 src/components/dashboard/PendingClaims.tsx
+ create mode 100644 src/components/dashboard/QuickActions.tsx
+ create mode 100644 src/components/dashboard/RecentTransactions.tsx
+ create mode 100644 src/components/dashboard/SmartAccountStatus.tsx
+ create mode 100644 src/components/history/TransactionDetail.tsx
+ create mode 100644 src/components/history/TransactionFilters.tsx
+ create mode 100644 src/components/history/TransactionList.tsx
+ create mode 100644 src/components/history/TransactionStats.tsx
+ create mode 100644 src/components/layout/MobileLayout.tsx
+ create mode 100644 src/components/navigation/NavigationDock.tsx
+ create mode 100644 src/components/onboarding/ClaimOnboarding.tsx
+ create mode 100644 src/components/pages/MainPage.tsx
+ create mode 100644 src/components/providers/CDPProvider.tsx
+ create mode 100644 src/components/pwa/InstallPrompt.tsx
+ create mode 100644 src/components/pwa/NetworkStatus.tsx
+ create mode 100644 src/components/pwa/SessionMonitor.tsx
+ create mode 100644 src/components/pwa/UpdateNotification.tsx
+ create mode 100644 src/components/receive/PaymentRequestForm.tsx
+ create mode 100644 src/components/receive/QRCodeDisplay.tsx
+ create mode 100644 src/components/receive/SimpleReceive.tsx
+ create mode 100644 src/components/receive/WalletAddressDisplay.tsx
+ create mode 100644 src/components/scanner/PWAQRScanner.tsx
+ create mode 100644 src/components/send/AmountInput.tsx
+ create mode 100644 src/components/send/RecipientInput.tsx
+ create mode 100644 src/components/send/SendConfirmation.tsx
+ create mode 100644 src/components/send/SendSuccess.tsx
+ create mode 100644 src/components/send/TransferPreview.tsx
+ create mode 100644 src/components/shared/LoadingScreen.tsx
+ create mode 100644 src/components/ui/ContactAvatar.tsx
+ create mode 100644 src/components/ui/button-3d.tsx
+ create mode 100644 src/components/ui/dock-two.tsx
+ create mode 100644 src/components/ui/number-ticker.tsx
+ create mode 100644 src/components/ui/send-button-3d.tsx
+ create mode 100644 src/components/ui/text-shimmer.tsx
+ create mode 100644 src/contracts/SimpleEscrow.sol.backup
+ create mode 100644 src/contracts/SimplifiedEscrow.sol
+ create mode 100644 src/contracts/USDCEscrow.sol
+ create mode 100644 src/hooks/useContacts.ts
+ create mode 100644 src/hooks/useDeviceContacts.ts
+ create mode 100644 src/hooks/useSessionRestore.ts
+ create mode 100644 src/hooks/useSmartAccount.ts
+ create mode 100644 src/lib/auth.ts
+ create mode 100644 src/lib/cdp.ts
+ create mode 100644 src/lib/db.ts
+ create mode 100644 src/lib/email.ts
+ create mode 100644 src/lib/models.ts
+ create mode 100644 src/lib/recipient-lookup.ts
+ create mode 100644 src/lib/session-enhancer.ts
+ create mode 100644 src/lib/simple-escrow.ts.backup
+ create mode 100644 src/lib/simplified-escrow.ts
+ create mode 100644 src/lib/storage.ts
+ create mode 100644 src/lib/usdc.ts
+ create mode 100644 src/lib/utils.ts
+ create mode 100644 src/types/index.ts
+ create mode 100644 src/types/transfer.ts
+ create mode 100644 src/types/user.ts
+ create mode 100644 tailwind.config.js
+ create mode 100644 test/SimplifiedEscrow.t.sol
+ create mode 100644 tsconfig.json
+ create mode 100644 vercel.json
+Enumerating objects: 381, done.
+Counting objects: 100% (381/381), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (340/340), done.
+Writing objects: 100% (381/381), 3.98 MiB | 5.90 MiB/s, done.
+Total 381 (delta 25), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (25/25), done.
+To https://github.com/Must-be-Ash/btwnfriends.com.git
+ * [new branch]      main -> main
+~/workspace$ 
