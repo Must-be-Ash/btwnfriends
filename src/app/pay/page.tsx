@@ -8,7 +8,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useIsSignedIn, useCurrentUser } from '@coinbase/cdp-hooks'
 import { LoadingScreen } from '@/components/shared/LoadingScreen'
 import { formatUSDCWithSymbol } from '@/lib/utils'
-import { ExternalLink, Download, Copy, CheckCircle } from 'lucide-react'
+import { Copy, CheckCircle } from 'lucide-react'
 
 interface UserLookupResult {
   success: boolean
@@ -28,7 +28,6 @@ function PayPageContent() {
   const { } = useCurrentUser()
 
   const [isLoading, setIsLoading] = useState(true)
-  const [isPWAStandalone, setIsPWAStandalone] = useState(false)
   const [recipientUser, setRecipientUser] = useState<UserLookupResult['user'] | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [urlCopied, setUrlCopied] = useState(false)
@@ -39,26 +38,6 @@ function PayPageContent() {
   const message = searchParams.get('message') || searchParams.get('memo')
   const name = searchParams.get('name') || searchParams.get('displayName')
 
-  // Detect PWA standalone mode
-  const detectPWAMode = useCallback(() => {
-    if (typeof window === 'undefined') return false
-
-    // Check if running in PWA standalone mode
-    const isStandalone =
-      (window.navigator as unknown as { standalone?: boolean }).standalone || // iOS Safari PWA
-      window.matchMedia('(display-mode: standalone)').matches || // Android Chrome PWA
-      window.matchMedia('(display-mode: fullscreen)').matches
-
-    console.log('🔍 PWA Detection:', {
-      isStandalone,
-      navigator_standalone: (window.navigator as unknown as { standalone?: boolean }).standalone,
-      display_mode_standalone: window.matchMedia('(display-mode: standalone)').matches,
-      display_mode_fullscreen: window.matchMedia('(display-mode: fullscreen)').matches,
-      userAgent: navigator.userAgent
-    })
-
-    return isStandalone
-  }, [])
 
   // Lookup user by wallet address
   const lookupUserByWalletAddress = useCallback(async (address: string): Promise<UserLookupResult> => {
@@ -92,9 +71,6 @@ function PayPageContent() {
   // Handle PWA routing logic
   const handlePWARouting = useCallback(async () => {
     console.log('🎯 Starting PWA routing logic...')
-
-    const standalone = detectPWAMode()
-    setIsPWAStandalone(standalone)
 
     // Validate wallet address
     if (!walletAddress || !/^0x[a-fA-F0-9]{40}$/.test(walletAddress)) {
@@ -136,29 +112,24 @@ function PayPageContent() {
       setError('Failed to process payment request')
       setIsLoading(false)
     }
-  }, [walletAddress, amount, message, isSignedIn, detectPWAMode, lookupUserByWalletAddress, router])
+  }, [walletAddress, amount, message, isSignedIn, lookupUserByWalletAddress, router])
 
   // Initialize on mount
   useEffect(() => {
     handlePWARouting()
   }, [handlePWARouting])
 
-  // Handle opening in PWA
-  const handleOpenInPWA = useCallback(() => {
+  // Handle sign in to complete payment
+  const handleSignIn = useCallback(() => {
     if (typeof window !== 'undefined') {
+      // Preserve all payment parameters when redirecting to auth
       const currentUrl = window.location.href
-      console.log('🔗 Attempting to open in PWA:', currentUrl)
+      const url = new URL(currentUrl)
+      const params = url.searchParams
 
-      // Try to open in installed PWA - simplified approach
-      window.location.href = currentUrl
-    }
-  }, [])
-
-  // Handle PWA installation
-  const handleInstallPWA = useCallback(() => {
-    // Redirect to main page where install prompt can be triggered
-    if (typeof window !== 'undefined') {
-      window.location.href = '/'
+      // Redirect to home page with payment params so user can authenticate
+      // After auth, they'll be redirected to send flow with these params
+      window.location.href = `/?${params.toString()}`
     }
   }, [])
 
@@ -255,59 +226,31 @@ function PayPageContent() {
 
         {/* Action Buttons */}
         <div className="space-y-3">
-          {isSignedIn && isPWAStandalone ? (
-            // User is signed in and in PWA - direct action
-            <button
-              onClick={handlePWARouting}
-              className="w-full py-4 px-6 bg-[#5CB0FF] text-white rounded-xl font-semibold hover:bg-[#4A9DE8] transition-colors flex items-center justify-center gap-2"
-            >
-              <span>Send Payment</span>
-            </button>
-          ) : isPWAStandalone ? (
-            // In PWA but not signed in
-            <button
-              onClick={() => router.push('/')}
-              className="w-full py-4 px-6 bg-[#5CB0FF] text-white rounded-xl font-semibold hover:bg-[#4A9DE8] transition-colors"
-            >
-              Sign In to Send Payment
-            </button>
-          ) : (
-            // Not in PWA - show install/open options
-            <>
-              <button
-                onClick={handleOpenInPWA}
-                className="w-full py-4 px-6 bg-[#5CB0FF] text-white rounded-xl font-semibold hover:bg-[#4A9DE8] transition-colors flex items-center justify-center gap-2"
-              >
-                <ExternalLink className="w-5 h-5" />
-                <span>Open in Between Friends</span>
-              </button>
+          {/* Primary action - Sign in to complete payment */}
+          <button
+            onClick={handleSignIn}
+            className="w-full py-4 px-6 bg-[#5CB0FF] text-white rounded-xl font-semibold hover:bg-[#4A9DE8] transition-colors"
+          >
+            Sign In to Send Payment
+          </button>
 
-              <button
-                onClick={handleInstallPWA}
-                className="w-full py-3 px-6 border border-gray-600 text-gray-300 rounded-xl font-semibold hover:bg-gray-700 transition-colors flex items-center justify-center gap-2"
-              >
-                <Download className="w-4 h-4" />
-                <span>Install Between Friends</span>
-              </button>
-
-              <button
-                onClick={handleCopyUrl}
-                className="w-full py-3 px-6 border border-gray-600 text-gray-300 rounded-xl font-semibold hover:bg-gray-700 transition-colors flex items-center justify-center gap-2"
-              >
-                {urlCopied ? (
-                  <>
-                    <CheckCircle className="w-4 h-4" />
-                    <span>Copied!</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-4 h-4" />
-                    <span>Copy Link</span>
-                  </>
-                )}
-              </button>
-            </>
-          )}
+          {/* Secondary action - Copy link */}
+          <button
+            onClick={handleCopyUrl}
+            className="w-full py-3 px-6 border border-gray-600 text-gray-300 rounded-xl font-semibold hover:bg-gray-700 transition-colors flex items-center justify-center gap-2"
+          >
+            {urlCopied ? (
+              <>
+                <CheckCircle className="w-4 h-4" />
+                <span>Copied!</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-4 h-4" />
+                <span>Copy Link</span>
+              </>
+            )}
+          </button>
         </div>
 
         {/* Footer */}

@@ -19,19 +19,19 @@ export function SimpleReceive({ address }: SimpleReceiveProps) {
   const generateQRCode = useCallback(async () => {
     setIsGenerating(true)
     try {
-      let qrData = address
-      
-      // If amount is specified, create payment URL
-      if (amount && parseFloat(amount) > 0) {
-        // Only use window.location on client side
-        const baseUrl = typeof window !== 'undefined'
-          ? window.location.origin
-          : process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-        const params = new URLSearchParams()
-        params.set('to', address)
+      // Always use payment URL instead of raw wallet address
+      const baseUrl = typeof window !== 'undefined'
+        ? window.location.origin
+        : process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+      const params = new URLSearchParams()
+      params.set('to', address)
+
+      // Include amount if specified (even if 0)
+      if (amount !== '') {
         params.set('amount', amount)
-        qrData = `${baseUrl}/pay?${params.toString()}`
       }
+
+      const qrData = `${baseUrl}/pay?${params.toString()}`
       
       const qrUrl = await QRCode.toDataURL(qrData, {
         width: 200,
@@ -86,8 +86,11 @@ export function SimpleReceive({ address }: SimpleReceiveProps) {
     const params = new URLSearchParams()
     params.set('to', address)
 
-    if (amount && parseFloat(amount) > 0) {
-      shareText = `Send me ${formatUSDCWithSymbol(amount)} USDC`
+    if (amount !== '') {
+      const amountNum = parseFloat(amount)
+      if (amountNum > 0) {
+        shareText = `Send me ${formatUSDCWithSymbol(amount)} USDC`
+      }
       params.set('amount', amount)
     }
 
