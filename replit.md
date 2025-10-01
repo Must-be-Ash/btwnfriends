@@ -16,6 +16,7 @@ The application comprises a Next.js web frontend, a React Native (Expo) mobile a
 - Both web and mobile apps aim for feature parity and a consistent user experience.
 - Mobile design incorporates Expo Router for navigation, Lucide React Native for icons, and React Native Reanimated for animations.
 - Web app utilizes Tailwind CSS for styling and Framer Motion for animations, supporting PWA features with Next-PWA.
+- QR code scanning implemented with expo-camera (CameraView) for iOS with proper permission handling.
 
 **Technical Implementations:**
 - **Authentication Flow:** Email-based OTP verification through CDP, leading to automatic wallet creation/retrieval.
@@ -25,8 +26,17 @@ The application comprises a Next.js web frontend, a React Native (Expo) mobile a
 - **Database Schema:** Key collections include `users` (profiles, wallets), `transfers` (pending escrow), `transactions` (history), and `contacts`.
 
 **Feature Specifications:**
-- **Core Features:** Email-based authentication, automatic wallet creation, direct USDC transfers, escrow transfers (email claim), transaction history, contact management, and PWA support.
+- **Core Features:** Email-based authentication, automatic wallet creation, direct USDC transfers, escrow transfers (email claim), transaction history, contact management, QR code scanning for payments, and PWA support.
 - **Smart Contract Integration:** USDC transfers on Base Network, `SimplifiedEscrow` for claims, and optional gas sponsorship for recipients.
+- **Mobile App Status (iOS):**
+  - ✅ Home Dashboard with balance and quick actions
+  - ✅ Send screen with recipient search, amount entry, and direct/escrow transfers
+  - ✅ Receive screen with QR code and payment links
+  - ✅ Transaction History with filters, search, and pagination
+  - ✅ Contacts management with favorites and search
+  - ✅ QR Scanner for scanning payment QR codes
+  - 🔲 Export Key screen
+  - 🔲 Settings/Profile screen
 
 ## External Dependencies
 - **Coinbase Developer Platform (CDP):** For Embedded Wallets, authentication, and blockchain interactions (`@coinbase/cdp-react`, `@coinbase/cdp-hooks`).
