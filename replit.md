@@ -164,6 +164,42 @@ The app is configured for deployment on Replit. For production:
 
 ### 2025-10-01: React Native Mobile App Development
 
+#### Task 11: History Screen - COMPLETE ✅
+- **Transaction List:**
+  - FlatList with transaction items showing email, amount, time, status
+  - Pagination with infinite scroll (20 items per page)
+  - Pull-to-refresh functionality
+  - Load more on scroll with loading indicator
+  - Race condition protection using request ID tracking
+  - Functional state updates for concurrent safety
+
+- **Filters & Search:**
+  - Independent type filters: All, Sent, Received, Pending
+  - Independent status filters: All, Confirmed, Pending, Failed
+  - Filters are combinable (e.g., Sent + Confirmed)
+  - Search by email/transaction details
+  - Active filters display with clear all option
+  - Real-time API refresh on filter changes
+
+- **Transaction Display:**
+  - Status badges (confirmed, pending, failed, claimed, unclaimed)
+  - Proper amount formatting with USDC symbol
+  - Time ago display (e.g., "2h ago", "3d ago")
+  - Copy transaction hash to clipboard
+  - View on block explorer (network-aware URLs)
+  - Empty states for no transactions
+
+- **Files Created:**
+  - `mobile/components/history/TransactionItem.tsx`: Individual transaction card
+  - `mobile/components/history/TransactionFilters.tsx`: Filter and search UI
+  - `mobile/app/(tabs)/history.tsx`: Full history screen with API integration
+
+- **Technical Implementation:**
+  - Request ID tracking prevents stale responses
+  - Functional state updates avoid closure issues
+  - API integration: GET /api/transactions with userId, limit, offset, type, status, search
+  - Default sort: Most recent first (backend default)
+
 #### Task 10: Receive Screen - COMPLETE ✅
 - **QR Code Generation:**
   - Native QR code display using react-native-qrcode-svg
