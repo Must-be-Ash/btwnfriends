@@ -29,7 +29,9 @@ export default function HomeScreen() {
           <Text className="text-gray-600 text-sm mb-2">Your Balance</Text>
           <Text className="text-4xl font-bold text-gray-900 mb-4">$0.00</Text>
           <Text className="text-xs text-gray-500 font-mono">
-            {evmAddress ? `${evmAddress.slice(0, 6)}...${evmAddress.slice(-4)}` : 'Loading...'}
+            {evmAddress && typeof evmAddress.evmAddress === 'string'
+              ? `${evmAddress.evmAddress.slice(0, 6)}...${evmAddress.evmAddress.slice(-4)}`
+              : 'Loading...'}
           </Text>
         </View>
 
