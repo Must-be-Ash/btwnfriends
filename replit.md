@@ -35,7 +35,7 @@ The application comprises a Next.js web frontend, a React Native (Expo) mobile a
   - ✅ Transaction History with filters, search, and pagination
   - ✅ Contacts management with favorites and search
   - ✅ QR Scanner for scanning payment QR codes
-  - 🔲 Export Key screen
+  - ✅ Export Key screen with biometric auth and clipboard security
   - 🔲 Settings/Profile screen
 
 ## External Dependencies
