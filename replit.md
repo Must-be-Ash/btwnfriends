@@ -17,6 +17,8 @@ The application comprises a Next.js web frontend, a React Native (Expo) mobile a
 - Mobile design incorporates Expo Router for navigation, Lucide React Native for icons, and React Native Reanimated for animations.
 - Web app utilizes Tailwind CSS for styling and Framer Motion for animations, supporting PWA features with Next-PWA.
 - QR code scanning implemented with expo-camera (CameraView) for iOS with proper permission handling.
+- Settings screen provides comprehensive profile management, security controls (biometric toggle, export key), and app information.
+- Avatar menu in dashboard offers quick access to Settings, Export Key, and Logout with proper confirmation flows.
 
 **Technical Implementations:**
 - **Authentication Flow:** Email-based OTP verification through CDP, leading to automatic wallet creation/retrieval.
@@ -36,7 +38,7 @@ The application comprises a Next.js web frontend, a React Native (Expo) mobile a
   - ✅ Contacts management with favorites and search
   - ✅ QR Scanner for scanning payment QR codes
   - ✅ Export Key screen with biometric auth and clipboard security
-  - 🔲 Settings/Profile screen
+  - ✅ Settings/Profile screen with profile editing, wallet info, security controls
 
 ## External Dependencies
 - **Coinbase Developer Platform (CDP):** For Embedded Wallets, authentication, and blockchain interactions (`@coinbase/cdp-react`, `@coinbase/cdp-hooks`).
