@@ -1,261 +1,7 @@
 # Between Friends - Payment App
 
 ## Overview
-Between Friends is a cryptocurrency payment platform enabling email-based USDC transfers using Coinbase Developer Platform (CDP) Embedded Wallets. Available as both a Next.js web app and React Native mobile app (iOS) sharing the same backend.
-
-## Project Structure
-- **Web Frontend**: Next.js 14 with React, TypeScript, and Tailwind CSS
-- **Mobile App**: React Native with Expo (iOS) - feature parity with web app
-- **Backend**: Next.js API routes (shared by both platforms)
-- **Database**: MongoDB for user data and transaction history
-- **Blockchain**: Base Network (Sepolia testnet for development)
-- **Authentication**: Coinbase CDP Embedded Wallets with email OTP
-- **Smart Contracts**: SimplifiedEscrow contract for escrow functionality
-
-## Technology Stack
-
-### Web App
-- Next.js 14.2.31
-- React 18.2.0
-- TypeScript 5.5.3
-- Tailwind CSS for styling
-- Framer Motion for animations
-- Next-PWA for Progressive Web App features
-
-### Mobile App (iOS)
-- Expo SDK 52
-- React Native
-- TypeScript 5.5.3
-- Expo Router for navigation
-- Lucide React Native for icons
-- React Native Reanimated for animations
-
-### Shared
-- Coinbase CDP SDK (@coinbase/cdp-react, @coinbase/cdp-hooks)
-- Viem for blockchain interactions
-- MongoDB 6.3.0
-
-## Configuration Requirements
-
-### Required Environment Variables (Web App)
-Configure these in the Secrets tab:
-
-1. **NEXT_PUBLIC_CDP_PROJECT_ID** - Get from [Coinbase Developer Platform](https://portal.cdp.coinbase.com/access/api)
-2. **DATABASE_URL** - MongoDB connection string (format: mongodb://...)
-
-### Optional Environment Variables (Web App)
-3. **RESEND_API_KEY** - For email notifications (get from resend.com)
-4. **ADMIN_WALLET_PRIVATE_KEY** - For gasless claims (only if using escrow features)
-
-### Required Environment Variables (Mobile App)
-Configure in mobile/.env:
-
-1. **EXPO_PUBLIC_CDP_PROJECT_ID** - Same as web app CDP Project ID
-2. **EXPO_PUBLIC_API_URL** - Backend API URL (e.g., https://your-repl.replit.dev)
-3. **EXPO_PUBLIC_WEB_URL** - Web app URL for claim links (e.g., https://your-repl.replit.dev)
-
-### Optional Environment Variables (Mobile App)
-4. **EXPO_PUBLIC_BASE_RPC_URL** - Base Sepolia RPC (defaults to https://sepolia.base.org)
-
-### Default Configuration
-The app is pre-configured for Base Sepolia testnet:
-- Chain ID: 84532
-- RPC URL: https://sepolia.base.org
-- USDC Contract: 0x036CbD53842c5426634e7929541eC2318f3dCF7e
-- Escrow Contract: 0x1C182dDa2DE61c349bc516Fa8a63a371cA4CE184
-
-## Getting Started
-
-### 1. Configure Environment
-1. Open the Secrets tab in Replit
-2. Add your CDP Project ID
-3. Add your MongoDB connection string
-4. (Optional) Add email and admin wallet keys
-
-### 2. Run the App
-The app runs automatically with the configured workflow. It's accessible at port 5000.
-
-### 3. First Time Setup
-- The app will create database collections automatically
-- Users authenticate via email using CDP
-- Wallets are created automatically on first login
-
-## Development
-
-### Web App Commands
-- `npm run dev` - Start development server on port 5000
-- `npm run build` - Build for production
-- `npm start` - Start production server
-- `npm run lint` - Run ESLint
-- `npm run type-check` - Check TypeScript types
-
-### Mobile App Commands
-- `cd mobile && npm start` - Start Expo development server
-- `cd mobile && npm run ios` - Run on iOS simulator
-- `cd mobile && npm run type-check` - Check TypeScript types
-
-### Port Configuration
-- Web Frontend: Port 5000 (configured for Replit)
-- Mobile App: Expo development server (connects to web backend)
-- Database: External MongoDB connection
-
-## Features
-
-### Core Features
-1. **Email-based Authentication** - Users sign in with email (CDP handles OTP)
-2. **Automatic Wallet Creation** - Wallets created on first login
-3. **Direct Transfers** - Send USDC to existing users instantly
-4. **Escrow Transfers** - Send to new users via email claim
-5. **Transaction History** - Track all sent/received payments
-6. **Contact Management** - Save frequent recipients
-7. **PWA Support** - Install as mobile app
-
-### Smart Contract Integration
-- USDC transfers on Base Network
-- SimplifiedEscrow for email-based claims
-- Gas sponsorship for recipients (if admin wallet configured)
-
-## Database Schema
-
-### Collections
-1. **users** - User profiles and wallet addresses
-2. **transfers** - Pending escrow transfers
-3. **transactions** - Transaction history
-4. **contacts** - User saved contacts
-
-## Architecture Notes
-
-### Authentication Flow
-1. User enters email
-2. CDP sends OTP code
-3. User verifies code
-4. CDP creates/retrieves wallet
-5. User authenticated with session
-
-### Transfer Flow
-**Direct Transfer** (recipient exists):
-1. Check recipient exists in database
-2. Prepare USDC transfer transaction
-3. Execute transfer
-4. Record in transaction history
-
-**Escrow Transfer** (new recipient):
-1. Approve USDC to escrow contract
-2. Deposit to escrow with email hash
-3. Send email notification
-4. Recipient claims via email verification
-5. Admin releases from escrow (gas-free for recipient)
-
-## Security Considerations
-- Environment variables stored securely in Replit Secrets
-- Private keys never exposed in code
-- CORS configured for production
-- Smart contracts audited (see security docs in repo)
-- Email verification for escrow claims
-
-## Deployment
-The app is configured for deployment on Replit. For production:
-1. Update environment variables for mainnet
-2. Deploy smart contracts to Base mainnet
-3. Configure production MongoDB
-4. Set up custom domain (optional)
-
-## Recent Changes
-
-### 2025-10-01: React Native Mobile App Development
-
-#### Task 11: History Screen - COMPLETE ✅
-- **Transaction List:**
-  - FlatList with transaction items showing email, amount, time, status
-  - Pagination with infinite scroll (20 items per page)
-  - Pull-to-refresh functionality
-  - Load more on scroll with loading indicator
-  - Race condition protection using request ID tracking
-  - Functional state updates for concurrent safety
-
-- **Filters & Search:**
-  - Independent type filters: All, Sent, Received, Pending
-  - Independent status filters: All, Confirmed, Pending, Failed
-  - Filters are combinable (e.g., Sent + Confirmed)
-  - Search by email/transaction details
-  - Active filters display with clear all option
-  - Real-time API refresh on filter changes
-
-- **Transaction Display:**
-  - Status badges (confirmed, pending, failed, claimed, unclaimed)
-  - Proper amount formatting with USDC symbol
-  - Time ago display (e.g., "2h ago", "3d ago")
-  - Copy transaction hash to clipboard
-  - View on block explorer (network-aware URLs)
-  - Empty states for no transactions
-
-- **Files Created:**
-  - `mobile/components/history/TransactionItem.tsx`: Individual transaction card
-  - `mobile/components/history/TransactionFilters.tsx`: Filter and search UI
-  - `mobile/app/(tabs)/history.tsx`: Full history screen with API integration
-
-- **Technical Implementation:**
-  - Request ID tracking prevents stale responses
-  - Functional state updates avoid closure issues
-  - API integration: GET /api/transactions with userId, limit, offset, type, status, search
-  - Default sort: Most recent first (backend default)
-
-#### Task 10: Receive Screen - COMPLETE ✅
-- **QR Code Generation:**
-  - Native QR code display using react-native-qrcode-svg
-  - Payment URL construction with wallet address, amount, and message
-  - Privacy-first approach: No PII (email/name) embedded in QR codes
-  - Environment-aware URL generation (EXPO_PUBLIC_WEB_URL)
-
-- **Copy & Share Functionality:**
-  - Dual copy options: Copy raw wallet address OR payment link
-  - Independent visual feedback for each copy action
-  - Native iOS share sheet integration
-  - Proper clipboard handling with Expo Clipboard
-
-- **Payment Request Features:**
-  - Optional amount specification (6-decimal USDC validation)
-  - Quick amount buttons ($10, $25, $50, $100)
-  - Optional message field (100 char limit)
-  - Two-step flow: configure → display QR
-
-- **Files Created:**
-  - `mobile/components/receive/QRCodeDisplay.tsx`: QR code display with share/copy
-  - `mobile/app/(tabs)/receive.tsx`: Receive screen with amount input
-
-#### Task 9: Send Screen - COMPLETE ✅
-- **Send Flow Components:**
-  - RecipientInput: Contact search, email lookup, favorite contacts
-  - AmountInput: USDC validation, quick amount buttons, balance checks
-  - SendConfirmation: Smart account transfers with CDP paymaster, escrow deposits with approval flow
-  - SendSuccess: Transaction receipts, network-aware block explorer links
-  - Full send flow orchestration: input → confirmation → success
-  - Balance fetching on mount, proper navigation, state management
-
-- **Supporting Files Created:**
-  - `mobile/lib/cdp.ts`: CDP utilities (USDC transfers, approvals, escrow, block explorer URLs)
-  - `mobile/lib/utils.ts`: Format utilities (USDC, addresses)
-  - `mobile/components/send/`: RecipientInput, SendConfirmation, SendSuccess
-  - `mobile/hooks/useContacts.ts`: Contact management with search and favorites
-  - `mobile/components/contacts/`: ContactSearch, ContactList components
-
-- **Task 8: Dashboard components ported to mobile** ✅
-  - BalanceCard: Fetches balance from blockchain via viem (on-chain)
-  - QuickActions: Navigation working with Expo Router
-  - RecentTransactions: API integration with /api/transactions
-  - PendingClaims: API client with /api/pending-claims, clipboard working
-  - AccountInfoWithAvatar: Uses /api/users endpoint, menu, logout working
-  - SmartAccountStatus: Simplified (wallet address + network, smart account features deferred)
-- Home screen fully integrated with all dashboard components
-- Pull-to-refresh working, proper loading states and error handling
-- API client configured with automatic token attachment
-
-### 2025-09-30: Configured for Replit environment
-- Set up port 5000 with 0.0.0.0 binding
-- Removed X-Frame-Options header for iframe compatibility
-- Added Cache-Control headers for development
-- Created environment configuration template
-- Configured workflow for automatic startup
+Between Friends is a cryptocurrency payment platform designed for email-based USDC transfers using Coinbase Developer Platform (CDP) Embedded Wallets. It offers a seamless experience across both a Next.js web application and a React Native mobile application (iOS), sharing a unified backend. The project aims to simplify crypto payments, making them as accessible as sending an email, with features like automatic wallet creation, direct and escrow transfers, and comprehensive transaction history.
 
 ## User Preferences
 - Use TypeScript for all new code
@@ -263,63 +9,29 @@ The app is configured for deployment on Replit. For production:
 - Keep dependencies up to date
 - Maintain mobile-first responsive design
 
-## Mobile App Architecture
+## System Architecture
+The application comprises a Next.js web frontend, a React Native (Expo) mobile app for iOS, and a shared Next.js API backend. MongoDB serves as the database for user and transaction data. Authentication is managed via Coinbase CDP Embedded Wallets using email OTP, automatically creating wallets upon a user's first login. Blockchain interactions occur on the Base Network (Sepolia for development), utilizing Viem, with smart contracts for USDC transfers and a `SimplifiedEscrow` contract for email-based claims.
 
-### Data Flow
-- **Balance**: Fetched directly from blockchain using viem (no API endpoint)
-- **Profile**: Mobile → /api/users?userId=X → MongoDB
-- **Transactions**: Mobile → /api/transactions → MongoDB
-- **Pending Claims**: Mobile → /api/pending-claims → MongoDB
+**UI/UX Decisions:**
+- Both web and mobile apps aim for feature parity and a consistent user experience.
+- Mobile design incorporates Expo Router for navigation, Lucide React Native for icons, and React Native Reanimated for animations.
+- Web app utilizes Tailwind CSS for styling and Framer Motion for animations, supporting PWA features with Next-PWA.
 
-### Components Structure
-```
-mobile/
-├── app/                    # Expo Router screens
-│   ├── (tabs)/            # Tab navigation
-│   ├── _layout.tsx        # Root layout with CDP provider
-│   └── login.tsx          # Authentication screen
-├── components/
-│   ├── dashboard/         # Dashboard components
-│   │   ├── BalanceCard.tsx
-│   │   ├── QuickActions.tsx
-│   │   ├── RecentTransactions.tsx
-│   │   ├── PendingClaims.tsx
-│   │   ├── AccountInfoWithAvatar.tsx
-│   │   └── SmartAccountStatus.tsx
-│   └── ui/                # Shared UI components
-│       ├── Button3D.tsx
-│       ├── SendButton3D.tsx
-│       ├── ContactAvatar.tsx
-│       ├── LoadingScreen.tsx
-│       ├── TextShimmer.tsx
-│       └── NumberTicker.tsx
-└── lib/                   # Utilities
-    ├── api.ts             # API client with auth
-    ├── usdc.ts            # Blockchain interactions
-    ├── auth-storage.ts    # Secure storage
-    └── secure-storage.ts  # SecureStore wrapper
-```
+**Technical Implementations:**
+- **Authentication Flow:** Email-based OTP verification through CDP, leading to automatic wallet creation/retrieval.
+- **Transfer Flows:**
+    - **Direct Transfer:** For existing users, USDC transfers are executed directly and recorded.
+    - **Escrow Transfer:** For new users, USDC is approved and deposited into an escrow contract, with an email notification sent. The recipient claims funds via email verification, with gas sponsorship handled by an admin wallet.
+- **Database Schema:** Key collections include `users` (profiles, wallets), `transfers` (pending escrow), `transactions` (history), and `contacts`.
 
-### Known Limitations (Mobile)
-1. **Smart Account Features**: Gas sponsoring and smart account status indicators not yet implemented (requires useSmartAccount hook port)
-2. **Device Testing**: Requires proper environment variables (EXPO_PUBLIC_API_URL, EXPO_PUBLIC_WEB_URL)
-3. **Polyfills**: May need crypto/Buffer polyfills for viem on physical devices
+**Feature Specifications:**
+- **Core Features:** Email-based authentication, automatic wallet creation, direct USDC transfers, escrow transfers (email claim), transaction history, contact management, and PWA support.
+- **Smart Contract Integration:** USDC transfers on Base Network, `SimplifiedEscrow` for claims, and optional gas sponsorship for recipients.
 
-## Troubleshooting
-
-### Web App Issues
-1. **CORS Errors** - Ensure NEXT_PUBLIC_CDP_PROJECT_ID is set correctly
-2. **Database Connection** - Verify DATABASE_URL format and connectivity
-3. **Wallet Creation Fails** - Check CDP project configuration
-4. **Transactions Fail** - Ensure users have USDC balance
-
-### Mobile App Issues
-1. **API Connection Failed** - Verify EXPO_PUBLIC_API_URL is set correctly
-2. **Balance Not Loading** - Check EXPO_PUBLIC_BASE_RPC_URL or network connection
-3. **Claim Links Not Working** - Ensure EXPO_PUBLIC_WEB_URL is configured
-
-### Support Resources
-- [CDP Documentation](https://docs.cdp.coinbase.com)
-- [Base Network Docs](https://docs.base.org)
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Expo Documentation](https://docs.expo.dev)
+## External Dependencies
+- **Coinbase Developer Platform (CDP):** For Embedded Wallets, authentication, and blockchain interactions (`@coinbase/cdp-react`, `@coinbase/cdp-hooks`).
+- **MongoDB:** Database for storing user data, transaction history, and other application-specific information.
+- **Resend:** (Optional) For sending email notifications (`RESEND_API_KEY`).
+- **Base Network:** The blockchain platform for USDC transfers and smart contract deployment.
+- **Viem:** For interacting with the Ethereum Virtual Machine and smart contracts.
+- **Expo SDK:** For building the React Native mobile application.
