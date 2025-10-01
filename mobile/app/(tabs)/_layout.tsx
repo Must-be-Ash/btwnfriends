@@ -1,6 +1,5 @@
 import { Tabs } from 'expo-router';
-import { View } from 'react-native';
-import { Home, Send, QrCode, History, User } from 'lucide-react-native';
+import { Home, Send, QrCode, History } from 'lucide-react-native';
 
 export default function TabsLayout() {
   return (
@@ -38,9 +37,9 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="scan"
+        name="receive"
         options={{
-          title: 'Scan',
+          title: 'Receive',
           tabBarIcon: ({ color, size }) => <QrCode size={size} color={color} />,
         }}
       />
@@ -49,13 +48,6 @@ export default function TabsLayout() {
         options={{
           title: 'History',
           tabBarIcon: ({ color, size }) => <History size={size} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: 'Profile',
-          tabBarIcon: ({ color, size }) => <User size={size} color={color} />,
         }}
       />
     </Tabs>

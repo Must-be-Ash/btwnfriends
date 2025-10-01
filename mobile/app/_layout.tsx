@@ -14,8 +14,57 @@ export default function RootLayout() {
         }}
       >
         <Stack.Screen name="index" />
-        <Stack.Screen name="(tabs)" />
         <Stack.Screen name="auth" />
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen 
+          name="scan" 
+          options={{
+            headerShown: true,
+            title: 'Scan QR Code',
+            presentation: 'modal',
+          }}
+        />
+        <Stack.Screen 
+          name="contacts" 
+          options={{
+            headerShown: true,
+            title: 'Contacts',
+          }}
+        />
+        <Stack.Screen 
+          name="settings" 
+          options={{
+            headerShown: true,
+            title: 'Settings',
+          }}
+        />
+        <Stack.Screen 
+          name="export-key" 
+          options={{
+            headerShown: true,
+            title: 'Export Key',
+          }}
+        />
+        <Stack.Screen 
+          name="pay" 
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen 
+          name="privacy" 
+          options={{
+            headerShown: true,
+            title: 'Privacy Policy',
+          }}
+        />
+        <Stack.Screen 
+          name="tos" 
+          options={{
+            headerShown: true,
+            title: 'Terms of Service',
+          }}
+        />
       </Stack>
     </CDPProvider>
   );
