@@ -162,9 +162,24 @@ The app is configured for deployment on Replit. For production:
 
 ## Recent Changes
 
-### 2025-10-01: React Native Mobile App Development
-- Started conversion of web app to React Native mobile app with Expo
-- Completed Task 8: Dashboard components ported to mobile
+### 2025-10-01: React Native Mobile App Development - Send Screen Complete
+- **Task 9: Send Screen - COMPLETE** ✅
+  - RecipientInput: Contact search, email lookup, favorite contacts
+  - AmountInput: USDC validation, quick amount buttons, balance checks
+  - SendConfirmation: Smart account transfers with CDP paymaster, escrow deposits with approval flow
+  - SendSuccess: Transaction receipts, network-aware block explorer links
+  - Full send flow orchestration: input → confirmation → success
+  - Balance fetching on mount, proper navigation, state management
+  - TypeScript: 0 errors, all LSP diagnostics resolved
+
+- **Supporting Files Created:**
+  - `mobile/lib/cdp.ts`: CDP utilities (USDC transfers, approvals, escrow, block explorer URLs)
+  - `mobile/lib/utils.ts`: Format utilities (USDC, addresses)
+  - `mobile/components/send/`: RecipientInput, SendConfirmation, SendSuccess
+  - `mobile/hooks/useContacts.ts`: Contact management with search and favorites
+  - `mobile/components/contacts/`: ContactSearch, ContactList components
+
+- **Task 8: Dashboard components ported to mobile** ✅
   - BalanceCard: Fetches balance from blockchain via viem (on-chain)
   - QuickActions: Navigation working with Expo Router
   - RecentTransactions: API integration with /api/transactions
@@ -174,7 +189,6 @@ The app is configured for deployment on Replit. For production:
 - Home screen fully integrated with all dashboard components
 - Pull-to-refresh working, proper loading states and error handling
 - API client configured with automatic token attachment
-- TypeScript compilation: 0 errors
 
 ### 2025-09-30: Configured for Replit environment
 - Set up port 5000 with 0.0.0.0 binding
