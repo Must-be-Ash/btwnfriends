@@ -1,58 +1,132 @@
-import { View, Text, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
-import { useState } from 'react';
-import { useEvmAddress } from '@coinbase/cdp-hooks';
+import { View, ScrollView, RefreshControl } from 'react-native';
+import { useState, useEffect, useCallback } from 'react';
+import { useEvmAddress, useCurrentUser } from '@coinbase/cdp-hooks';
+import { useRouter } from 'expo-router';
+import { api } from '../../lib/api';
+import { authStorage } from '../../lib/auth-storage';
+import { getUSDCBalance } from '../../lib/usdc';
+import {
+  BalanceCard,
+  QuickActions,
+  RecentTransactions,
+  PendingClaims,
+  AccountInfoWithAvatar,
+  SmartAccountStatus
+} from '../../components/dashboard';
 
 export default function HomeScreen() {
   const [refreshing, setRefreshing] = useState(false);
+  const [balance, setBalance] = useState('0');
+  const [isLoadingBalance, setIsLoadingBalance] = useState(true);
+  const [transactions, setTransactions] = useState([]);
+  const [isLoadingTransactions, setIsLoadingTransactions] = useState(true);
+  const [user, setUser] = useState(null);
+  
   const evmAddress = useEvmAddress();
+  const { currentUser } = useCurrentUser();
+  const router = useRouter();
+
+  const fetchBalance = useCallback(async () => {
+    if (!evmAddress?.evmAddress) return;
+    
+    try {
+      setIsLoadingBalance(true);
+      const balance = await getUSDCBalance(evmAddress.evmAddress);
+      setBalance(balance);
+    } catch (error) {
+      console.error('Error fetching balance:', error);
+      setBalance('0');
+    } finally {
+      setIsLoadingBalance(false);
+    }
+  }, [evmAddress?.evmAddress]);
+
+  const fetchTransactions = useCallback(async () => {
+    if (!currentUser?.userId) return;
+    
+    try {
+      setIsLoadingTransactions(true);
+      const response = await api.get('/api/transactions');
+      setTransactions(response.data?.transactions || []);
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+      setTransactions([]);
+    } finally {
+      setIsLoadingTransactions(false);
+    }
+  }, [currentUser?.userId]);
+
+  const fetchUserProfile = useCallback(async () => {
+    if (!currentUser?.userId) return;
+    
+    try {
+      const response = await api.get(`/api/users?userId=${encodeURIComponent(currentUser.userId)}`);
+      setUser(response.data?.user || null);
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      setUser(null);
+    }
+  }, [currentUser?.userId]);
+
+  useEffect(() => {
+    fetchBalance();
+    fetchTransactions();
+    fetchUserProfile();
+  }, [fetchBalance, fetchTransactions, fetchUserProfile]);
 
   const onRefresh = async () => {
     setRefreshing(true);
-    // TODO: Refresh balance and transactions
-    setTimeout(() => setRefreshing(false), 1000);
+    await Promise.all([
+      fetchBalance(),
+      fetchTransactions(),
+      fetchUserProfile()
+    ]);
+    setRefreshing(false);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await authStorage.clearSession();
+      router.replace('/auth');
+    } catch (error) {
+      console.error('Error logging out:', error);
+      router.replace('/auth');
+    }
   };
 
   return (
     <ScrollView 
-      className="flex-1 bg-gray-50"
+      className="flex-1 bg-[#1A1A1A]"
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
     >
-      <View className="bg-primary-500 px-6 pt-16 pb-8">
-        <Text className="text-white text-2xl font-bold mb-2">Between Friends</Text>
-        <Text className="text-primary-100 text-sm">Send USDC with just an email</Text>
-      </View>
-
-      <View className="px-6 -mt-6">
-        <View className="bg-white rounded-2xl p-6 shadow-sm">
-          <Text className="text-gray-600 text-sm mb-2">Your Balance</Text>
-          <Text className="text-4xl font-bold text-gray-900 mb-4">$0.00</Text>
-          <Text className="text-xs text-gray-500 font-mono">
-            {evmAddress && typeof evmAddress.evmAddress === 'string'
-              ? `${evmAddress.evmAddress.slice(0, 6)}...${evmAddress.evmAddress.slice(-4)}`
-              : 'Loading...'}
-          </Text>
-        </View>
-
-        <View className="mt-6">
-          <Text className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</Text>
-          <View className="flex-row gap-3">
-            <TouchableOpacity className="flex-1 bg-white rounded-xl p-4 items-center shadow-sm">
-              <Text className="text-primary-500 font-semibold">Send</Text>
-            </TouchableOpacity>
-            <TouchableOpacity className="flex-1 bg-white rounded-xl p-4 items-center shadow-sm">
-              <Text className="text-primary-500 font-semibold">Receive</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <View className="mt-8">
-          <Text className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</Text>
-          <View className="bg-white rounded-xl p-6 items-center">
-            <Text className="text-gray-500">No transactions yet</Text>
-          </View>
-        </View>
+      <View className="px-4 pt-6 pb-8 space-y-4">
+        <BalanceCard 
+          balance={balance}
+          isLoading={isLoadingBalance}
+          onRefresh={fetchBalance}
+        />
+        
+        <QuickActions />
+        
+        {currentUser?.userId && (
+          <PendingClaims userId={currentUser.userId} />
+        )}
+        
+        <RecentTransactions 
+          transactions={transactions}
+          isLoading={isLoadingTransactions}
+        />
+        
+        <AccountInfoWithAvatar
+          user={user}
+          walletAddress={evmAddress?.evmAddress || ''}
+          handleLogout={handleLogout}
+          currentUser={currentUser}
+        />
+        
+        <SmartAccountStatus />
       </View>
     </ScrollView>
   );

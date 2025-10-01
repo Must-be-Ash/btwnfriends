@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useState, useEffect, useCallback } from 'react';
 import * as Clipboard from 'expo-clipboard';
 import { AlertTriangle } from 'lucide-react-native';
+import { api } from '../../lib/api';
 
 interface PendingClaim {
   transferId: string;
@@ -43,14 +44,8 @@ export function PendingClaims({ userId }: PendingClaimsProps) {
     setError(null);
 
     try {
-      const response = await fetch(`/api/pending-claims?userId=${encodeURIComponent(userId)}`);
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch pending claims');
-      }
-
-      const data = await response.json();
-      setPendingClaims(data.claims || []);
+      const response = await api.get(`/api/pending-claims?userId=${encodeURIComponent(userId)}`);
+      setPendingClaims(response.data?.claims || []);
     } catch (error) {
       console.error('Error fetching pending claims:', error);
       setError('Failed to load pending claims');
@@ -86,7 +81,7 @@ export function PendingClaims({ userId }: PendingClaimsProps) {
   };
 
   const handleCopyLink = async (transferId: string) => {
-    const baseUrl = process.env.EXPO_PUBLIC_APP_URL || 'https://yourapp.com';
+    const baseUrl = process.env.EXPO_PUBLIC_WEB_URL || 'https://between-friends.replit.app';
     const claimUrl = `${baseUrl}/claim?id=${transferId}`;
     
     await Clipboard.setStringAsync(claimUrl);
