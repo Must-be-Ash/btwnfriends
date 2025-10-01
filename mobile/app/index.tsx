@@ -21,8 +21,8 @@ export default function Index() {
   }, [isSignedIn]);
 
   return (
-    <View className="flex-1 items-center justify-center bg-primary-500">
-      <Text className="text-4xl font-bold text-white mb-4">Between Friends</Text>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#3b82f6' }}>
+      <Text style={{ fontSize: 36, fontWeight: 'bold', color: 'white', marginBottom: 16 }}>Between Friends</Text>
       <ActivityIndicator size="large" color="#ffffff" />
     </View>
   );
