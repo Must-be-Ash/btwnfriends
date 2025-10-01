@@ -162,15 +162,39 @@ The app is configured for deployment on Replit. For production:
 
 ## Recent Changes
 
-### 2025-10-01: React Native Mobile App Development - Send Screen Complete
-- **Task 9: Send Screen - COMPLETE** ✅
+### 2025-10-01: React Native Mobile App Development
+
+#### Task 10: Receive Screen - COMPLETE ✅
+- **QR Code Generation:**
+  - Native QR code display using react-native-qrcode-svg
+  - Payment URL construction with wallet address, amount, and message
+  - Privacy-first approach: No PII (email/name) embedded in QR codes
+  - Environment-aware URL generation (EXPO_PUBLIC_WEB_URL)
+
+- **Copy & Share Functionality:**
+  - Dual copy options: Copy raw wallet address OR payment link
+  - Independent visual feedback for each copy action
+  - Native iOS share sheet integration
+  - Proper clipboard handling with Expo Clipboard
+
+- **Payment Request Features:**
+  - Optional amount specification (6-decimal USDC validation)
+  - Quick amount buttons ($10, $25, $50, $100)
+  - Optional message field (100 char limit)
+  - Two-step flow: configure → display QR
+
+- **Files Created:**
+  - `mobile/components/receive/QRCodeDisplay.tsx`: QR code display with share/copy
+  - `mobile/app/(tabs)/receive.tsx`: Receive screen with amount input
+
+#### Task 9: Send Screen - COMPLETE ✅
+- **Send Flow Components:**
   - RecipientInput: Contact search, email lookup, favorite contacts
   - AmountInput: USDC validation, quick amount buttons, balance checks
   - SendConfirmation: Smart account transfers with CDP paymaster, escrow deposits with approval flow
   - SendSuccess: Transaction receipts, network-aware block explorer links
   - Full send flow orchestration: input → confirmation → success
   - Balance fetching on mount, proper navigation, state management
-  - TypeScript: 0 errors, all LSP diagnostics resolved
 
 - **Supporting Files Created:**
   - `mobile/lib/cdp.ts`: CDP utilities (USDC transfers, approvals, escrow, block explorer URLs)
