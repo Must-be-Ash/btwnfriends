@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { View, ScrollView, TouchableOpacity, Text } from 'react-native';
 import { useCurrentUser, useEvmAddress } from '@coinbase/cdp-hooks';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { ArrowLeft } from 'lucide-react-native';
 import { RecipientInput } from '../../components/send/RecipientInput';
 import { SendConfirmation } from '../../components/send/SendConfirmation';
@@ -25,6 +25,8 @@ type Step = 'select_contact' | 'enter_amount';
 type CurrentStep = 'input' | 'confirmation' | 'success';
 
 export default function SendScreen() {
+  const params = useLocalSearchParams<{ contactEmail?: string; displayName?: string; amount?: string }>();
+  
   const [currentStep, setCurrentStep] = useState<CurrentStep>('input');
   const [recipientInputStep, setRecipientInputStep] = useState<Step>('select_contact');
   const [pendingTransferData, setPendingTransferData] = useState<TransferData | null>(null);
@@ -35,6 +37,15 @@ export default function SendScreen() {
   const { currentUser } = useCurrentUser();
   const evmAddress = useEvmAddress();
   const router = useRouter();
+
+  const contactEmail = Array.isArray(params.contactEmail) ? params.contactEmail[0] : params.contactEmail;
+  const displayName = Array.isArray(params.displayName) ? params.displayName[0] : params.displayName;
+  const amountParam = Array.isArray(params.amount) ? params.amount[0] : params.amount;
+
+  const preSelectedContact = contactEmail && displayName
+    ? { contactEmail, displayName }
+    : null;
+  const preFilledAmount = amountParam || '';
 
   const fetchBalance = async () => {
     if (!evmAddress?.evmAddress) return;
@@ -113,8 +124,8 @@ export default function SendScreen() {
                 userBalance={balance}
                 isLoadingBalance={isLoadingBalance}
                 ownerUserId={currentUser.userId}
-                preSelectedContact={null}
-                preFilledAmount=""
+                preSelectedContact={preSelectedContact}
+                preFilledAmount={preFilledAmount}
                 currentStep={recipientInputStep}
                 onStepChange={setRecipientInputStep}
               />
