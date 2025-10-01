@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity, Modal } from 'react-native';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
-import { LogOut, Key, Copy, Check } from 'lucide-react-native';
+import { LogOut, Key, Settings, Copy, Check } from 'lucide-react-native';
 import * as Clipboard from 'expo-clipboard';
 
 interface UserProfile {
@@ -43,6 +43,11 @@ export function AccountInfoWithAvatar({
     await Clipboard.setStringAsync(walletAddress);
     setCopiedAddress(true);
     setTimeout(() => setCopiedAddress(false), 2000);
+  };
+
+  const handleSettings = () => {
+    setShowMenu(false);
+    router.push('/settings');
   };
 
   const handleExportKeys = () => {
@@ -93,6 +98,14 @@ export function AccountInfoWithAvatar({
                 {user?.displayName || 'User'}
               </Text>
             </View>
+
+            <TouchableOpacity
+              onPress={handleSettings}
+              className="flex-row items-center px-4 py-3 active:bg-gray-100"
+            >
+              <Settings size={18} color="#6B7280" />
+              <Text className="ml-3 text-sm text-gray-700">Settings</Text>
+            </TouchableOpacity>
 
             <TouchableOpacity
               onPress={handleExportKeys}
