@@ -64,7 +64,7 @@
       "eas": {
         "projectId": "your-eas-project-id"
       },
-      "cdpProjectId": "your-cdp-project-id",
+      "cdpProjectId": "f37a551c-90fb-41e4-ad9e-b10da2d0a73c",
       "apiUrl": "http://localhost:3000"
     }
   }

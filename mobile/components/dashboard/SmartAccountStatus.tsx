@@ -19,7 +19,7 @@ export function SmartAccountStatus() {
         <Text className="text-lg font-semibold text-white">Wallet Status</Text>
       </View>
 
-      <View className="space-y-4">
+      <View className="gap-4">
         {/* EOA Address */}
         <View className="flex-row items-center justify-between">
           <Text className="text-[#B8B8B8] text-sm">Wallet Address</Text>

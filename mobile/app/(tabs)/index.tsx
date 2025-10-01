@@ -1,15 +1,13 @@
 import { View, ScrollView, RefreshControl } from 'react-native';
 import { useState, useEffect, useCallback } from 'react';
-import { useEvmAddress, useCurrentUser } from '@coinbase/cdp-hooks';
+import { useEvmAddress, useCurrentUser, useSignOut } from '@coinbase/cdp-hooks';
 import { useRouter } from 'expo-router';
-import { api } from '../../lib/api';
-import { authStorage } from '../../lib/auth-storage';
+import { useApi } from '../../lib/use-api';
 import { getUSDCBalance } from '../../lib/usdc';
 import {
   BalanceCard,
   QuickActions,
   RecentTransactions,
-  PendingClaims,
   AccountInfoWithAvatar,
   SmartAccountStatus
 } from '../../components/dashboard';
@@ -21,10 +19,12 @@ export default function HomeScreen() {
   const [transactions, setTransactions] = useState([]);
   const [isLoadingTransactions, setIsLoadingTransactions] = useState(true);
   const [user, setUser] = useState(null);
-  
+
   const evmAddress = useEvmAddress();
   const { currentUser } = useCurrentUser();
   const router = useRouter();
+  const { api, isReady: isApiReady } = useApi();
+  const { signOut } = useSignOut();
 
   const fetchBalance = useCallback(async () => {
     if (!evmAddress?.evmAddress) return;
@@ -42,11 +42,11 @@ export default function HomeScreen() {
   }, [evmAddress?.evmAddress]);
 
   const fetchTransactions = useCallback(async () => {
-    if (!currentUser?.userId) return;
-    
+    if (!currentUser?.userId || !isApiReady) return;
+
     try {
       setIsLoadingTransactions(true);
-      const response = await api.get('/api/transactions');
+      const response = await api.get(`/api/transactions?userId=${encodeURIComponent(currentUser.userId)}`);
       setTransactions(response.data?.transactions || []);
     } catch (error) {
       console.error('Error fetching transactions:', error);
@@ -54,11 +54,11 @@ export default function HomeScreen() {
     } finally {
       setIsLoadingTransactions(false);
     }
-  }, [currentUser?.userId]);
+  }, [currentUser?.userId, api, isApiReady]);
 
   const fetchUserProfile = useCallback(async () => {
-    if (!currentUser?.userId) return;
-    
+    if (!currentUser?.userId || !isApiReady) return;
+
     try {
       const response = await api.get(`/api/users?userId=${encodeURIComponent(currentUser.userId)}`);
       setUser(response.data?.user || null);
@@ -66,7 +66,7 @@ export default function HomeScreen() {
       console.error('Error fetching user profile:', error);
       setUser(null);
     }
-  }, [currentUser?.userId]);
+  }, [currentUser?.userId, api, isApiReady]);
 
   useEffect(() => {
     fetchBalance();
@@ -86,10 +86,12 @@ export default function HomeScreen() {
 
   const handleLogout = async () => {
     try {
-      await authStorage.clearSession();
+      // Use CDP's signOut to properly terminate the session
+      await signOut();
       router.replace('/auth');
     } catch (error) {
-      console.error('Error logging out:', error);
+      console.error('Logout failed:', error);
+      // Even if signOut fails, navigate to auth screen
       router.replace('/auth');
     }
   };
@@ -101,7 +103,7 @@ export default function HomeScreen() {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
     >
-      <View className="px-4 pt-6 pb-8 space-y-4">
+      <View className="px-4 pt-6 pb-8 gap-4">
         <BalanceCard 
           balance={balance}
           isLoading={isLoadingBalance}
@@ -109,11 +111,7 @@ export default function HomeScreen() {
         />
         
         <QuickActions />
-        
-        {currentUser?.userId && (
-          <PendingClaims userId={currentUser.userId} />
-        )}
-        
+
         <RecentTransactions 
           transactions={transactions}
           isLoading={isLoadingTransactions}

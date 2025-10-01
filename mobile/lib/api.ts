@@ -49,6 +49,8 @@ const getAPIUrl = () => {
 
 const API_URL = getAPIUrl();
 
+// Create axios instance with base configuration
+// NOTE: Authentication is handled by the useApi hook, not here
 export const api = axios.create({
   baseURL: API_URL,
   timeout: 30000,
@@ -57,40 +59,48 @@ export const api = axios.create({
   },
 });
 
-// Add auth token to requests
-api.interceptors.request.use(
-  async (config) => {
-    const token = await secureStorage.getAuthToken();
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
-// Handle response errors
+// Basic error logging (authentication handled elsewhere)
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response) {
       console.error('API Error:', error.response.data);
-      
-      // Handle 401 Unauthorized - clear tokens and redirect to auth
-      if (error.response.status === 401) {
-        await secureStorage.removeAuthToken();
-        await secureStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
-        // TODO: Redirect to auth screen
-        console.log('Session expired. Please log in again.');
-      }
     } else if (error.request) {
       console.error('Network Error:', error.message);
     }
     return Promise.reject(error);
   }
 );
+
+/**
+ * Create an authenticated API client with CDP access token
+ * Use this function in the useApi hook
+ */
+export function createAuthenticatedApi(accessToken: string | null) {
+  const authenticatedApi = axios.create({
+    baseURL: API_URL,
+    timeout: 30000,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+    },
+  });
+
+  // Add error handling
+  authenticatedApi.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      if (error.response) {
+        console.error('API Error:', error.response.data);
+      } else if (error.request) {
+        console.error('Network Error:', error.message);
+      }
+      return Promise.reject(error);
+    }
+  );
+
+  return authenticatedApi;
+}
 
 // API endpoints
 export const recipientAPI = {

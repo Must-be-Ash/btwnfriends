@@ -93,7 +93,7 @@ export function PendingClaims({ userId }: PendingClaimsProps) {
     return (
       <View className="bg-[#3B3B3B] rounded-2xl p-6 border border-white/30 shadow-2xl">
         <Text className="text-lg font-semibold text-white mb-4">Pending Claims</Text>
-        <View className="space-y-3">
+        <View className="gap-3">
           {[1, 2].map((i) => (
             <View key={i} className="border border-white/20 rounded-lg p-4">
               <View className="h-4 bg-white/20 rounded w-32 mb-2" />

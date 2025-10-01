@@ -4,7 +4,7 @@ import { useCurrentUser } from '@coinbase/cdp-hooks';
 import { TransactionItem } from '../../components/history/TransactionItem';
 import { TransactionFilters } from '../../components/history/TransactionFilters';
 import { LoadingScreen } from '../../components/ui/LoadingScreen';
-import { api } from '../../lib/api';
+import { useApi } from '../../lib/use-api';
 
 interface Transaction {
   _id: string;
@@ -23,22 +23,23 @@ type FilterStatus = 'all' | 'confirmed' | 'pending' | 'failed';
 
 export default function HistoryScreen() {
   const { currentUser } = useCurrentUser();
+  const { api, isReady: isApiReady } = useApi();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   const [filterType, setFilterType] = useState<FilterType>('all');
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [offset, setOffset] = useState(0);
-  
+
   const requestIdRef = useRef(0);
 
   const fetchTransactions = useCallback(async (reset: boolean = false) => {
-    if (!currentUser?.userId) return;
+    if (!currentUser?.userId || !isApiReady) return;
 
     const currentRequestId = ++requestIdRef.current;
     const newOffset = reset ? 0 : offset;
@@ -93,7 +94,7 @@ export default function HistoryScreen() {
         setIsLoadingMore(false);
       }
     }
-  }, [currentUser?.userId, filterType, filterStatus, searchQuery, offset]);
+  }, [currentUser?.userId, filterType, filterStatus, searchQuery, offset, api, isApiReady]);
 
   useEffect(() => {
     fetchTransactions(true);

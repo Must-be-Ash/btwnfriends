@@ -126,7 +126,7 @@ export function AccountInfoWithAvatar({
         </TouchableOpacity>
       </Modal>
 
-      <View className="space-y-4">
+      <View className="gap-4">
         <View>
           <Text className="text-sm text-white/70 mb-1">Display Name</Text>
           <Text className="font-medium text-white">{user?.displayName || 'Loading...'}</Text>

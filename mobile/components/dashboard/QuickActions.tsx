@@ -54,7 +54,7 @@ export function QuickActions() {
     <View className="bg-[#3B3B3B] rounded-2xl p-6 border border-white/30 shadow-2xl">
       <Text className="text-lg font-semibold text-white mb-6">Quick Actions</Text>
       
-      <View className="space-y-3">
+      <View className="gap-3">
         {actions.map((action) => {
           const Icon = action.icon;
           return (

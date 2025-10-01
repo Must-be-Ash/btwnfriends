@@ -25,13 +25,6 @@ export default function RootLayout() {
           }}
         />
         <Stack.Screen 
-          name="contacts" 
-          options={{
-            headerShown: true,
-            title: 'Contacts',
-          }}
-        />
-        <Stack.Screen 
           name="settings" 
           options={{
             headerShown: true,
