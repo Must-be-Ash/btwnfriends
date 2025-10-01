@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Send, Download, Users, History, QrCode, ChevronRight } from 'lucide-react-native';
+import { Send, Download, Users, History, QrCode, Key, ChevronRight } from 'lucide-react-native';
 
 export function QuickActions() {
   const router = useRouter();
@@ -40,6 +40,13 @@ export function QuickActions() {
       description: 'View transactions',
       icon: History,
       onPress: () => router.push('/(tabs)/history')
+    },
+    {
+      id: 'export-key',
+      label: 'Export Key',
+      description: 'Backup wallet',
+      icon: Key,
+      onPress: () => router.push('/export-key')
     }
   ];
 
