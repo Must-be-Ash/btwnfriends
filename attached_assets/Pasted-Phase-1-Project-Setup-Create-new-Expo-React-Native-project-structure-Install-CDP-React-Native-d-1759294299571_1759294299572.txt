@@ -1,0 +1,75 @@
+Phase 1: Project Setup
+* Create new Expo React Native project structure
+* Install CDP React Native dependencies
+* Setup TypeScript and configuration files
+* Setup NativeWind for styling
+* Setup Expo Router for navigation
+Phase 2: Core Infrastructure
+* Create API client to connect to Next.js backend
+* Port authentication logic (CDP integration)
+* Setup secure storage for tokens
+* Create navigation structure matching current app flow
+Phase 3: Component Migration
+* Port shared UI components (buttons, cards, inputs, etc.)
+* Convert layout components to React Native
+* Adapt Tailwind styles to NativeWind
+* Create mobile-specific components where needed
+Phase 4: Screen Migration
+* Port authentication screens (login, signup, OTP)
+* Port wallet screens (balance, send, receive)
+* Port transfer/escrow screens
+* Port QR code screens with camera integration
+* Port profile/settings screens
+Phase 5: Feature Integration
+* Implement QR scanner using Expo Camera
+* Setup push notifications (optional)
+* Implement secure storage for sensitive data
+* Add offline support if needed
+Phase 6: Testing & Polish
+* End-to-end testing of all flows
+* iOS-specific UI polish
+* Performance optimization
+* Prepare for TestFlight/App Store
+
+
+
+1. Send Screen (mobile/app/(tabs)/send.tsx)
+    * Port RecipientInput component (contact search, email lookup)
+    * Port AmountInput component (amount entry, quick amounts, max button)
+    * Port SendConfirmation component (review transfer, smart account toggle)
+    * Port SendSuccess component (transaction receipt, blockchain explorer link)
+    * Integrate with blockchain for direct transfers
+    * Integrate with escrow contract for email-based transfers
+2. Receive Screen (mobile/app/(tabs)/receive.tsx)
+    * Port QR code generation (using react-native-qrcode-svg or similar)
+    * Wallet address display with copy/share
+    * Amount request input (optional)
+    * Payment link generation
+3. History Screen (mobile/app/(tabs)/history.tsx)
+    * Full transaction list (expand beyond dashboard's "recent")
+    * Transaction filters (type, status, search)
+    * Transaction statistics/summary
+    * Transaction detail view
+4. Contacts Screen (mobile/app/contacts.tsx)
+    * Contact list with favorites
+    * Contact search functionality
+    * Add/edit/delete contacts
+    * Quick send from contacts
+5. Export Key Screen (mobile/app/export-key.tsx)
+    * Security warnings
+    * Private key export with copy
+    * Confirmation flow
+Supporting Screens
+1. QR Scanner (mobile/app/scan.tsx)
+    * Camera-based QR code scanning (expo-camera)
+    * Parse payment links
+    * Navigate to send flow with pre-filled data
+2. Payment Processing (mobile/app/pay.tsx)
+    * Handle payment links from QR codes/deep links
+    * Pre-fill send form with amount and recipient
+Additional Components Needed
+* Contact search/selection components
+* Transaction detail modal/screen
+* QR code scanner component
+* Form validation utilities
+* Transaction execution hooks
