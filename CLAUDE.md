@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Development Commands
 
-### Common Development Tasks
+### Web App (Next.js)
 ```bash
 # Start development server
 npm run dev -- -p 3000
@@ -22,6 +22,24 @@ npm run lint
 npm run type-check
 ```
 
+### Mobile App (React Native/Expo)
+```bash
+# Navigate to mobile directory first
+cd mobile
+
+# Start Expo development server
+npm start
+
+# Run on iOS simulator
+npm run ios
+
+# Run on Android emulator
+npm run android
+
+# Run as web app (for testing)
+npm run web
+```
+
 ### Smart Contract Development (Foundry)
 ```bash
 # Build contracts
@@ -30,24 +48,27 @@ forge build
 # Run contract tests
 forge test
 
-# Deploy to Base Sepolia testnet
-forge script script/DeploySimpleEscrow.s.sol --rpc-url base_sepolia --broadcast
+# Deploy SimplifiedEscrow to Base Sepolia testnet
+forge script script/DeploySimplifiedEscrow.s.sol --rpc-url base_sepolia --broadcast
 
-# Deploy to Base mainnet
-forge script script/DeploySimpleEscrowMainnet.s.sol --rpc-url base --broadcast
+# Deploy SimplifiedEscrow to Base mainnet
+forge script script/DeploySimplifiedEscrowMainnet.s.sol --rpc-url base --broadcast
 ```
 
 ## Repository Overview
 
-This is "Between Friends" - a Next.js web application for email-based USDC transfers on Base. The app uses Coinbase Developer Platform (CDP) Embedded Wallets and implements a conditional escrow system for unknown recipients.
+This is "Between Friends" - a dual-platform application (Next.js web + React Native mobile) for email-based USDC transfers on Base. The app uses Coinbase Developer Platform (CDP) Embedded Wallets and implements a conditional escrow system for unknown recipients.
 
 ## Architecture
 
 ### Core Structure
-- **Frontend**: Next.js 14 with App Router, TypeScript, Tailwind CSS
+- **Web Frontend**: Next.js 14 with App Router, TypeScript, Tailwind CSS
+- **Mobile Frontend**: React Native with Expo Router, TypeScript, NativeWind (Tailwind for React Native)
 - **Backend**: Next.js API routes with MongoDB for data persistence
 - **Blockchain**: Smart contracts on Base (mainnet/testnet) using Foundry
 - **Wallet Integration**: CDP Embedded Wallets for gasless, email-based authentication
+  - Web: `@coinbase/cdp-hooks` with `CDPHooksProvider`
+  - Mobile: `@coinbase/cdp-react-native` with same hook interface
 - **PWA**: Progressive Web App with offline support and install prompts
 
 ### Key Technologies
@@ -84,12 +105,14 @@ JWT_SECRET=your-jwt-secret
 
 ## Smart Contracts
 
-### SimpleEscrow.sol
-Core escrow contract for email-based transfers:
-- **Deposit**: Users deposit USDC with a hashed secret (email + token)
+### SimplifiedEscrow.sol
+Core escrow contract for email-based transfers (located in `src/contracts/SimplifiedEscrow.sol`):
+- **Deposit**: Users deposit USDC with a hashed email (privacy-preserving)
 - **Admin Release**: Admin wallet releases funds to verified recipients (gasless for recipients)
 - **Refund**: Senders can reclaim funds after timeout
+- **Admin Refund**: Admin can process automatic refunds for expired transfers
 - **Security**: Uses OpenZeppelin's ReentrancyGuard and Ownable
+- **Emergency Withdrawal**: Owner can recover stuck tokens
 
 ### Contract Addresses
 Update `src/lib/cdp.ts` with deployed contract addresses:
@@ -99,9 +122,9 @@ export const CONTRACT_ADDRESSES = {
     8453: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // Base Mainnet
     84532: '0x036CbD53842c5426634e7929541eC2318f3dCF7e', // Base Sepolia
   },
-  SIMPLE_ESCROW: {
-    8453: 'YOUR_MAINNET_ADDRESS',
-    84532: 'YOUR_TESTNET_ADDRESS',
+  SIMPLIFIED_ESCROW: {
+    8453: '0x0000000000000000000000000000000000000000', // Base Mainnet - to be deployed
+    84532: '0x1C182dDa2DE61c349bc516Fa8a63a371cA4CE184', // Base Sepolia - deployed
   }
 }
 ```
@@ -261,37 +284,86 @@ forge test -vvv
 
 ## File Organization
 
-### Source Structure
+### Web App Structure
 ```
 src/
 ├── app/                 # Next.js App Router pages and API routes
+│   ├── api/            # Backend API endpoints
+│   │   ├── admin/release/      # Admin releases funds to recipients
+│   │   ├── contacts/           # Contact management
+│   │   ├── pending-claims/     # Pending transfer lookups
+│   │   ├── recipients/lookup/  # Check if recipient exists
+│   │   ├── send/              # Transfer endpoints
+│   │   ├── transactions/       # Transaction history
+│   │   └── users/             # User management
+│   └── ...             # Application pages
 ├── components/          # React components organized by feature
 ├── contracts/           # Solidity smart contracts
+│   ├── SimplifiedEscrow.sol     # Active escrow contract
+│   ├── USDCEscrow.sol          # Alternative implementation
+│   └── *.sol.backup            # Backup files
 ├── hooks/              # Custom React hooks
 ├── lib/                # Utility libraries and configurations
+│   ├── cdp.ts                  # CDP config and transaction helpers
+│   ├── db.ts                   # MongoDB connection
+│   ├── email.ts                # Resend email integration
+│   ├── models.ts               # Database models with Zod schemas
+│   ├── simplified-escrow.ts    # Escrow contract interactions
+│   ├── usdc.ts                 # USDC token interactions
+│   └── utils.ts                # General utilities
 └── types/              # TypeScript type definitions
 ```
 
+### Mobile App Structure
+```
+mobile/
+├── app/                # Expo Router screens
+│   ├── (tabs)/        # Tab navigation screens
+│   │   ├── index.tsx           # Home/Dashboard
+│   │   ├── send.tsx            # Send money
+│   │   ├── activity.tsx        # Transaction history
+│   │   └── wallet.tsx          # Wallet management
+│   ├── auth.tsx       # Authentication screen
+│   ├── settings.tsx   # Settings and preferences
+│   ├── export-key.tsx # Private key export
+│   └── scan.tsx       # QR code scanner
+├── components/         # React Native components
+├── hooks/             # Custom hooks for mobile
+├── lib/               # Shared utilities (API client, storage)
+└── assets/            # Images, fonts, icons
+```
+
 ### Key Files
-- `src/lib/cdp.ts`: CDP configuration and utilities
+- `src/lib/cdp.ts`: CDP configuration and transaction utilities
 - `src/lib/db.ts`: MongoDB connection and models
 - `src/lib/email.ts`: Email service integration
-- `src/components/providers/CDPProvider.tsx`: CDP React provider
+- `src/lib/simplified-escrow.ts`: Escrow contract interaction helpers
+- `src/components/providers/CDPProvider.tsx`: CDP React provider (web)
 - `next.config.js`: Next.js and PWA configuration
+- `mobile/lib/api.ts`: Mobile API client with dynamic host detection
 
 ## Common Issues
 
 ### CDP Integration
-- Ensure `"use client"` directive on all CDP components
+- **Web**: Ensure `"use client"` directive on all CDP components
+- **Mobile**: CDP React Native hooks work the same as web hooks (see `mobile/CDP_INTEGRATION_NOTE.md`)
 - Verify CORS allowlist in CDP Portal matches your domain
 - Use supported Node.js versions (20 or 22, not 21)
 - When exporting private keys, use `currentUser.evmAccounts[0]` for EOA address (not `useEvmAddress()` which returns Smart Account)
 - Private keys from CDP come as binary data and need hex conversion for display
 
+### Mobile Development
+- Mobile app connects to web backend API endpoints
+- API client auto-detects localhost vs production URLs
+- Test on both iOS simulator and Android emulator
+- Expo Go may have limitations; use development builds for full features
+- QR code scanning requires camera permissions
+
 ### Smart Contract Deployment
 - Verify RPC URL and chain ID match target network
 - Ensure sufficient ETH balance for deployment gas
-- Update contract addresses after deployment
+- Update contract addresses in `src/lib/cdp.ts` after deployment
+- Use correct deployment script: `DeploySimplifiedEscrow.s.sol` (not DeploySimpleEscrow)
 
 ### PWA Installation
 - Manifest file must be accessible at `/manifest.json`
@@ -322,3 +394,66 @@ Use Context7 MCP for fetching up-to-date library documentation:
 - `mcp__context7__resolve-library-id`: Convert library name to Context7 ID
 - `mcp__context7__get-library-docs`: Fetch documentation with library ID
 - Always use when experiencing CDP errors or needing latest API reference
+
+## Mobile App Architecture
+
+### Platform-Specific Differences
+The mobile app shares the same backend API and smart contracts but has platform-specific considerations:
+
+**Shared with Web:**
+- Same CDP hooks API (`@coinbase/cdp-hooks` interface)
+- Same transaction flow (USDC transfers, escrow deposits)
+- Same backend API endpoints
+- Smart Account architecture (EOA + Smart Account)
+
+**Mobile-Specific:**
+- Uses `@coinbase/cdp-react-native` instead of `@coinbase/cdp-hooks`
+- Expo Router for navigation instead of Next.js App Router
+- NativeWind for styling (Tailwind CSS for React Native)
+- Native camera access for QR code scanning
+- Secure storage with `expo-secure-store`
+- Biometric authentication with `expo-local-authentication`
+
+### API Communication
+Mobile app communicates with the Next.js backend API:
+- Development: Auto-detects `localhost:5000` or local network IP
+- Production: Uses deployed backend URL from environment variables
+- All API routes are prefixed with `/api/`
+- Authentication uses same JWT tokens as web app
+
+### Key Mobile Packages
+```json
+{
+  "@coinbase/cdp-react-native": "^0.0.1",
+  "expo": "~54.0.10",
+  "expo-router": "^6.0.9",
+  "nativewind": "^4.2.1",
+  "expo-camera": "^17.0.8",
+  "expo-secure-store": "^15.0.7",
+  "expo-local-authentication": "^17.0.7"
+}
+```
+
+## API Endpoints Reference
+
+### User Management
+- `POST /api/users` - Create or update user profile
+- `GET /api/users/lookup-by-address?address=0x...` - Find user by wallet address
+
+### Transfers
+- `GET /api/recipients/lookup?email=...` - Check if recipient exists
+- `POST /api/send` - Initiate direct transfer or escrow deposit
+- `POST /api/send/complete` - Mark transfer as complete
+- `POST /api/send/sponsored` - Request sponsored gas for transfer
+- `POST /api/admin/release` - Admin releases escrow funds to recipient
+- `POST /api/refund` - Sender refunds expired escrow transfer
+
+### Transactions & History
+- `GET /api/transactions?userId=...` - Get transaction history
+- `GET /api/pending-claims?recipientEmail=...` - Get pending claims for user
+
+### Contacts
+- `GET /api/contacts?userId=...` - Get user's contacts
+- `POST /api/contacts` - Add/update contact
+- `POST /api/contacts/favorite` - Toggle favorite status
+- `POST /api/contacts/sync-device` - Sync device contacts
