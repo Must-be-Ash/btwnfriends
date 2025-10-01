@@ -1,10 +1,13 @@
-import { useState, useCallback } from 'react';
-import { View, Text, TouchableOpacity, TextInput, ScrollView, Alert } from 'react-native';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { View, Text, TouchableOpacity, TextInput, ScrollView, Alert, AppState, AppStateStatus } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useCurrentUser, useExportEvmAccount } from '@coinbase/cdp-hooks';
 import * as Clipboard from 'expo-clipboard';
-import { ArrowLeft, AlertTriangle, Copy, CheckCircle, Shield } from 'lucide-react-native';
+import { ArrowLeft, AlertTriangle, Copy, CheckCircle, Shield, Trash2 } from 'lucide-react-native';
 import { LoadingScreen } from '../components/ui/LoadingScreen';
+import { biometricAuth } from '../lib/biometric-auth';
+
+const CLIPBOARD_AUTO_CLEAR_SECONDS = 30;
 
 export default function ExportKeyScreen() {
   const router = useRouter();
@@ -15,11 +18,56 @@ export default function ExportKeyScreen() {
   const [privateKey, setPrivateKey] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const clipboardTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const eoaAddress = currentUser?.evmAccounts?.[0];
 
+  useEffect(() => {
+    if (!currentUser || !eoaAddress) {
+      router.replace('/(tabs)');
+    }
+  }, [currentUser, eoaAddress, router]);
+
+  useEffect(() => {
+    const handleAppStateChange = async (nextAppState: AppStateStatus) => {
+      if (nextAppState === 'background' || nextAppState === 'inactive') {
+        try {
+          await Clipboard.setStringAsync(' ');
+          if (clipboardTimerRef.current) {
+            clearTimeout(clipboardTimerRef.current);
+          }
+        } catch (err) {
+          console.warn('Failed to clear clipboard on app background:', err);
+        }
+      }
+    };
+
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+
+    return () => {
+      subscription.remove();
+      
+      if (clipboardTimerRef.current) {
+        clearTimeout(clipboardTimerRef.current);
+      }
+
+      Clipboard.setStringAsync(' ').catch(err => 
+        console.warn('Failed to clear clipboard on unmount:', err)
+      );
+    };
+  }, []);
+
   const handleConfirmExport = useCallback(async () => {
     if (!eoaAddress) return;
+
+    const authenticated = await biometricAuth.authenticateIfEnabled(
+      'Authenticate to export your private key'
+    );
+
+    if (!authenticated) {
+      Alert.alert('Authentication Failed', 'You must authenticate to export your private key.');
+      return;
+    }
 
     setStep('exporting');
     setError(null);
@@ -29,13 +77,15 @@ export default function ExportKeyScreen() {
         evmAccount: eoaAddress
       });
 
-      let formattedKey = exportedKey;
-      if (typeof exportedKey === 'string' && exportedKey.length === 32) {
-        const bytes = new Uint8Array(exportedKey.split('').map(c => c.charCodeAt(0)));
-        formattedKey = '0x' + Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+      if (!exportedKey || typeof exportedKey !== 'string') {
+        throw new Error('Invalid private key format received');
       }
 
-      setPrivateKey(formattedKey);
+      if (!/^0x[0-9a-fA-F]{64}$/.test(exportedKey)) {
+        console.warn('Unexpected private key format: length', exportedKey.length);
+      }
+
+      setPrivateKey(exportedKey);
       setStep('exported');
     } catch (err) {
       console.error('Failed to export private key:', err);
@@ -50,6 +100,20 @@ export default function ExportKeyScreen() {
     try {
       await Clipboard.setStringAsync(privateKey);
       setCopied(true);
+      
+      if (clipboardTimerRef.current) {
+        clearTimeout(clipboardTimerRef.current);
+      }
+
+      clipboardTimerRef.current = setTimeout(async () => {
+        try {
+          await Clipboard.setStringAsync(' ');
+          console.log('Clipboard automatically cleared after 30 seconds');
+        } catch (err) {
+          console.warn('Failed to auto-clear clipboard:', err);
+        }
+      }, CLIPBOARD_AUTO_CLEAR_SECONDS * 1000);
+
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
@@ -57,13 +121,37 @@ export default function ExportKeyScreen() {
     }
   }, [privateKey]);
 
-  const handleDone = useCallback(() => {
+  const handleClearClipboard = useCallback(async () => {
+    try {
+      await Clipboard.setStringAsync(' ');
+      
+      if (clipboardTimerRef.current) {
+        clearTimeout(clipboardTimerRef.current);
+      }
+
+      Alert.alert('Clipboard Cleared', 'Your private key has been removed from the clipboard.');
+    } catch (err) {
+      console.error('Failed to clear clipboard:', err);
+      Alert.alert('Error', 'Failed to clear clipboard');
+    }
+  }, []);
+
+  const handleDone = useCallback(async () => {
+    if (clipboardTimerRef.current) {
+      clearTimeout(clipboardTimerRef.current);
+    }
+    
+    try {
+      await Clipboard.setStringAsync(' ');
+    } catch (err) {
+      console.warn('Failed to clear clipboard on done:', err);
+    }
+
     setPrivateKey(null);
     router.push('/(tabs)');
   }, [router]);
 
   if (!currentUser || !eoaAddress) {
-    router.push('/(tabs)');
     return <LoadingScreen message="Redirecting..." />;
   }
 
@@ -123,17 +211,33 @@ export default function ExportKeyScreen() {
             </View>
 
             <View className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 mb-6">
+              <Text className="text-gray-300 text-sm mb-2">
+                <Text className="font-semibold text-white">Security Warning:</Text> Anyone with this key has complete control of your wallet.
+              </Text>
               <Text className="text-gray-300 text-sm">
-                Anyone with this key has complete control of your wallet. Store it securely and clear your clipboard.
+                • Screenshots may expose your key{'\n'}
+                • Clipboard auto-clears in {CLIPBOARD_AUTO_CLEAR_SECONDS}s or when app backgrounds{'\n'}
+                • Store in a secure location immediately{'\n'}
+                • Never share with anyone
               </Text>
             </View>
 
-            <TouchableOpacity
-              onPress={handleDone}
-              className="w-full py-4 px-6 bg-[#5CB0FF] rounded-xl"
-            >
-              <Text className="text-white font-semibold text-center">Done</Text>
-            </TouchableOpacity>
+            <View className="space-y-3">
+              <TouchableOpacity
+                onPress={handleClearClipboard}
+                className="w-full py-4 px-6 bg-[#3B3B3B] border border-[#4A4A4A] rounded-xl flex-row items-center justify-center gap-2"
+              >
+                <Trash2 size={20} color="#B8B8B8" />
+                <Text className="text-[#B8B8B8] font-semibold">Clear Clipboard Now</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={handleDone}
+                className="w-full py-4 px-6 bg-[#5CB0FF] rounded-xl"
+              >
+                <Text className="text-white font-semibold text-center">Done</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </ScrollView>
