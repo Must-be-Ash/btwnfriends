@@ -1,5 +1,6 @@
 import axios from 'axios';
 import Constants from 'expo-constants';
+import { secureStorage, STORAGE_KEYS } from './secure-storage';
 
 // Smart API URL detection for React Native environments
 const getAPIUrl = () => {
@@ -59,11 +60,10 @@ export const api = axios.create({
 // Add auth token to requests
 api.interceptors.request.use(
   async (config) => {
-    // TODO: Get access token from CDP auth
-    // const token = await getAccessToken();
-    // if (token) {
-    //   config.headers.Authorization = `Bearer ${token}`;
-    // }
+    const token = await secureStorage.getAuthToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => {
@@ -74,9 +74,17 @@ api.interceptors.request.use(
 // Handle response errors
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
     if (error.response) {
       console.error('API Error:', error.response.data);
+      
+      // Handle 401 Unauthorized - clear tokens and redirect to auth
+      if (error.response.status === 401) {
+        await secureStorage.removeAuthToken();
+        await secureStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
+        // TODO: Redirect to auth screen
+        console.log('Session expired. Please log in again.');
+      }
     } else if (error.request) {
       console.error('Network Error:', error.message);
     }
