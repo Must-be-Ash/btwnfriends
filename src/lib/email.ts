@@ -347,11 +347,18 @@ export async function sendClaimNotificationEmail(params: {
       html: emailTemplate.html,
       text: emailTemplate.text,
     })
-    
+
+    console.log('📬 RESEND API RESPONSE:', JSON.stringify(response, null, 2))
+
+    if (response.error) {
+      console.error('❌ RESEND API ERROR:', response.error)
+      return { success: false, error: response.error.message }
+    }
+
     console.log('✅ EMAIL SENT SUCCESSFULLY:', { emailId: response.data?.id })
     return { success: true }
   } catch (error) {
     console.error('❌ ERROR SENDING CLAIM NOTIFICATION EMAIL:', error)
-    return { success: false, error: 'Failed to send email' }
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to send email' }
   }
 }
