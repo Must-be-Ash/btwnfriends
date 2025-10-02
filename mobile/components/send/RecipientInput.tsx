@@ -104,6 +104,9 @@ export function RecipientInput({
     setLookupError('');
     setIsLookingUp(true);
 
+    // Change step immediately so user sees amount entry screen
+    onStepChange('enter_amount');
+
     try {
       const response = await api.post('/api/recipients/lookup', {
         email: contact.contactEmail
@@ -116,10 +119,11 @@ export function RecipientInput({
       }
 
       setRecipient(recipientInfo);
-      onStepChange('enter_amount');
     } catch (error) {
       console.error('Recipient lookup error:', error);
       setLookupError('Failed to lookup recipient. Please try again.');
+      // Go back to contact selection on error
+      onStepChange('select_contact');
     } finally {
       setIsLookingUp(false);
     }
@@ -142,7 +146,7 @@ export function RecipientInput({
             <ContactSearch
               ownerUserId={ownerUserId}
               onContactSelect={handleContactSelect}
-              placeholder="Search contacts or enter email address..."
+              placeholder="Search contacts..."
             />
 
             {lookupError && (

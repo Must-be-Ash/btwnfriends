@@ -69,21 +69,20 @@ export default function ReceiveScreen() {
         <View className="px-4 pt-8 pb-32">
           {/* Amount Input */}
           <View className="bg-[#3B3B3B] rounded-2xl p-6 border border-white/30 shadow-2xl mb-4">
-            <Text className="text-lg font-semibold text-white mb-4">Request Specific Amount</Text>
+            <Text className="text-lg font-semibold text-white mb-4">Request Amount</Text>
 
             <View className="flex flex-row items-center bg-white/10 rounded-xl px-4 py-3 border border-white/20">
-              <Text className="text-lg text-white/70 flex-shrink-0">$</Text>
+              <Text className="text-lg text-white/70 flex-shrink-0" style={{ lineHeight: 20 }}>$</Text>
               <TextInput
                 value={amount}
                 onChangeText={handleAmountChange}
                 placeholder="0.00"
                 placeholderTextColor="rgba(255,255,255,0.4)"
                 keyboardType="decimal-pad"
-                textAlignVertical="center"
-                style={{ padding: 0, margin: 0, height: 24 }}
+                style={{ padding: 0, paddingTop: 0, paddingBottom: 0, margin: 0, height: 20, lineHeight: 20, textAlignVertical: 'center' }}
                 className="flex-1 min-w-0 text-lg font-medium text-white ml-2"
               />
-              <Text className="text-sm text-white/70 flex-shrink-0 ml-2">USDC</Text>
+              <Text className="text-sm text-white/70 flex-shrink-0 ml-2" style={{ lineHeight: 20 }}>USDC</Text>
             </View>
           </View>
 

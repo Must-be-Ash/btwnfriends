@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
-import { View, TextInput, TouchableOpacity, Text, ActivityIndicator, ScrollView } from 'react-native';
-import { Search, X, Plus } from 'lucide-react-native';
+import { View, TextInput, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
+import { Search, X, Plus, Users, Star } from 'lucide-react-native';
 import { ContactList } from './ContactList';
 import { useContacts, Contact } from '../../hooks/useContacts';
+
+type ViewMode = 'all' | 'favorites';
 
 interface ContactSearchProps {
   ownerUserId: string;
@@ -11,14 +13,15 @@ interface ContactSearchProps {
   allowAddNew?: boolean;
 }
 
-export function ContactSearch({ 
+export function ContactSearch({
   ownerUserId,
-  onContactSelect, 
-  placeholder = 'Search contacts or enter email...',
+  onContactSelect,
+  placeholder = 'Search contacts...',
   allowAddNew = true
 }: ContactSearchProps) {
   const [query, setQuery] = useState('');
   const [isValidEmail, setIsValidEmail] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>('all');
 
   const {
     contacts,
@@ -28,6 +31,7 @@ export function ContactSearch({
     searchContacts,
     clearSearch,
     createContact,
+    toggleFavorite,
   } = useContacts(ownerUserId);
 
   useEffect(() => {
@@ -72,11 +76,13 @@ export function ContactSearch({
     }
   };
 
-  const sortedContacts = [...contacts].sort((a, b) => 
+  const sortedContacts = [...contacts].sort((a, b) =>
     a.displayName.toLowerCase().localeCompare(b.displayName.toLowerCase())
   );
-  
-  const displayContacts = query.trim() ? searchResults : sortedContacts;
+
+  const favoriteContacts = sortedContacts.filter(c => c && c.favorite === true);
+  const filteredContacts = viewMode === 'favorites' ? favoriteContacts : sortedContacts;
+  const displayContacts = query.trim() ? searchResults : filteredContacts;
 
   return (
     <View>
@@ -86,10 +92,10 @@ export function ContactSearch({
           onChangeText={setQuery}
           placeholder={placeholder}
           placeholderTextColor="rgba(255,255,255,0.4)"
-          className="w-full pl-10 pr-10 py-3 bg-white/10 border border-white/20 rounded-xl text-white"
+          className="w-full pl-12 pr-10 py-3 bg-white/10 border border-white/20 rounded-xl text-white"
           autoCapitalize="none"
           keyboardType="email-address"
-          style={{ textAlignVertical: 'center' }}
+          style={{ lineHeight: 20 }}
         />
         <View style={{ position: 'absolute', left: 12, top: '50%', transform: [{ translateY: -10 }] }}>
           <Search size={20} color="#B8B8B8" />
@@ -106,6 +112,51 @@ export function ContactSearch({
           </TouchableOpacity>
         )}
       </View>
+
+      {/* View Mode Toggle */}
+      {!query && (
+        <View className="bg-[#2A2A2A] rounded-2xl p-1.5 border border-[#3A3A3A] mb-4">
+          <View className="flex flex-row gap-1.5">
+            <TouchableOpacity
+              onPress={() => setViewMode('all')}
+              activeOpacity={0.7}
+              className={`flex-1 flex flex-row items-center justify-center gap-2 px-4 py-3 rounded-xl ${
+                viewMode === 'all'
+                  ? 'bg-[#5CB0FF]'
+                  : 'bg-transparent'
+              }`}
+            >
+              <Users size={18} color={viewMode === 'all' ? '#ffffff' : '#9CA3AF'} />
+              <Text className={`text-sm font-semibold ${
+                viewMode === 'all' ? 'text-white' : 'text-[#9CA3AF]'
+              }`}>
+                All ({sortedContacts.length})
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => setViewMode('favorites')}
+              activeOpacity={0.7}
+              className={`flex-1 flex flex-row items-center justify-center gap-2 px-4 py-3 rounded-xl ${
+                viewMode === 'favorites'
+                  ? 'bg-[#5CB0FF]'
+                  : 'bg-transparent'
+              }`}
+            >
+              <Star
+                size={18}
+                color={viewMode === 'favorites' ? '#ffffff' : '#9CA3AF'}
+                fill={viewMode === 'favorites' ? '#ffffff' : 'none'}
+              />
+              <Text className={`text-sm font-semibold ${
+                viewMode === 'favorites' ? 'text-white' : 'text-[#9CA3AF]'
+              }`}>
+                Favorites ({favoriteContacts.length})
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
 
       {(displayContacts.length > 0 || allowAddNew || isLoading || isSearching) && (
         <View>
@@ -134,13 +185,14 @@ export function ContactSearch({
           {!isLoading && !isSearching && displayContacts.length > 0 && (
             <View>
               <Text className="text-sm font-medium text-white/70 mb-3">
-                {query ? 'Search Results' : 'Your Contacts'}
+                {query ? 'Search Results' : viewMode === 'favorites' ? 'Favorite Contacts' : 'Your Contacts'}
               </Text>
               <View>
                 <ContactList
                   contacts={displayContacts}
                   onContactSelect={handleContactSelect}
-                  showFavoriteAction={false}
+                  onToggleFavorite={async (contact) => await toggleFavorite(contact.contactEmail)}
+                  showFavoriteAction={true}
                   emptyMessage={query ? 'No contacts found' : 'No contacts yet'}
                 />
               </View>

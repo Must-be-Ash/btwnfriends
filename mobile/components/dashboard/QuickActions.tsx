@@ -28,13 +28,6 @@ export function QuickActions() {
       onPress: () => router.push('/scan')
     },
     {
-      id: 'contacts',
-      label: 'Contacts',
-      description: 'Manage contacts',
-      icon: Users,
-      onPress: () => router.push('/contacts')
-    },
-    {
       id: 'history',
       label: 'History',
       description: 'View transactions',

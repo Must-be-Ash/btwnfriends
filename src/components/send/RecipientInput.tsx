@@ -139,7 +139,7 @@ export function RecipientInput({ onShowConfirmation, userBalance, isLoadingBalan
             <ContactSearch
               ownerUserId={ownerUserId}
               onContactSelect={handleContactSelect}
-              placeholder="Search contacts or enter email address..."
+              placeholder="Search contacts..."
               className="mb-4"
             />
 

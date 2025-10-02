@@ -121,7 +121,7 @@ export function SimpleReceive({ address }: SimpleReceiveProps) {
 
       {/* Amount Input */}
       <div className="bg-[#3B3B3B] rounded-2xl p-6 border border-white/30 shadow-2xl mt-6 md:mt-0">
-        <h3 className="text-lg font-semibold text-white mb-4">Request Specific Amount</h3>
+        <h3 className="text-lg font-semibold text-white mb-4">Request Amount</h3>
         
         <div className="flex items-center space-x-2 bg-white/10 rounded-xl p-4 pr-6 border border-white/20">
           <span className="text-white/70 text-lg flex-shrink-0">$</span>

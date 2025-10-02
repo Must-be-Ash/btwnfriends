@@ -18,7 +18,7 @@ interface ContactSearchProps {
 export function ContactSearch({ 
   ownerUserId,
   onContactSelect, 
-  placeholder = 'Search contacts or enter email...',
+  placeholder = 'Search contacts...',
   className,
   allowAddNew = true
 }: ContactSearchProps) {
@@ -113,7 +113,7 @@ export function ContactSearch({
   return (
     <div ref={containerRef} className={cn('relative', className)}>
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40 w-5 h-5" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40 w-4 h-4" />
         <input
           ref={inputRef}
           type="text"
@@ -121,7 +121,7 @@ export function ContactSearch({
           onChange={(e) => setQuery(e.target.value)}
           onFocus={handleInputFocus}
           placeholder={placeholder}
-          className="w-full pl-10 pr-10 py-3 bg-white/10 border border-white/20 rounded-xl focus:outline-none focus:bg-white/20 placeholder-white/40 text-white"
+          className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:outline-none focus:bg-white/20 placeholder-white/40 text-white"
         />
         {query && (
           <button

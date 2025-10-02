@@ -95,10 +95,11 @@ export default function ContactsScreen() {
                 onChangeText={handleSearch}
                 placeholder="Search contacts..."
                 placeholderTextColor="rgba(255,255,255,0.4)"
-                className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white"
+                className="w-full pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white"
+                style={{ textAlignVertical: 'center' }}
               />
-              <View className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                <Search size={20} color="rgba(255,255,255,0.4)" />
+              <View style={{ position: 'absolute', left: 12, top: '50%', transform: [{ translateY: -10 }] }}>
+                <Search size={20} color="#B8B8B8" />
               </View>
             </View>
           </View>
