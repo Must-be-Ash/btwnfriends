@@ -21,7 +21,7 @@ export default function RootLayout() {
         <Stack.Screen
           name="scan"
           options={{
-            headerShown: true,
+            headerShown: false,
             title: 'Scan QR Code',
             presentation: 'fullScreenModal',
           }}
@@ -36,7 +36,7 @@ export default function RootLayout() {
         <Stack.Screen 
           name="export-key" 
           options={{
-            headerShown: true,
+            headerShown: false,
             title: 'Export Key',
           }}
         />

@@ -1,6 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, TextInput, ScrollView, Alert, AppState, AppStateStatus } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useCurrentUser, useExportEvmAccount } from '@coinbase/cdp-hooks';
 import * as Clipboard from 'expo-clipboard';
@@ -162,9 +161,8 @@ export default function ExportKeyScreen() {
 
   if (step === 'exported' && privateKey) {
     return (
-      <SafeAreaView className="flex-1 bg-[#222222]" edges={['top']}>
-        <ScrollView className="flex-1">
-          <View className="px-4 pt-8 pb-24">
+      <View className="flex-1 bg-[#222222]">
+        <View className="px-4 pt-16">
           {/* Back Button */}
           <TouchableOpacity
             onPress={() => router.back()}
@@ -173,17 +171,15 @@ export default function ExportKeyScreen() {
             <ArrowLeft size={20} color="#B8B8B8" />
             <Text className="text-[#B8B8B8] ml-2">Back</Text>
           </TouchableOpacity>
+        </View>
 
+        <ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-start', paddingTop: 40 }}>
+          <View className="px-4 pb-32">
           {/* Content Card */}
           <View className="bg-[#3B3B3B] rounded-2xl p-6 border border-white/30 shadow-2xl">
-            <View className="flex-row items-center gap-3 mb-6">
-              <View className="w-12 h-12 bg-green-500/20 rounded-full items-center justify-center">
-                <Shield size={24} color="#10b981" />
-              </View>
-              <View className="flex-1">
-                <Text className="text-2xl font-bold text-white">Your Private Key</Text>
-                <Text className="text-[#B8B8B8] text-sm mt-1">Keep this secure and never share it</Text>
-              </View>
+            <View className="mb-6">
+              <Text className="text-2xl font-bold text-white">Your Private Key</Text>
+              <Text className="text-[#B8B8B8] text-sm mt-1">Keep this secure and never share it</Text>
             </View>
 
             <View className="mb-6">
@@ -224,33 +220,22 @@ export default function ExportKeyScreen() {
               </Text>
             </View>
 
-            <View className="space-y-3">
-              <TouchableOpacity
-                onPress={handleClearClipboard}
-                className="w-full py-4 px-6 bg-[#3B3B3B] border border-[#4A4A4A] rounded-xl flex-row items-center justify-center gap-2"
-              >
-                <Trash2 size={20} color="#B8B8B8" />
-                <Text className="text-[#B8B8B8] font-semibold">Clear Clipboard Now</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={handleDone}
-                className="w-full py-4 px-6 bg-[#5CB0FF] rounded-xl"
-              >
-                <Text className="text-white font-semibold text-center">Done</Text>
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+              onPress={handleDone}
+              className="w-full py-4 px-6 bg-[#5CB0FF] rounded-xl"
+            >
+              <Text className="text-white font-semibold text-center">Done</Text>
+            </TouchableOpacity>
           </View>
         </View>
         </ScrollView>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-[#222222]" edges={['top']}>
-      <ScrollView className="flex-1">
-        <View className="px-4 pt-8 pb-24">
+    <View className="flex-1 bg-[#222222]">
+      <View className="px-4 pt-16">
         {/* Back Button */}
         <TouchableOpacity
           onPress={() => router.back()}
@@ -259,7 +244,10 @@ export default function ExportKeyScreen() {
           <ArrowLeft size={20} color="#B8B8B8" />
           <Text className="text-[#B8B8B8] ml-2">Back</Text>
         </TouchableOpacity>
+      </View>
 
+      <ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-start', paddingTop: 40 }}>
+        <View className="px-4 pb-32">
         {/* Content Card */}
         <View className="bg-[#3B3B3B] rounded-2xl p-6 border border-white/30 shadow-2xl">
           <View className="flex-row items-center gap-3 mb-6">
@@ -305,6 +293,6 @@ export default function ExportKeyScreen() {
         </View>
       </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
