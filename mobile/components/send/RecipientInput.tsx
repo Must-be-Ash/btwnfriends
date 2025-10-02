@@ -5,7 +5,7 @@ import { AmountInput } from './AmountInput';
 import { ContactSearch } from '../contacts/ContactSearch';
 import { ContactAvatar } from '../ui/ContactAvatar';
 import { SendButton3D } from '../ui/SendButton3D';
-import { api } from '../../lib/api';
+import { useApi } from '../../lib/use-api';
 
 interface RecipientInfo {
   email: string;
@@ -32,22 +32,25 @@ interface RecipientInputProps {
   ownerUserId: string;
   preSelectedContact?: {contactEmail: string; displayName: string} | null;
   preFilledAmount?: string;
+  preselectedRecipient?: RecipientInfo | null;
   currentStep: Step;
   onStepChange: (step: Step) => void;
 }
 
 type Step = 'select_contact' | 'enter_amount';
 
-export function RecipientInput({ 
-  onShowConfirmation, 
-  userBalance, 
-  isLoadingBalance, 
-  ownerUserId, 
-  preSelectedContact, 
-  preFilledAmount, 
-  currentStep, 
-  onStepChange 
+export function RecipientInput({
+  onShowConfirmation,
+  userBalance,
+  isLoadingBalance,
+  ownerUserId,
+  preSelectedContact,
+  preFilledAmount,
+  preselectedRecipient,
+  currentStep,
+  onStepChange
 }: RecipientInputProps) {
+  const { api, isReady: isApiReady } = useApi();
   const [selectedContact, setSelectedContact] = useState<SelectedContact | null>(null);
   const [amount, setAmount] = useState('');
   const [recipient, setRecipient] = useState<RecipientInfo | null>(null);
@@ -56,10 +59,16 @@ export function RecipientInput({
   const [amountError, setAmountError] = useState('');
 
   useEffect(() => {
-    if (preSelectedContact) {
+    if (preselectedRecipient && preSelectedContact) {
+      // Coming back from confirmation - restore state directly without API call
+      setSelectedContact(preSelectedContact);
+      setRecipient(preselectedRecipient);
+      onStepChange('enter_amount');
+    } else if (preSelectedContact && !selectedContact) {
+      // Fresh selection - need to look up recipient
       handleContactSelect(preSelectedContact);
     }
-  }, [preSelectedContact]);
+  }, [preSelectedContact, preselectedRecipient]);
 
   useEffect(() => {
     if (preFilledAmount) {
@@ -85,6 +94,12 @@ export function RecipientInput({
   }, [amount, userBalance]);
 
   const handleContactSelect = async (contact: SelectedContact) => {
+    if (!isApiReady) {
+      console.error('API not ready - waiting for authentication');
+      setLookupError('Please wait, authenticating...');
+      return;
+    }
+
     setSelectedContact(contact);
     setLookupError('');
     setIsLookingUp(true);
@@ -95,11 +110,11 @@ export function RecipientInput({
       });
 
       const recipientInfo = response.data?.recipient;
-      
+
       if (!recipientInfo || !recipientInfo.email) {
         throw new Error('Invalid recipient data received');
       }
-      
+
       setRecipient(recipientInfo);
       onStepChange('enter_amount');
     } catch (error) {
@@ -118,16 +133,11 @@ export function RecipientInput({
   const canProceedAmount = amount && !amountError && !isLoadingBalance;
 
   return (
-    <View className="space-y-6">
+    <View>
       {currentStep === 'select_contact' && (
-        <View className="space-y-6">
-          <View className="text-center">
-            <Text className="text-2xl font-bold text-white mb-2 text-center">Send Money</Text>
-            <Text className="text-white/70 text-center">Choose who to send money to</Text>
-          </View>
-
-          <View className="bg-[#3B3B3B] rounded-2xl p-6 border border-white/30">
-            <Text className="text-lg font-semibold text-white mb-4">Recipient</Text>
+        <View>
+          <View className="bg-[#3B3B3B] rounded-2xl p-4 border border-white/30 shadow-2xl">
+            <Text className="text-lg font-semibold text-white mb-3">Recipient</Text>
 
             <ContactSearch
               ownerUserId={ownerUserId}
@@ -157,31 +167,26 @@ export function RecipientInput({
       )}
 
       {currentStep === 'enter_amount' && selectedContact && recipient && (
-        <View className="space-y-6">
-          <View className="text-center">
-            <Text className="text-2xl font-bold text-white mb-2 text-center">Enter Amount</Text>
-            <Text className="text-white/70 text-center">How much would you like to send?</Text>
-          </View>
+        <View>
+          <View className="bg-[#3B3B3B] rounded-2xl p-4 border border-white/30 shadow-2xl mb-4">
+            <Text className="text-lg font-semibold text-white mb-3">Sending to</Text>
 
-          <View className="bg-[#3B3B3B] rounded-2xl p-6 border border-white/30">
-            <Text className="text-lg font-semibold text-white mb-4">Sending to</Text>
-            
             <View className="flex flex-row items-center gap-4">
-              <ContactAvatar 
+              <ContactAvatar
                 contact={{
                   displayName: selectedContact.displayName,
                   contactEmail: selectedContact.contactEmail
-                }} 
+                }}
                 size="lg"
               />
               <View className="flex-1">
-                <Text className="font-semibold text-white">{selectedContact.displayName}</Text>
+                <Text className="font-semibold text-white text-lg">{selectedContact.displayName}</Text>
                 <Text className="text-white/70 text-sm">{selectedContact.contactEmail}</Text>
               </View>
             </View>
           </View>
 
-          <View className="bg-[#3B3B3B] rounded-2xl p-6 border border-white/30">
+          <View className="bg-[#3B3B3B] rounded-2xl p-4 border border-white/30 shadow-2xl mb-6">
             <AmountInput
               amount={amount}
               onAmountChange={setAmount}

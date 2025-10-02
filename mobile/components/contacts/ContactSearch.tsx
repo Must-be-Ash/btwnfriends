@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, TextInput, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
+import { View, TextInput, TouchableOpacity, Text, ActivityIndicator, ScrollView } from 'react-native';
 import { Search, X, Plus } from 'lucide-react-native';
 import { ContactList } from './ContactList';
 import { useContacts, Contact } from '../../hooks/useContacts';
@@ -81,9 +81,6 @@ export function ContactSearch({
   return (
     <View>
       <View className="relative mb-4">
-        <View className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
-          <Search size={20} color="rgba(255,255,255,0.4)" />
-        </View>
         <TextInput
           value={query}
           onChangeText={setQuery}
@@ -92,16 +89,20 @@ export function ContactSearch({
           className="w-full pl-10 pr-10 py-3 bg-white/10 border border-white/20 rounded-xl text-white"
           autoCapitalize="none"
           keyboardType="email-address"
+          style={{ textAlignVertical: 'center' }}
         />
+        <View style={{ position: 'absolute', left: 12, top: '50%', transform: [{ translateY: -10 }] }}>
+          <Search size={20} color="#B8B8B8" />
+        </View>
         {query && (
           <TouchableOpacity
             onPress={() => {
               setQuery('');
               clearSearch();
             }}
-            className="absolute right-3 top-1/2 -translate-y-1/2"
+            style={{ position: 'absolute', right: 12, top: '50%', transform: [{ translateY: -10 }] }}
           >
-            <X size={20} color="rgba(255,255,255,0.4)" />
+            <X size={20} color="#B8B8B8" />
           </TouchableOpacity>
         )}
       </View>
@@ -135,7 +136,7 @@ export function ContactSearch({
               <Text className="text-sm font-medium text-white/70 mb-3">
                 {query ? 'Search Results' : 'Your Contacts'}
               </Text>
-              <View className="max-h-60">
+              <View>
                 <ContactList
                   contacts={displayContacts}
                   onContactSelect={handleContactSelect}

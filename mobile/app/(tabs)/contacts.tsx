@@ -76,6 +76,7 @@ export default function ContactsScreen() {
     <SafeAreaView className="flex-1 bg-[#222222]" edges={['top']}>
       <ScrollView
         className="flex-1"
+        contentContainerStyle={{ paddingBottom: 128 }}
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
@@ -84,7 +85,7 @@ export default function ContactsScreen() {
           />
         }
       >
-        <View className="px-4 pt-8 pb-6">
+        <View className="px-4 pt-8 pb-4">
           {/* Search */}
           <View className="bg-[#3B3B3B] rounded-2xl p-4 border border-white/30 shadow-2xl mb-4">
             <Text className="text-lg font-semibold text-white mb-3">Search</Text>

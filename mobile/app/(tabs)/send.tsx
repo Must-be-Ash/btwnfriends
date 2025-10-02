@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { View, ScrollView, TouchableOpacity, Text } from 'react-native';
 import { useCurrentUser, useEvmAddress } from '@coinbase/cdp-hooks';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { ArrowLeft } from 'lucide-react-native';
+import { useCallback } from 'react';
 import { RecipientInput } from '../../components/send/RecipientInput';
 import { SendConfirmation } from '../../components/send/SendConfirmation';
 import { SendSuccess } from '../../components/send/SendSuccess';
@@ -69,7 +70,6 @@ export default function SendScreen() {
 
   const handleConfirmationBack = () => {
     setCurrentStep('input');
-    setPendingTransferData(null);
   };
 
   const handleSuccess = (hash: string) => {
@@ -92,9 +92,22 @@ export default function SendScreen() {
     fetchBalance();
   }, [evmAddress?.evmAddress]);
 
+  useFocusEffect(
+    useCallback(() => {
+      // Reset to initial state when screen is focused, unless coming from params
+      if (!preSelectedContact && currentStep !== 'success') {
+        setCurrentStep('input');
+        setRecipientInputStep('select_contact');
+        setPendingTransferData(null);
+        setTxHash('');
+      }
+    }, [preSelectedContact])
+  );
+
   const handleTopBackButton = () => {
     if (recipientInputStep === 'enter_amount') {
       setRecipientInputStep('select_contact');
+      setPendingTransferData(null);
     } else {
       router.back();
     }
@@ -103,52 +116,52 @@ export default function SendScreen() {
   return (
     <View className="flex-1 bg-[#222222]">
       <ScrollView className="flex-1">
-        <View className="px-4 pt-10 pb-32">
-          <View className="max-w-md mx-auto space-y-6">
-            {currentStep !== 'confirmation' && (
-              <View className="flex flex-row items-center justify-between mb-8">
-                <TouchableOpacity
-                  onPress={handleTopBackButton}
-                  className="flex flex-row items-center gap-2"
-                >
-                  <ArrowLeft size={16} color="rgba(255,255,255,0.7)" />
-                  <Text className="text-white/70">Back</Text>
-                </TouchableOpacity>
-                <View />
-              </View>
-            )}
+        <View className="px-4 pt-16 pb-32">
+          {currentStep !== 'confirmation' && (
+            <TouchableOpacity
+              onPress={handleTopBackButton}
+              className="flex flex-row items-center gap-2 mb-12"
+            >
+              <ArrowLeft size={20} color="rgba(255,255,255,0.9)" />
+              <Text className="text-white text-lg">Back</Text>
+            </TouchableOpacity>
+          )}
 
-            {currentStep === 'input' && currentUser?.userId && (
-              <RecipientInput
-                onShowConfirmation={handleShowConfirmation}
-                userBalance={balance}
-                isLoadingBalance={isLoadingBalance}
-                ownerUserId={currentUser.userId}
-                preSelectedContact={preSelectedContact}
-                preFilledAmount={preFilledAmount}
-                currentStep={recipientInputStep}
-                onStepChange={setRecipientInputStep}
-              />
-            )}
+          {currentStep === 'input' && currentUser?.userId && (
+            <RecipientInput
+              onShowConfirmation={handleShowConfirmation}
+              userBalance={balance}
+              isLoadingBalance={isLoadingBalance}
+              ownerUserId={currentUser.userId}
+              preSelectedContact={
+                pendingTransferData
+                  ? { contactEmail: pendingTransferData.recipient.email, displayName: pendingTransferData.recipient.displayName || pendingTransferData.recipient.email }
+                  : preSelectedContact
+              }
+              preFilledAmount={pendingTransferData?.amount || preFilledAmount}
+              preselectedRecipient={pendingTransferData?.recipient || null}
+              currentStep={recipientInputStep}
+              onStepChange={setRecipientInputStep}
+            />
+          )}
 
-            {currentStep === 'confirmation' && pendingTransferData && currentUser && (
-              <SendConfirmation
-                transferData={pendingTransferData}
-                currentUser={currentUser}
-                onSuccess={handleSuccess}
-                onBack={handleConfirmationBack}
-              />
-            )}
+          {currentStep === 'confirmation' && pendingTransferData && currentUser && (
+            <SendConfirmation
+              transferData={pendingTransferData}
+              currentUser={currentUser}
+              onSuccess={handleSuccess}
+              onBack={handleConfirmationBack}
+            />
+          )}
 
-            {currentStep === 'success' && txHash && pendingTransferData && (
-              <SendSuccess
-                transferData={pendingTransferData}
-                txHash={txHash}
-                onSendAnother={handleStartOver}
-                onGoToDashboard={handleGoToDashboard}
-              />
-            )}
-          </View>
+          {currentStep === 'success' && txHash && pendingTransferData && (
+            <SendSuccess
+              transferData={pendingTransferData}
+              txHash={txHash}
+              onSendAnother={handleStartOver}
+              onGoToDashboard={handleGoToDashboard}
+            />
+          )}
         </View>
       </ScrollView>
     </View>

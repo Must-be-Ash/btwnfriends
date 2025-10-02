@@ -8,32 +8,31 @@ interface SendButton3DProps {
   className?: string;
 }
 
-export function SendButton3D({ 
-  children, 
-  onPress, 
-  disabled = false, 
-  className 
+export function SendButton3D({
+  children,
+  onPress,
+  disabled = false,
+  className
 }: SendButton3DProps) {
   return (
     <Pressable
       onPress={disabled ? undefined : onPress}
       disabled={disabled}
       className={cn(
-        'w-full py-4 px-6 rounded-xl relative overflow-hidden',
+        'w-full rounded-2xl p-4',
         disabled && 'opacity-50',
         className
       )}
-      style={({ pressed }) => ({
-        backgroundColor: disabled ? '#1f1f1f' : '#2a2a2a',
+      style={{
+        backgroundColor: disabled ? '#3A3A3A' : '#5CB0FF',
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: disabled ? 4 : 8 },
-        shadowOpacity: disabled ? 0.2 : 0.4,
-        shadowRadius: disabled ? 12 : 24,
-        elevation: disabled ? 2 : 8,
-        transform: pressed && !disabled ? [{ translateY: 1 }] : undefined,
-      })}
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 4,
+      }}
     >
-      <Text className="text-white font-semibold text-lg text-center relative z-10">
+      <Text className="text-white font-semibold text-lg text-center">
         {children}
       </Text>
     </Pressable>

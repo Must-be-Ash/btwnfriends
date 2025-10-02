@@ -60,8 +60,8 @@ export default function TabsLayout() {
                 padding: 12,
                 borderRadius: 12,
                 borderWidth: 1,
-                borderColor: focused ? '#404040' : 'transparent',
-                backgroundColor: focused ? '#030303' : 'transparent',
+                borderColor: focused ? '#606060' : '#404040',
+                backgroundColor: '#030303',
               }}
             >
               <Home size={size} color={color} />
@@ -79,8 +79,8 @@ export default function TabsLayout() {
                 padding: 12,
                 borderRadius: 12,
                 borderWidth: 1,
-                borderColor: focused ? '#404040' : 'transparent',
-                backgroundColor: focused ? '#030303' : 'transparent',
+                borderColor: focused ? '#606060' : '#404040',
+                backgroundColor: '#030303',
               }}
             >
               <Send size={size} color={color} />
@@ -98,8 +98,8 @@ export default function TabsLayout() {
                 padding: 12,
                 borderRadius: 12,
                 borderWidth: 1,
-                borderColor: focused ? '#404040' : 'transparent',
-                backgroundColor: focused ? '#030303' : 'transparent',
+                borderColor: focused ? '#606060' : '#404040',
+                backgroundColor: '#030303',
               }}
             >
               <QrCode size={size} color={color} />
@@ -117,8 +117,8 @@ export default function TabsLayout() {
                 padding: 12,
                 borderRadius: 12,
                 borderWidth: 1,
-                borderColor: focused ? '#404040' : 'transparent',
-                backgroundColor: focused ? '#030303' : 'transparent',
+                borderColor: focused ? '#606060' : '#404040',
+                backgroundColor: '#030303',
               }}
             >
               <History size={size} color={color} />

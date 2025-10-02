@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { View, Text, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, ActivityIndicator, Pressable } from 'react-native';
 import { useGetAccessToken, useSendUserOperation, useCurrentUser } from '@coinbase/cdp-hooks';
 import { keccak256, toBytes } from 'viem';
 import { AlertCircle } from 'lucide-react-native';
 import { SendButton3D } from '../ui/SendButton3D';
-import { Button3D } from '../ui/Button3D';
 import { formatUSDCWithSymbol } from '../../lib/utils';
 import { getCDPNetworkName, prepareUSDCTransferCall, prepareUSDCApprovalCall, prepareEscrowDepositCall, SmartAccountCall } from '../../lib/cdp';
 import { api } from '../../lib/api';
@@ -160,81 +159,94 @@ export function SendConfirmation({ transferData, currentUser, onSuccess, onBack 
   };
 
   return (
-    <ScrollView className="flex-1 bg-[#222222]">
-      <View className="p-6 space-y-6">
-        <View className="rounded-2xl p-8">
-          <View className="items-center mb-8">
-            <View className="w-16 h-16 rounded-full mb-6 bg-[#4A4A4A] border border-[#6B6B6B] items-center justify-center">
-              <Text className="text-4xl">💸</Text>
-            </View>
-            
-            <Text className="text-xl font-semibold text-white mb-3 text-center">
-              Confirm Your Transfer
-            </Text>
-            
-            <Text className="text-[#B8B8B8] text-center">
-              Ready to send money {isDirect ? 'directly' : 'via email'}
+    <View className="flex-1 bg-[#222222]">
+      <View style={{ height: 120 }} />
+
+      <View className="items-center pb-8">
+        <View className="w-24 h-24 rounded-full bg-[#3B3B3B] border border-white/20 items-center justify-center mb-6">
+          <Text className="text-5xl">💸</Text>
+        </View>
+
+        <Text className="text-2xl font-bold text-white mb-2 text-center">
+          Confirm Your Transfer
+        </Text>
+
+        <Text className="text-white/70 text-center">
+          Ready to send money {isDirect ? 'directly' : 'via email'}
+        </Text>
+      </View>
+
+      <View className="px-4 pb-32">
+        <View className="bg-[#3B3B3B] rounded-2xl p-4 border border-white/30 shadow-2xl mb-8">
+          <View className="flex flex-row justify-between items-center mb-5">
+            <Text className="text-white/70 text-base">Sending</Text>
+            <Text className="text-2xl font-bold text-white">
+              {formatUSDCWithSymbol(amount)}
             </Text>
           </View>
 
-          <View className="bg-[#2A2A2A] rounded-xl py-6 px-6 border border-[#4A4A4A] space-y-5">
-            <View className="flex flex-row justify-between items-center">
-              <Text className="text-[#B8B8B8]">Sending</Text>
-              <Text className="text-xl font-bold text-white">
-                {formatUSDCWithSymbol(amount)}
+          <View className="h-px bg-white/10 mb-5" />
+
+          <View className="flex flex-row justify-between items-start">
+            <Text className="text-white/70 text-base">To</Text>
+            <View className="flex-1 items-end">
+              <Text className="font-semibold text-white text-right text-lg">
+                {recipient.displayName || recipient.email}
               </Text>
-            </View>
-            
-            <View className="flex flex-row justify-between items-start">
-              <Text className="text-[#B8B8B8]">To</Text>
-              <View className="flex-1 items-end">
-                <Text className="font-medium text-white text-right">
-                  {recipient.displayName || recipient.email}
-                </Text>
-                {recipient.displayName && (
-                  <Text className="text-sm text-[#999999] mt-1 text-right">{recipient.email}</Text>
-                )}
-              </View>
+              {recipient.displayName && (
+                <Text className="text-sm text-white/70 mt-1 text-right">{recipient.email}</Text>
+              )}
             </View>
           </View>
         </View>
 
         {error && (
-          <View className="bg-[#4A2A2A] rounded-2xl p-6 border border-[#6B3B3B]">
+          <View className="bg-red-500/20 rounded-2xl p-4 border border-red-400/30 mb-8">
             <View className="flex flex-row items-start">
-              <AlertCircle size={20} color="#CC6666" className="mt-1 mr-4" />
+              <AlertCircle size={20} color="#fca5a5" className="mt-1 mr-3" />
               <View className="flex-1">
-                <Text className="font-medium text-[#FFAAAA] mb-2">Transaction Failed</Text>
-                <Text className="text-[#CCAAAA] text-sm">{error}</Text>
+                <Text className="font-semibold text-red-300 mb-1">Transaction Failed</Text>
+                <Text className="text-red-300/80 text-sm">{error}</Text>
               </View>
             </View>
           </View>
         )}
 
-        <View className="flex flex-row gap-3">
-          <View className="flex-1">
-            <Button3D onPress={onBack} disabled={isProcessing}>
-              Back
-            </Button3D>
-          </View>
-          <View className="flex-1">
-            <SendButton3D onPress={handleConfirmSend} disabled={isProcessing}>
-              {isProcessing ? 'Sending...' : `Send ${formatUSDCWithSymbol(amount)}`}
-            </SendButton3D>
-          </View>
-        </View>
-
         {isProcessing && (
-          <View className="items-center pt-2">
+          <View className="items-center mb-8">
             <View className="flex flex-row items-center">
               <ActivityIndicator size="small" color="rgba(184,184,184,1)" />
-              <Text className="ml-2 text-sm text-[#B8B8B8]">
+              <Text className="ml-3 text-white/70">
                 {currentStep || 'Processing transaction...'}
               </Text>
             </View>
           </View>
         )}
+
+        <View className="gap-3">
+          <SendButton3D onPress={handleConfirmSend} disabled={isProcessing}>
+            {isProcessing ? 'Sending...' : `Send ${formatUSDCWithSymbol(amount)}`}
+          </SendButton3D>
+
+          <Pressable
+            onPress={isProcessing ? undefined : onBack}
+            disabled={isProcessing}
+            className="w-full rounded-2xl p-4"
+            style={{
+              backgroundColor: isProcessing ? '#3A3A3A' : '#444444',
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.3,
+              shadowRadius: 8,
+              elevation: 4,
+            }}
+          >
+            <Text className="text-white font-semibold text-lg text-center">
+              Back
+            </Text>
+          </Pressable>
+        </View>
       </View>
-    </ScrollView>
+    </View>
   );
 }

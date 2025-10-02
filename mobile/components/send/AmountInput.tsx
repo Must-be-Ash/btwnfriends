@@ -34,11 +34,11 @@ export function AmountInput({ amount, onAmountChange, userBalance, isLoadingBala
   const quickAmounts = ['5', '10', '25', '50'];
 
   return (
-    <View className="space-y-4">
+    <View className="space-y-6">
       <View>
         <Text className="text-lg font-semibold text-white mb-4">Amount to Send</Text>
-        
-        <View className="bg-white/10 rounded-xl p-4 border border-white/20">
+
+        <View className="bg-white/10 rounded-xl p-5 border border-white/20">
           <View className="flex flex-row items-center">
             <TextInput
               value={amount}
@@ -52,7 +52,7 @@ export function AmountInput({ amount, onAmountChange, userBalance, isLoadingBala
         </View>
 
         {error && (
-          <Text className="text-red-400 text-sm mt-2">{error}</Text>
+          <Text className="text-red-400 text-sm mt-3">{error}</Text>
         )}
       </View>
 
@@ -68,29 +68,29 @@ export function AmountInput({ amount, onAmountChange, userBalance, isLoadingBala
             Available balance: <Text className="font-medium text-white">${userBalance} USDC</Text>
           </Text>
         )}
-        
+
         {!isLoadingBalance && parseFloat(userBalance) > 0 && (
-          <TouchableOpacity onPress={handleMaxAmount}>
+          <TouchableOpacity onPress={handleMaxAmount} className="py-1 px-2">
             <Text className="text-[#F2F2F2] font-medium">Use Max</Text>
           </TouchableOpacity>
         )}
       </View>
 
       <View>
-        <Text className="text-sm font-medium text-white/70 mb-2">Quick Amounts</Text>
-        <View className="flex flex-row gap-2">
+        <Text className="text-sm font-medium text-white/70 mb-3">Quick amounts:</Text>
+        <View className="flex flex-row gap-3">
           {quickAmounts.map((quickAmount) => (
             <TouchableOpacity
               key={quickAmount}
               onPress={() => handleQuickAmount(quickAmount)}
-              className={`flex-1 py-3 rounded-xl border ${
+              className={`flex-1 py-4 rounded-xl border ${
                 amount === quickAmount
                   ? 'bg-white/20 border-white/40'
                   : 'bg-white/10 border-white/20'
               }`}
               activeOpacity={0.7}
             >
-              <Text className="text-white text-center font-medium">${quickAmount}</Text>
+              <Text className="text-white text-center font-medium text-base">${quickAmount}</Text>
             </TouchableOpacity>
           ))}
         </View>
