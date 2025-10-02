@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useCurrentUser } from '@coinbase/cdp-hooks';
 import { Search, Users, Star } from 'lucide-react-native';
@@ -50,9 +51,9 @@ export default function ContactsScreen() {
     setIsRefreshing(false);
   };
 
-  const favoriteContacts = contacts.filter(c => c.favorite);
-  const displayContacts = view === 'search' ? searchResults : 
-                         view === 'favorites' ? favoriteContacts : 
+  const favoriteContacts = contacts.filter(c => c && c.favorite === true);
+  const displayContacts = view === 'search' ? searchResults :
+                         view === 'favorites' ? favoriteContacts :
                          contacts;
 
   const handleContactSelect = (contact: Contact) => {
@@ -72,8 +73,8 @@ export default function ContactsScreen() {
   };
 
   return (
-    <View className="flex-1 bg-[#222222]">
-      <ScrollView 
+    <SafeAreaView className="flex-1 bg-[#222222]" edges={['top']}>
+      <ScrollView
         className="flex-1"
         refreshControl={
           <RefreshControl
@@ -83,7 +84,7 @@ export default function ContactsScreen() {
           />
         }
       >
-        <View className="px-4 pt-10 pb-6">
+        <View className="px-4 pt-8 pb-6">
           <Text className="text-2xl font-bold text-white mb-6 text-center">Contacts</Text>
 
           {/* Search */}
@@ -104,36 +105,41 @@ export default function ContactsScreen() {
           </View>
 
           {/* View Filter */}
-          <View className="bg-white/20 backdrop-blur-xl rounded-2xl p-4 border border-white/30 mb-4">
-            <Text className="text-lg font-semibold text-white mb-3">View</Text>
-            <View className="flex flex-row space-x-2">
+          <View className="bg-[#2A2A2A] rounded-2xl p-1.5 border border-[#3A3A3A] mb-4">
+            <View className="flex flex-row gap-1.5">
               <TouchableOpacity
                 onPress={() => handleViewChange('all')}
+                activeOpacity={0.7}
                 className={`flex-1 flex flex-row items-center justify-center gap-2 px-4 py-3 rounded-xl ${
-                  view === 'all' 
-                    ? 'bg-white/30 border border-white/40' 
-                    : 'bg-white/10'
+                  view === 'all'
+                    ? 'bg-[#5CB0FF]'
+                    : 'bg-transparent'
                 }`}
               >
-                <Users size={16} color={view === 'all' ? '#ffffff' : 'rgba(255,255,255,0.7)'} />
-                <Text className={`text-sm font-medium ${
-                  view === 'all' ? 'text-white' : 'text-white/70'
+                <Users size={18} color={view === 'all' ? '#ffffff' : '#9CA3AF'} />
+                <Text className={`text-sm font-semibold ${
+                  view === 'all' ? 'text-white' : 'text-[#9CA3AF]'
                 }`}>
                   All ({contacts.length})
                 </Text>
               </TouchableOpacity>
-              
+
               <TouchableOpacity
                 onPress={() => handleViewChange('favorites')}
+                activeOpacity={0.7}
                 className={`flex-1 flex flex-row items-center justify-center gap-2 px-4 py-3 rounded-xl ${
-                  view === 'favorites' 
-                    ? 'bg-white/30 border border-white/40' 
-                    : 'bg-white/10'
+                  view === 'favorites'
+                    ? 'bg-[#5CB0FF]'
+                    : 'bg-transparent'
                 }`}
               >
-                <Star size={16} color={view === 'favorites' ? '#ffffff' : 'rgba(255,255,255,0.7)'} />
-                <Text className={`text-sm font-medium ${
-                  view === 'favorites' ? 'text-white' : 'text-white/70'
+                <Star
+                  size={18}
+                  color={view === 'favorites' ? '#ffffff' : '#9CA3AF'}
+                  fill={view === 'favorites' ? '#ffffff' : 'none'}
+                />
+                <Text className={`text-sm font-semibold ${
+                  view === 'favorites' ? 'text-white' : 'text-[#9CA3AF]'
                 }`}>
                   Favorites ({favoriteContacts.length})
                 </Text>
@@ -168,7 +174,7 @@ export default function ContactsScreen() {
                 <ContactList
                   contacts={displayContacts}
                   onContactSelect={handleContactSelect}
-                  onToggleFavorite={(contact) => toggleFavorite(contact.contactEmail)}
+                  onToggleFavorite={async (contact) => await toggleFavorite(contact.contactEmail)}
                   showFavoriteAction={true}
                   emptyMessage={
                     view === 'search' ? 'No contacts match your search' :
@@ -198,6 +204,6 @@ export default function ContactsScreen() {
           )}
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }

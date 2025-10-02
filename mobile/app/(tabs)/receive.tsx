@@ -1,23 +1,22 @@
-import { useState } from 'react';
-import { View, Text, TextInput, ScrollView, TouchableOpacity } from 'react-native';
-import { useEvmAddress, useCurrentUser } from '@coinbase/cdp-hooks';
+import { useState, useMemo } from 'react';
+import { View, Text, TextInput, ScrollView, TouchableOpacity, Share, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useEvmAddress } from '@coinbase/cdp-hooks';
 import { LoadingScreen } from '../../components/ui/LoadingScreen';
-import { QRCodeDisplay } from '../../components/receive/QRCodeDisplay';
-import { Button3D } from '../../components/ui/Button3D';
-import { ArrowLeft } from 'lucide-react-native';
-
-type ViewMode = 'input' | 'display';
+import QRCode from 'react-native-qrcode-svg';
+import * as Clipboard from 'expo-clipboard';
+import { formatUSDCWithSymbol, formatAddress } from '../../lib/utils';
 
 export default function ReceiveScreen() {
-  const { currentUser } = useCurrentUser();
   const evmAddress = useEvmAddress();
-  const [viewMode, setViewMode] = useState<ViewMode>('input');
   const [amount, setAmount] = useState('');
-  const [message, setMessage] = useState('');
+  const [copiedAddress, setCopiedAddress] = useState(false);
 
   if (!evmAddress?.evmAddress) {
     return <LoadingScreen message="Loading wallet..." />;
   }
+
+  const walletAddress = evmAddress.evmAddress;
 
   const handleAmountChange = (value: string) => {
     const regex = /^\d*\.?\d{0,6}$/;
@@ -26,126 +25,112 @@ export default function ReceiveScreen() {
     }
   };
 
-  const handleGenerateQR = () => {
-    setViewMode('display');
+  // Generate web URL that updates reactively when amount changes
+  // This works for both camera scanning AND in-app scanning
+  const paymentUrl = useMemo(() => {
+    const baseUrl = process.env.EXPO_PUBLIC_WEB_URL || 'http://localhost:3000';
+    const params = new URLSearchParams();
+    params.set('to', walletAddress);
+    params.set('amount', amount || '0');
+
+    return `${baseUrl}/pay?${params.toString()}`;
+  }, [walletAddress, amount]);
+
+  const handleCopyAddress = async () => {
+    try {
+      await Clipboard.setStringAsync(walletAddress);
+      setCopiedAddress(true);
+      setTimeout(() => setCopiedAddress(false), 2000);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to copy to clipboard');
+    }
   };
 
-  const handleBack = () => {
-    setViewMode('input');
-  };
+  const handleShare = async () => {
+    const amountValue = amount && parseFloat(amount) > 0 ? parseFloat(amount) : 0;
+    const shareText = amountValue > 0
+      ? `Send me ${formatUSDCWithSymbol(amount)} USDC`
+      : 'Send me USDC';
 
-  const handleClearAmount = () => {
-    setAmount('');
-    setMessage('');
+    try {
+      await Share.share({
+        message: `${shareText}\n\n${paymentUrl}`,
+        url: paymentUrl,
+        title: 'Between Friends Payment Request'
+      });
+    } catch (error) {
+      console.error('Error sharing:', error);
+    }
   };
-
-  const quickAmounts = ['10', '25', '50', '100'];
 
   return (
-    <View className="flex-1 bg-[#222222]">
+    <SafeAreaView className="flex-1 bg-[#222222]" edges={['top']}>
       <ScrollView className="flex-1">
-        <View className="px-4 pt-10 pb-6">
-          <View className="max-w-md mx-auto space-y-6">
-            <View className="flex flex-row items-center justify-between mb-8">
-              {viewMode === 'display' ? (
-                <TouchableOpacity
-                  onPress={handleBack}
-                  className="flex flex-row items-center gap-2"
-                >
-                  <ArrowLeft size={16} color="rgba(255,255,255,0.7)" />
-                  <Text className="text-white/70">Back</Text>
-                </TouchableOpacity>
-              ) : (
-                <View />
-              )}
-              <View />
+        <View className="px-4 pt-8 pb-6">
+          <View className="max-w-md mx-auto">
+            {/* Amount Input */}
+            <View className="bg-[#3B3B3B] rounded-2xl p-6 border border-white/30 shadow-2xl mb-4">
+              <Text className="text-lg font-semibold text-white mb-4">Request Specific Amount</Text>
+
+              <View className="flex flex-row items-center bg-white/10 rounded-xl p-4 border border-white/20">
+                <Text className="text-white/70 text-lg flex-shrink-0">$</Text>
+                <TextInput
+                  value={amount}
+                  onChangeText={handleAmountChange}
+                  placeholder="0.00"
+                  placeholderTextColor="rgba(255,255,255,0.4)"
+                  keyboardType="decimal-pad"
+                  className="flex-1 min-w-0 text-lg font-medium text-white ml-2"
+                />
+                <Text className="text-sm text-white/70 flex-shrink-0 ml-2">USDC</Text>
+              </View>
             </View>
 
-            {viewMode === 'input' ? (
-              <>
-                <View className="items-center mb-6">
-                  <Text className="text-2xl font-bold text-white mb-2">Receive USDC</Text>
-                  <Text className="text-[#B8B8B8] text-center">
-                    Generate a QR code or share your wallet address
-                  </Text>
-                </View>
-
-                <View className="bg-[#2A2A2A] rounded-2xl p-6 border border-[#4A4A4A]">
-                  <Text className="text-lg font-semibold text-white mb-4">Request Specific Amount (Optional)</Text>
-                  
-                  <View className="flex flex-row items-center space-x-2 bg-[#1A1A1A] rounded-xl p-4 border border-[#3A3A3A] mb-4">
-                    <Text className="text-white/70 text-lg flex-shrink-0">$</Text>
-                    <TextInput
-                      value={amount}
-                      onChangeText={handleAmountChange}
-                      placeholder="0.00"
-                      placeholderTextColor="rgba(255,255,255,0.3)"
-                      keyboardType="decimal-pad"
-                      className="flex-1 min-w-0 text-lg font-medium text-white"
-                    />
-                    <Text className="text-sm text-white/70 flex-shrink-0">USDC</Text>
-                  </View>
-
-                  <View className="flex flex-row gap-2 mb-4">
-                    {quickAmounts.map((quickAmount) => (
-                      <TouchableOpacity
-                        key={quickAmount}
-                        onPress={() => setAmount(quickAmount)}
-                        className="flex-1 py-2 bg-[#3A3A3A] rounded-lg border border-[#4A4A4A]"
-                      >
-                        <Text className="text-white text-center font-medium">${quickAmount}</Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-
-                  {amount && (
-                    <TouchableOpacity
-                      onPress={handleClearAmount}
-                      className="py-2"
-                    >
-                      <Text className="text-[#B8B8B8] text-center text-sm">Clear Amount</Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-
-                <View className="bg-[#2A2A2A] rounded-2xl p-6 border border-[#4A4A4A]">
-                  <Text className="text-lg font-semibold text-white mb-4">Add Message (Optional)</Text>
-                  
-                  <TextInput
-                    value={message}
-                    onChangeText={setMessage}
-                    placeholder="e.g., Dinner split, Concert tickets..."
-                    placeholderTextColor="rgba(255,255,255,0.3)"
-                    className="bg-[#1A1A1A] rounded-xl p-4 border border-[#3A3A3A] text-white"
-                    multiline
-                    numberOfLines={3}
-                    maxLength={100}
+            {/* QR Code & Wallet Address */}
+            <View className="bg-white/20 backdrop-blur-xl rounded-2xl p-6 border border-white/30 shadow-2xl mb-4">
+              <View className="items-center">
+                <View className="bg-white rounded-2xl p-4 mb-2">
+                  <QRCode
+                    value={paymentUrl}
+                    size={192}
+                    backgroundColor="white"
+                    color="#111827"
                   />
-                  <Text className="text-[#999999] text-xs mt-2 text-right">
-                    {message.length}/100
-                  </Text>
                 </View>
+                <Text className="text-sm text-white/70 mb-4 text-center">
+                  {amount && parseFloat(amount) > 0
+                    ? `Scan to send ${formatUSDCWithSymbol(amount)}`
+                    : 'Scan to send USDC'
+                  }
+                </Text>
 
-                <Button3D onPress={handleGenerateQR}>
-                  Generate QR Code
-                </Button3D>
-
-                <View className="bg-[#2A2A3A] rounded-xl p-4 border border-[#3A3A4A]">
-                  <Text className="text-[#B8B8D8] text-sm">
-                    💡 Tip: Add an amount to create a payment request. Leave it blank to just share your wallet address.
+                {/* Wallet Address - clickable to copy */}
+                <TouchableOpacity
+                  onPress={handleCopyAddress}
+                  className="w-full p-3 bg-white/10 rounded-xl border border-white/20"
+                >
+                  <Text className="text-sm font-mono text-white/90 mb-1 text-center">
+                    {formatAddress(walletAddress)}
                   </Text>
-                </View>
-              </>
-            ) : (
-              <QRCodeDisplay
-                walletAddress={evmAddress.evmAddress}
-                amount={amount || undefined}
-                message={message || undefined}
-              />
-            )}
+                  <Text className="text-xs text-white/60 text-center">
+                    {copiedAddress ? 'Copied!' : 'Tap to copy address'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* Share Button */}
+            <TouchableOpacity
+              onPress={handleShare}
+              className="bg-[#5CB0FF] rounded-2xl p-4 shadow-lg"
+            >
+              <Text className="text-white text-center font-semibold text-lg">
+                Share Payment Request
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }

@@ -31,8 +31,8 @@ export function ContactList({
     );
   }
 
-  const favoriteContacts = contacts.filter(contact => contact.favorite);
-  const regularContacts = contacts.filter(contact => !contact.favorite);
+  const favoriteContacts = contacts.filter(contact => contact.favorite === true);
+  const regularContacts = contacts.filter(contact => contact.favorite !== true);
 
   return (
     <View className="space-y-1">
@@ -46,7 +46,7 @@ export function ContactList({
           </View>
           {favoriteContacts.map((contact) => (
             <ContactItem
-              key={contact.contactEmail}
+              key={contact._id || contact.contactEmail}
               contact={contact}
               onClick={() => onContactSelect?.(contact)}
               onToggleFavorite={() => onToggleFavorite?.(contact)}
@@ -66,7 +66,7 @@ export function ContactList({
       
       {regularContacts.map((contact) => (
         <ContactItem
-          key={contact.contactEmail}
+          key={contact._id || contact.contactEmail}
           contact={contact}
           onClick={() => onContactSelect?.(contact)}
           onToggleFavorite={() => onToggleFavorite?.(contact)}

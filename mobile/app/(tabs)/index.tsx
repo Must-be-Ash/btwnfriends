@@ -1,4 +1,5 @@
 import { View, ScrollView, RefreshControl } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useEffect, useCallback } from 'react';
 import { useEvmAddress, useCurrentUser, useSignOut } from '@coinbase/cdp-hooks';
 import { useRouter } from 'expo-router';
@@ -7,17 +8,13 @@ import { getUSDCBalance } from '../../lib/usdc';
 import {
   BalanceCard,
   QuickActions,
-  RecentTransactions,
-  AccountInfoWithAvatar,
-  SmartAccountStatus
+  AccountInfoWithAvatar
 } from '../../components/dashboard';
 
 export default function HomeScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [balance, setBalance] = useState('0');
   const [isLoadingBalance, setIsLoadingBalance] = useState(true);
-  const [transactions, setTransactions] = useState([]);
-  const [isLoadingTransactions, setIsLoadingTransactions] = useState(true);
   const [user, setUser] = useState(null);
 
   const evmAddress = useEvmAddress();
@@ -41,21 +38,6 @@ export default function HomeScreen() {
     }
   }, [evmAddress?.evmAddress]);
 
-  const fetchTransactions = useCallback(async () => {
-    if (!currentUser?.userId || !isApiReady) return;
-
-    try {
-      setIsLoadingTransactions(true);
-      const response = await api.get(`/api/transactions?userId=${encodeURIComponent(currentUser.userId)}`);
-      setTransactions(response.data?.transactions || []);
-    } catch (error) {
-      console.error('Error fetching transactions:', error);
-      setTransactions([]);
-    } finally {
-      setIsLoadingTransactions(false);
-    }
-  }, [currentUser?.userId, api, isApiReady]);
-
   const fetchUserProfile = useCallback(async () => {
     if (!currentUser?.userId || !isApiReady) return;
 
@@ -70,15 +52,13 @@ export default function HomeScreen() {
 
   useEffect(() => {
     fetchBalance();
-    fetchTransactions();
     fetchUserProfile();
-  }, [fetchBalance, fetchTransactions, fetchUserProfile]);
+  }, [fetchBalance, fetchUserProfile]);
 
   const onRefresh = async () => {
     setRefreshing(true);
     await Promise.all([
       fetchBalance(),
-      fetchTransactions(),
       fetchUserProfile()
     ]);
     setRefreshing(false);
@@ -97,35 +77,30 @@ export default function HomeScreen() {
   };
 
   return (
-    <ScrollView 
-      className="flex-1 bg-[#1A1A1A]"
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-    >
-      <View className="px-4 pt-6 pb-8 gap-4">
-        <BalanceCard 
+    <SafeAreaView className="flex-1 bg-[#1A1A1A]" edges={['top']}>
+      <ScrollView
+        className="flex-1"
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        <View className="px-4 pt-8 pb-8 gap-4">
+        <BalanceCard
           balance={balance}
           isLoading={isLoadingBalance}
           onRefresh={fetchBalance}
         />
-        
+
         <QuickActions />
 
-        <RecentTransactions 
-          transactions={transactions}
-          isLoading={isLoadingTransactions}
-        />
-        
         <AccountInfoWithAvatar
           user={user}
           walletAddress={evmAddress?.evmAddress || ''}
           handleLogout={handleLogout}
           currentUser={currentUser}
         />
-        
-        <SmartAccountStatus />
-      </View>
-    </ScrollView>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }

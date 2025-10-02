@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { api } from '../lib/api';
+import { useApi } from '../lib/use-api';
 
 export interface Contact {
   _id?: string;
@@ -38,6 +38,7 @@ interface UseContactsReturn {
 }
 
 export function useContacts(ownerUserId: string | null): UseContactsReturn {
+  const { api, isReady: isApiReady } = useApi();
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -45,7 +46,7 @@ export function useContacts(ownerUserId: string | null): UseContactsReturn {
   const [isSearching, setIsSearching] = useState(false);
 
   const fetchContacts = useCallback(async (query?: string) => {
-    if (!ownerUserId) return;
+    if (!ownerUserId || !isApiReady) return;
 
     try {
       setIsLoading(!query);
@@ -58,8 +59,8 @@ export function useContacts(ownerUserId: string | null): UseContactsReturn {
       }
 
       const response = await api.get(`/api/contacts?${params.toString()}`);
-      const contactsData = response.data?.contacts || [];
-      
+      const contactsData = (response.data?.contacts || []).filter((c: Contact | null | undefined) => c != null);
+
       if (query) {
         setSearchResults(contactsData);
       } else {
@@ -73,14 +74,14 @@ export function useContacts(ownerUserId: string | null): UseContactsReturn {
       setIsLoading(false);
       setIsSearching(false);
     }
-  }, [ownerUserId]);
+  }, [ownerUserId, api, isApiReady]);
 
   const refreshContacts = useCallback(async () => {
     await fetchContacts();
   }, [fetchContacts]);
 
   const createContact = useCallback(async (contactData: Omit<CreateContactData, 'ownerUserId'>): Promise<boolean> => {
-    if (!ownerUserId) return false;
+    if (!ownerUserId || !isApiReady) return false;
 
     try {
       const response = await api.post('/api/contacts', {
@@ -95,10 +96,10 @@ export function useContacts(ownerUserId: string | null): UseContactsReturn {
       setError(err instanceof Error ? err.message : 'Failed to create contact');
       return false;
     }
-  }, [ownerUserId]);
+  }, [ownerUserId, api, isApiReady]);
 
   const updateContact = useCallback(async (contactEmail: string, updateData: Partial<Contact>): Promise<boolean> => {
-    if (!ownerUserId) return false;
+    if (!ownerUserId || !isApiReady) return false;
 
     try {
       const response = await api.put('/api/contacts', {
@@ -107,19 +108,22 @@ export function useContacts(ownerUserId: string | null): UseContactsReturn {
         ...updateData
       });
 
-      setContacts(prev => prev.map(c => 
-        c.contactEmail === contactEmail ? response.data.contact : c
-      ));
+      const updatedContact = response.data?.contact;
+      if (updatedContact) {
+        setContacts(prev => prev.map(c =>
+          c && c.contactEmail === contactEmail ? updatedContact : c
+        ));
+      }
       return true;
     } catch (err) {
       console.error('Error updating contact:', err);
       setError(err instanceof Error ? err.message : 'Failed to update contact');
       return false;
     }
-  }, [ownerUserId]);
+  }, [ownerUserId, api, isApiReady]);
 
   const deleteContact = useCallback(async (contactEmail: string): Promise<boolean> => {
-    if (!ownerUserId) return false;
+    if (!ownerUserId || !isApiReady) return false;
 
     try {
       await api.delete(`/api/contacts?ownerUserId=${encodeURIComponent(ownerUserId)}&contactEmail=${encodeURIComponent(contactEmail)}`);
@@ -130,13 +134,30 @@ export function useContacts(ownerUserId: string | null): UseContactsReturn {
       setError(err instanceof Error ? err.message : 'Failed to delete contact');
       return false;
     }
-  }, [ownerUserId]);
+  }, [ownerUserId, api, isApiReady]);
 
   const toggleFavorite = useCallback(async (contactEmail: string): Promise<boolean> => {
-    const contact = contacts.find(c => c.contactEmail === contactEmail);
+    const contact = contacts.find(c => c && c.contactEmail === contactEmail);
     if (!contact) return false;
-    
-    return updateContact(contactEmail, { favorite: !contact.favorite });
+
+    const newFavoriteStatus = contact.favorite === true ? false : true;
+
+    // Optimistic update
+    setContacts(prev => prev.map(c =>
+      c && c.contactEmail === contactEmail ? { ...c, favorite: newFavoriteStatus } : c
+    ));
+
+    // Call API to persist
+    const success = await updateContact(contactEmail, { favorite: newFavoriteStatus });
+
+    // Revert on failure
+    if (!success) {
+      setContacts(prev => prev.map(c =>
+        c && c.contactEmail === contactEmail ? { ...c, favorite: contact.favorite } : c
+      ));
+    }
+
+    return success;
   }, [contacts, updateContact]);
 
   const searchContacts = useCallback(async (query: string) => {
@@ -152,10 +173,10 @@ export function useContacts(ownerUserId: string | null): UseContactsReturn {
   }, []);
 
   useEffect(() => {
-    if (ownerUserId) {
+    if (ownerUserId && isApiReady) {
       fetchContacts();
     }
-  }, [ownerUserId, fetchContacts]);
+  }, [ownerUserId, isApiReady, fetchContacts]);
 
   return {
     contacts,

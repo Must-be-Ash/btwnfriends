@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { View, Text, FlatList, RefreshControl, ActivityIndicator } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCurrentUser } from '@coinbase/cdp-hooks';
 import { TransactionItem } from '../../components/history/TransactionItem';
 import { TransactionFilters } from '../../components/history/TransactionFilters';
@@ -97,8 +98,10 @@ export default function HistoryScreen() {
   }, [currentUser?.userId, filterType, filterStatus, searchQuery, offset, api, isApiReady]);
 
   useEffect(() => {
-    fetchTransactions(true);
-  }, [currentUser?.userId, filterType, filterStatus, searchQuery]);
+    if (isApiReady) {
+      fetchTransactions(true);
+    }
+  }, [currentUser?.userId, filterType, filterStatus, searchQuery, isApiReady]);
 
   const handleRefresh = () => {
     setIsRefreshing(true);
@@ -128,8 +131,8 @@ export default function HistoryScreen() {
   }
 
   return (
-    <View className="flex-1 bg-[#222222]">
-      <View className="px-4 pt-10 pb-4">
+    <SafeAreaView className="flex-1 bg-[#222222]" edges={['top']}>
+      <View className="px-4 pt-8 pb-4">
         <Text className="text-2xl font-bold text-white mb-4">Transaction History</Text>
         
         <TransactionFilters
@@ -182,6 +185,6 @@ export default function HistoryScreen() {
           }
         />
       )}
-    </View>
+    </SafeAreaView>
   );
 }
