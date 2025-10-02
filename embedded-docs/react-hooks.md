@@ -5,7 +5,7 @@
 CDP provides React hooks for conveniently accessing the CDP Embedded Wallet SDK functionality. Built on top of `@coinbase/cdp-core`, these hooks offer a React-friendly interface for authentication and embedded wallet operations.
 
 <Tip>
-  Check out the [CDP Web SDK reference](/sdks/cdp-sdks-v2/react) for comprehensive method signatures, types, and examples.
+  Check out the [CDP Web SDK reference](/sdks/cdp-sdks-v2/frontend) for comprehensive method signatures, types, and examples.
 </Tip>
 
 <Accordion title="Available hooks">
@@ -20,7 +20,7 @@ CDP provides React hooks for conveniently accessing the CDP Embedded Wallet SDK 
   * `useSignOut` - Sign out the current user
   * `useGetAccessToken` - Retrieve the access token of the current user
 
-  ### Wallet operations
+  ### EVM wallet operations
 
   * `useEvmAddress` - Get the primary EVM wallet address
   * `useSendEvmTransaction` - Send transactions on many EVM networks via CDP
@@ -30,13 +30,23 @@ CDP provides React hooks for conveniently accessing the CDP Embedded Wallet SDK 
   * `useSignEvmHash` - Sign message hashes
   * `useExportEvmAccount` - Export wallet private key
 
-  Note: For a list of all EVM EOAs, call `useCurrentUser()` and read `currentUser?.evmAccounts`.
+  <Note> For a list of all EVM EOAs, call `useCurrentUser()` and read `currentUser?.evmAccounts`.</Note>
 
   ### Smart account operations
 
   * `useSendUserOperation` - Submit ERC-4337 user operations (batch calls) with optional Paymaster gas sponsorship
 
   Note: `useEvmAddress()` returns the Smart Account if one exists; otherwise it returns the owner's EOA.
+
+  ### Solana wallet operations
+
+  * `useSolanaAddress` - Get the primary Solana wallet address
+  * `useSendSolanaTransaction` - Send transactions on Solana mainnet or devnet via CDP
+  * `useSignSolanaTransaction` - Sign transactions on Solana
+  * `useSignSolanaMessage` - Sign base64-encoded messages
+  * `useExportSolanaAccount` - Export wallet private key
+
+  <Note> For a list of all Solana accounts, call `useCurrentUser()` and read `currentUser?.solanaAccounts`.</Note>
 
   ### SDK state
 
@@ -100,27 +110,13 @@ function App() {
 Config options:
 
 * `projectId` (required)
-* `createAccountOnLogin` = `"evm-eoa" | "evm-smart"` (optional)
+* `ethereum.createOnLogin` = `"eoa" | "smart"` (optional)
+* `solana.createOnLogin` = `boolean` (optional)
 * `basePath` (optional API base URL)
 * `useMock` (optional mock mode for local testing)
 * `debugging` (optional verbose API logging)
 
-### Smart account configuration (optional)
-
-Enable automatic smart account creation on login:
-
-```tsx
-<CDPHooksProvider
-  config={{
-    projectId: "your-project-id",
-    createAccountOnLogin: "evm-smart",
-  }}
->
-  <YourApp />
-</CDPHooksProvider>
-```
-
-Learn more in the dedicated [Smart Accounts guide](/embedded-wallets/smart-accounts).
+Check out the [Smart Accounts guide](/embedded-wallets/smart-accounts) for more information about EVM smart accounts.
 
 ## 2. Ensure SDK initialization
 
@@ -187,34 +183,64 @@ function SignIn() {
 
 Display user information and wallet addresses using CDP hooks:
 
-```tsx
-import { useCurrentUser, useEvmAddress } from "@coinbase/cdp-hooks";
+<Tabs groupId="user-profile">
+  <Tab value="EVM" title="evmProfile.tsx">
+    ```tsx
+    import { useCurrentUser, useEvmAddress } from "@coinbase/cdp-hooks";
 
-function Profile() {
-  const { currentUser } = useCurrentUser();
-  const { evmAddress: primaryAddress } = useEvmAddress();
+    function Profile() {
+      const { currentUser } = useCurrentUser();
+      const { evmAddress: primaryAddress } = useEvmAddress();
 
-  if (!currentUser) {
-    return <div>Please sign in</div>;
-  }
+      if (!currentUser) {
+        return <div>Please sign in</div>;
+      }
 
-  return (
-    <div>
-      <h2>Profile</h2>
-      <p>User ID: {currentUser.userId}</p>
-      <p>Primary Address: {primaryAddress}</p>
-      <p>All Accounts: {currentUser.evmAccounts.join(", ")}</p>
-      {currentUser.evmSmartAccounts?.[0] && (
-        <p>Smart Account: {currentUser.evmSmartAccounts[0]}</p>
-      )}
-    </div>
-  );
-}
-```
+      return (
+        <div>
+          <h2>Profile</h2>
+          <p>User ID: {currentUser.userId}</p>
+          <p>Primary Address: {primaryAddress}</p>
+          <p>All EVM Accounts: {currentUser.evmAccounts.join(", ")}</p>
+          {currentUser.evmSmartAccounts?.[0] && (
+            <p>Smart Account: {currentUser.evmSmartAccounts[0]}</p>
+          )}
+        </div>
+      );
+    }
+    ```
+  </Tab>
+
+  <Tab value="Solana" title="solanaProfile.tsx">
+    ```tsx
+    import { useCurrentUser, useSolanaAddress } from "@coinbase/cdp-hooks";
+
+    function Profile() {
+      const { currentUser } = useCurrentUser();
+      const { solanaAddress } = useSolanaAddress();
+
+      if (!currentUser) {
+        return <div>Please sign in</div>;
+      }
+
+      return (
+        <div>
+          <h2>Profile</h2>
+          <p>User ID: {currentUser.userId}</p>
+          <p>Solana Address: {solanaAddress}</p>
+          <p>All Solana Accounts: {currentUser.solanaAccounts.join(", ")}</p>
+        </div>
+      );
+    }
+    ```
+  </Tab>
+</Tabs>
 
 ### Send a transaction
 
 We support signing and sending a blockchain transaction in a single action on the networks listed below. For other networks, see the [next section](#sign-and-broadcast-non-supported-networks).
+
+##### EVM networks:
 
 * Base
 * Base Sepolia
@@ -225,42 +251,82 @@ We support signing and sending a blockchain transaction in a single action on th
 * Optimism
 * Polygon
 
-```tsx
-import { useSendEvmTransaction, useEvmAddress } from "@coinbase/cdp-hooks";
+##### Solana networks:
 
-function SendTransaction() {
-  const { sendEvmTransaction } = useSendEvmTransaction();
-  const { evmAddress } = useEvmAddress();
+* Solana Mainnet
+* Solana Devnet
 
-  const handleSend = async () => {
-    if (!evmAddress) return;
+<Tabs groupId="send-transaction">
+  <Tab value="EVM" title="evmTransaction.tsx">
+    ```tsx
+    import { useSendEvmTransaction, useEvmAddress } from "@coinbase/cdp-hooks";
 
-    try {
-      const result = await sendEvmTransaction({
-        transaction: {
-          to: evmAddress,              // Send to yourself for testing
-          value: 1000000000000n,       // 0.000001 ETH in wei
-          gas: 21000n,                 // Standard ETH transfer gas limit
-          chainId: 84532,              // Base Sepolia
-          type: "eip1559",             // Modern gas fee model
-        },
-        evmAccount: evmAddress,        // Your CDP wallet address
-        network: "base-sepolia",       // Target network
-      });
+    function SendTransaction() {
+      const { sendEvmTransaction } = useSendEvmTransaction();
+      const { evmAddress } = useEvmAddress();
 
-      console.log("Transaction hash:", result.transactionHash);
-    } catch (error) {
-      console.error("Transaction failed:", error);
+      const handleSend = async () => {
+        if (!evmAddress) return;
+
+        try {
+          const result = await sendEvmTransaction({
+            transaction: {
+              to: evmAddress,              // Send to yourself for testing
+              value: 1000000000000n,       // 0.000001 ETH in wei
+              gas: 21000n,                 // Standard ETH transfer gas limit
+              chainId: 84532,              // Base Sepolia
+              type: "eip1559",             // Modern gas fee model
+            },
+            evmAccount: evmAddress,        // Your CDP wallet address
+            network: "base-sepolia",       // Target network
+          });
+
+          console.log("Transaction hash:", result.transactionHash);
+        } catch (error) {
+          console.error("Transaction failed:", error);
+        }
+      };
+
+      return <button onClick={handleSend}>Send Transaction</button>;
     }
-  };
+    ```
+  </Tab>
 
-  return <button onClick={handleSend}>Send Transaction</button>;
-}
-```
+  <Tab value="Solana" title="solanaTransaction.tsx">
+    ```tsx
+    import { useSendSolanaTransaction, useSolanaAddress } from "@coinbase/cdp-hooks";
 
-Note: This hook also returns a `data` state with statuses `idle | pending | success | error` that reflects the most recent transaction.
+    function SendTransaction() {
+      const { sendSolanaTransaction } = useSendSolanaTransaction();
+      const { solanaAddress } = useSolanaAddress();
 
-### Sign and broadcast (non-supported networks)
+      const handleSend = async () => {
+        if (!solanaAddress) return;
+
+        try {
+          const result = await sendSolanaTransaction({
+            transaction: "base64-solana-transaction",
+            solanaAccount: solanaAddress,
+            network: "solana-devnet",
+          });
+
+          console.log("Transaction signature:", result.transactionSignature);
+        } catch (error) {
+          console.error("Transaction failed:", error);
+        }
+      };
+
+      return <button onClick={handleSend}>Send Transaction</button>;
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<Note>
+  The `useSendEvmTransaction` hook also returns a `data` state with statuses `idle | pending | success | error` that reflects the most recent transaction.
+</Note>
+
+### Sign and broadcast (non-supported EVM networks)
 
 For networks other than those supported by the Send Transaction API, you can sign a transaction with the wallet and broadcast it yourself. This example uses the public client from `viem` to broadcast the transaction:
 
@@ -311,76 +377,106 @@ function NonBaseTransaction() {
 
 ### Sign messages and typed data
 
-You can sign EVM messages, hashes, and typed data to generate signatures for various on-chain applications:
+You can sign EVM (and Solana) messages, hashes, and typed data to generate signatures for various on-chain applications:
 
-```tsx
-import { useSignEvmMessage, useSignEvmTypedData, useSignEvmHash, useEvmAddress } from "@coinbase/cdp-hooks";
+<Tabs groupId="sign-message">
+  <Tab value="EVM" title="evmSigning.tsx">
+    ```tsx
+    import { useSignEvmMessage, useSignEvmTypedData, useSignEvmHash, useEvmAddress } from "@coinbase/cdp-hooks";
 
-function SignData() {
-  const { signEvmMessage } = useSignEvmMessage();
-  const { signEvmTypedData } = useSignEvmTypedData();
-  const { signEvmHash } = useSignEvmHash();
-  const { evmAddress } = useEvmAddress();
+    function SignData() {
+      const { signEvmMessage } = useSignEvmMessage();
+      const { signEvmTypedData } = useSignEvmTypedData();
+      const { signEvmHash } = useSignEvmHash();
+      const { evmAddress } = useEvmAddress();
 
-  const handleSignMessage = async () => {
-    if (!evmAddress) return;
+      const handleSignMessage = async () => {
+        if (!evmAddress) return;
 
-    const result = await signEvmMessage({
-      evmAccount: evmAddress,
-      message: "Hello World"
-    });
+        const result = await signEvmMessage({
+          evmAccount: evmAddress,
+          message: "Hello World"
+        });
 
-    console.log("Message signature:", result.signature);
-  };
+        console.log("Message signature:", result.signature);
+      };
 
-  const handleSignTypedData = async () => {
-    if (!evmAddress) return;
+      const handleSignTypedData = async () => {
+        if (!evmAddress) return;
 
-    const result = await signEvmTypedData({
-      evmAccount: evmAddress,
-      typedData: {
-        domain: {
-          name: "Example DApp",
-          version: "1",
-          chainId: 84532,
-        },
-        types: {
-          Person: [
-            { name: "name", type: "string" },
-            { name: "wallet", type: "address" }
-          ]
-        },
-        primaryType: "Person",
-        message: {
-          name: "Bob",
-          wallet: evmAddress
-        }
-      }
-    });
+        const result = await signEvmTypedData({
+          evmAccount: evmAddress,
+          typedData: {
+            domain: {
+              name: "Example DApp",
+              version: "1",
+              chainId: 84532,
+            },
+            types: {
+              Person: [
+                { name: "name", type: "string" },
+                { name: "wallet", type: "address" }
+              ]
+            },
+            primaryType: "Person",
+            message: {
+              name: "Bob",
+              wallet: evmAddress
+            }
+          }
+        });
 
-    console.log("Typed data signature:", result.signature);
-  };
+        console.log("Typed data signature:", result.signature);
+      };
 
-  const handleSignHash = async () => {
-    if (!evmAddress) return;
+      const handleSignHash = async () => {
+        if (!evmAddress) return;
 
-    const result = await signEvmHash({
-      evmAccount: evmAddress,
-      hash: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-    });
+        const result = await signEvmHash({
+          evmAccount: evmAddress,
+          hash: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        });
 
-    console.log("Hash signature:", result.signature);
-  };
+        console.log("Hash signature:", result.signature);
+      };
 
-  return (
-    <div>
-      <button onClick={handleSignMessage}>Sign Message</button>
-      <button onClick={handleSignTypedData}>Sign Typed Data</button>
-      <button onClick={handleSignHash}>Sign Hash</button>
-    </div>
-  );
-}
-```
+      return (
+        <div>
+          <button onClick={handleSignMessage}>Sign Message</button>
+          <button onClick={handleSignTypedData}>Sign Typed Data</button>
+          <button onClick={handleSignHash}>Sign Hash</button>
+        </div>
+      );
+    }
+    ```
+  </Tab>
+
+  <Tab value="Solana" title="solanaSigning.tsx">
+    ```tsx
+    import { useSignSolanaMessage, useSolanaAddress } from "@coinbase/cdp-hooks";
+
+    function SignData() {
+      const { signSolanaMessage } = useSignSolanaMessage();
+      const { solanaAddress } = useSolanaAddress();
+
+      const handleSignMessage = async () => {
+        if (!solanaAddress) return;
+
+        const result = await signSolanaMessage({
+          solanaAccount: solanaAddress,
+          message: "base64-message"
+        });
+
+        console.log("Message signature:", result.signature);
+      };
+
+      return (
+        <button onClick={handleSignMessage}>Sign Message</button>
+      );
+    }
+    ```
+  </Tab>
+</Tabs>
 
 ### Export private keys
 
@@ -388,7 +484,7 @@ function SignData() {
   Private key export is a high-risk security operation. See our comprehensive [Security & Export](/embedded-wallets/security-export) guide for proper implementation, security considerations, and best practices.
 </Warning>
 
-The `useExportEvmAccount` hook allows users to export their private key for wallet migration or other purposes. For detailed implementation examples and security guidance, see the [Security & Export](/embedded-wallets/security-export#implementation) documentation.
+The `useExportEvmAccount` and `useExportSolanaAccount` hooks allows users to export their respective private keys for wallet migration or other purposes. For detailed implementation examples and security guidance, see the [Security & Export](/embedded-wallets/security-export#implementation) documentation.
 
 ### Send a user operation (Smart Accounts)
 
@@ -431,7 +527,7 @@ The hook returns the `sendUserOperation` method, which you call with the transac
 
 ## What to read next
 
-* [**CDP Web SDK Documentation**](/sdks/cdp-sdks-v2/react): Comprehensive API reference for the CDP Web SDK
+* [**CDP Web SDK Documentation**](/sdks/cdp-sdks-v2/frontend): Comprehensive API reference for the CDP Web SDK
 * [**Embedded Wallet - React Components**](/embedded-wallets/react-components): Pre-built UI components that work seamlessly with these hooks
 * [**Embedded Wallet - Wagmi Integration**](/embedded-wallets/wagmi): Use CDP wallets with the popular wagmi library
 * [**Embedded Wallet - Next.js**](/embedded-wallets/nextjs): Special considerations for Next.js applications

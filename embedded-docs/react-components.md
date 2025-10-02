@@ -5,7 +5,7 @@
 CDP React components provide pre-built, customizable UI elements for common self-custodial wallet and authentication flows, built on top of the CDP Embedded Wallets SDK. This guide will help you get started with `@coinbase/cdp-react` components in your application.
 
 <Tip>
-  Check out the [CDP Web SDK reference](/sdks/cdp-sdks-v2/react) for comprehensive method signatures, types, and examples.
+  Check out the [CDP Web SDK reference](/sdks/cdp-sdks-v2/frontend) for comprehensive method signatures, types, and examples.
 </Tip>
 
 ## Prerequisites
@@ -49,7 +49,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { App } from './App'; // Your main App component
 import { type Config } from '@coinbase/cdp-core';
-import { CDPReactProvider, type AppConfig, type Theme } from '@coinbase/cdp-react';
+import { CDPReactProvider, type Theme } from '@coinbase/cdp-react';
 
 // Your CDP config
 const cdpConfig: Config = {
@@ -57,12 +57,8 @@ const cdpConfig: Config = {
   basePath: "https://api.cdp.coinbase.com", // CDP API url
   useMock: false, // Use live APIs or use mock data for testing
   debugging: false, // Log API requests and responses
-}
-
-// Global config for your dapp
-const appConfig: AppConfig = {
-  name: "My app", // the name of your application
-  logoUrl: "https://picsum.photos/64", // logo will be displayed in select components
+  appName: "My app", // the name of your application
+  appLogoUrl: "https://picsum.photos/64", // logo will be displayed in select components
 }
 
 // You can customize the theme by overriding theme variables
@@ -75,7 +71,7 @@ const themeOverrides: Partial<Theme> = {
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <CDPReactProvider config={cdpConfig} app={appConfig} theme={themeOverrides}>
+    <CDPReactProvider config={cdpConfig} theme={themeOverrides}>
       <App />
     </CDPReactProvider>
   </React.StrictMode>,
@@ -104,11 +100,11 @@ export default App;
 
 That's it! You've successfully installed `@coinbase/cdp-react`, set up the provider, and rendered your first component.
 
-Find all available components and their documentation in the [CDP React module reference](/sdks/cdp-sdks-v2/react/@coinbase/cdp-react).
+Find all available components and their documentation in the [CDP React module reference](/sdks/cdp-sdks-v2/frontend/@coinbase/cdp-react).
 
 ## 3. Customize theme (optional)
 
-CDP React components come with a comprehensive theming system that allows you to customize the look and feel of all components to match your brand. The theme system uses semantic design tokens that are applied consistently across all components.
+CDP React components come with a comprehensive theming system that allows you to customize the look and feel of all components to match your brand. The theme is built on a small set of core **semantic tokens** that control foundational styles like colors and typography. These are inherited by more specific **component tokens** used to style individual UI elements.
 
 You can customize the theme by passing a `theme` object to the `CDPReactProvider`:
 
@@ -141,7 +137,7 @@ const customTheme: Partial<Theme> = {
 };
 
 // Apply the theme to your provider
-<CDPReactProvider config={cdpConfig} app={appConfig} theme={customTheme}>
+<CDPReactProvider config={cdpConfig} theme={customTheme}>
   <App />
 </CDPReactProvider>
 ```
@@ -150,40 +146,45 @@ const customTheme: Partial<Theme> = {
   The theme configuration uses `Partial<Theme>`, so you only need to include the variables you want to customize. Any variables you don't specify will use CDP React's default values.
 </Tip>
 
-### Theme variables
+### Semantic theme variables
 
-CDP React components use a set of design tokens (e.g. colors, typography, borders) to style their elements. You can override these in your app’s theme configuration.
+This section lists the core **semantic tokens** that form the foundation of the theme. You only need to customize these tokens to apply a new theme across your entire application.
 
-Each token maps to one or more CSS custom properties used by the components. When you customize a theme variable, all associated styles update automatically.
+Each token maps to a primary CSS variable which is then inherited by multiple component-level variables. The table below lists the primary mapping and provides an example of a component variable that inherits from it. For an exhaustive list of all tokens along with their default values, see the [Theming page](/embedded-wallets/theming).
 
-For example, updating `colors-fg-default` changes the default text color across inputs, pages, and links.
+<Tip>
+  Theme tokens are rendered as CSS variables under the namespace `cdp-web` (i.e. `colors-page-bg-default` becomes `--cdp-web-colors-page-bg-default`).
+</Tip>
 
-| Token                   | Description                                                                | CSS variable mapping                                                                                                              |
-| ----------------------- | -------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| **Backgrounds**         |                                                                            |                                                                                                                                   |
-| `colors-bg-default`     | Default page and input background                                          | `--cdp-web-colors-page-bg-default`, `--cdp-web-colors-input-bg-default`                                                           |
-| `colors-bg-alternate`   | Alternate backgrounds (e.g. cards)                                         | *(not mapped in this version)*                                                                                                    |
-| `colors-bg-overlay`     | Overlay UI (e.g. modals). Defaults to 33% opacity of `colors-bg-alternate` | `--cdp-web-colors-bg-overlay`                                                                                                     |
-| `colors-bg-skeleton`    | Loading placeholders. Defaults to 10% opacity of `colors-fg-default`       | `--cdp-web-colors-bg-skeleton`                                                                                                    |
-| `colors-bg-primary`     | Primary brand background (e.g. CTA)                                        | `--cdp-web-colors-cta-primary-bg-default`                                                                                         |
-| `colors-bg-secondary`   | Secondary background (e.g. secondary CTA)                                  | `--cdp-web-colors-cta-secondary-bg-default`                                                                                       |
-| **Text**                |                                                                            |                                                                                                                                   |
-| `colors-fg-default`     | Default text color                                                         | `--cdp-web-colors-page-text-default`, `--cdp-web-colors-input-text-default`, `--cdp-web-colors-link-secondary-text-default`       |
-| `colors-fg-muted`       | Muted/placeholder text                                                     | `--cdp-web-colors-page-text-muted`, `--cdp-web-colors-input-placeholder-default`                                                  |
-| `colors-fg-primary`     | Primary action text (e.g. links)                                           | `--cdp-web-colors-link-primary-text-default`                                                                                      |
-| `colors-fg-onPrimary`   | Text on primary backgrounds                                                | `--cdp-web-colors-cta-primary-text-default`                                                                                       |
-| `colors-fg-onSecondary` | Text on secondary backgrounds                                              | `--cdp-web-colors-cta-secondary-text-default`                                                                                     |
-| `colors-fg-positive`    | Success messaging text                                                     | `--cdp-web-colors-fg-positive`                                                                                                    |
-| `colors-fg-negative`    | Error messaging text                                                       | `--cdp-web-colors-fg-negative`                                                                                                    |
-| **Borders**             |                                                                            |                                                                                                                                   |
-| `colors-line-default`   | Standard borders (e.g. dividers)                                           | `--cdp-web-colors-page-border-default`                                                                                            |
-| `colors-line-heavy`     | Input borders                                                              | `--cdp-web-colors-input-border-default`                                                                                           |
-| `colors-line-primary`   | Focus/active borders                                                       | `--cdp-web-colors-cta-primary-border-focus`, `--cdp-web-colors-cta-secondary-border-focus`, `--cdp-web-colors-input-border-focus` |
-| `colors-line-positive`  | Success state borders                                                      | *(not mapped in this version)*                                                                                                    |
-| `colors-line-negative`  | Error borders                                                              | `--cdp-web-colors-input-border-error`                                                                                             |
-| **Typography**          |                                                                            |                                                                                                                                   |
-| `font-family-sans`      | Sans-serif font family                                                     | Applied globally                                                                                                                  |
-| `font-size-base`        | Base font size                                                             | Applied globally                                                                                                                  |
+| Token                   | Description                                                                                 | CSS variable mapping                                                                                |
+| ----------------------- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| **Backgrounds**         |                                                                                             |                                                                                                     |
+| `colors-bg-default`     | Default page and input background                                                           | `--cdp-web-colors-bg-default` (inherited by e.g. `--cdp-web-colors-page-bg-default`)                |
+| `colors-bg-alternate`   | Alternate backgrounds (e.g. cards)                                                          | `--cdp-web-colors-bg-alternate` (inherited by e.g. `--cdp-web-colors-code-bg-default`)              |
+| `colors-bg-contrast`    | A contrast color mixed with other backgrounds to generate default hover and pressed states. | `--cdp-web-colors-bg-contrast`                                                                      |
+| `colors-bg-overlay`     | Overlay UI (e.g. modals). Defaults to 33% opacity of `colors-bg-alternate`                  | `--cdp-web-colors-bg-overlay`                                                                       |
+| `colors-bg-skeleton`    | Loading placeholders. Defaults to 10% opacity of `colors-fg-default`                        | `--cdp-web-colors-bg-skeleton`                                                                      |
+| `colors-bg-primary`     | Primary brand background (e.g. CTA)                                                         | `--cdp-web-colors-bg-primary` (inherited by e.g. `--cdp-web-colors-cta-primary-bg-default`)         |
+| `colors-bg-secondary`   | Secondary background (e.g. secondary CTA)                                                   | `--cdp-web-colors-bg-secondary` (inherited by e.g. `--cdp-web-colors-cta-secondary-bg-default`)     |
+| **Text**                |                                                                                             |                                                                                                     |
+| `colors-fg-default`     | Default text color                                                                          | `--cdp-web-colors-fg-default` (inherited by e.g. `--cdp-web-colors-page-text-default`)              |
+| `colors-fg-muted`       | Muted/placeholder text                                                                      | `--cdp-web-colors-fg-muted` (inherited by e.g. `--cdp-web-colors-page-text-muted`)                  |
+| `colors-fg-primary`     | Primary action text (e.g. links)                                                            | `--cdp-web-colors-fg-primary` (inherited by e.g. `--cdp-web-colors-link-primary-text-default`)      |
+| `colors-fg-onPrimary`   | Text on primary backgrounds                                                                 | `--cdp-web-colors-fg-onPrimary` (inherited by e.g. `--cdp-web-colors-cta-primary-text-default`)     |
+| `colors-fg-onSecondary` | Text on secondary backgrounds                                                               | `--cdp-web-colors-fg-onSecondary` (inherited by e.g. `--cdp-web-colors-cta-secondary-text-default`) |
+| `colors-fg-positive`    | Success messaging text                                                                      | `--cdp-web-colors-fg-positive` (inherited by e.g. `--cdp-web-colors-input-successText-default`)     |
+| `colors-fg-negative`    | Error messaging text                                                                        | `--cdp-web-colors-fg-negative` (inherited by e.g. `--cdp-web-colors-input-errorText-default`)       |
+| `colors-fg-warning`     | Warning messaging text                                                                      | `--cdp-web-colors-fg-warning`                                                                       |
+| **Borders**             |                                                                                             |                                                                                                     |
+| `colors-line-default`   | Standard borders (e.g. dividers)                                                            | `--cdp-web-colors-line-default` (inherited by e.g. `--cdp-web-colors-page-border-default`)          |
+| `colors-line-heavy`     | Higher contrast borders (e.g. inputs)                                                       | `--cdp-web-colors-line-heavy` (inherited by e.g. `--cdp-web-colors-input-border-default`)           |
+| `colors-line-primary`   | Primary brand color borders (e.g. for focus/active state)                                   | `--cdp-web-colors-line-primary` (inherited by e.g. `--cdp-web-colors-input-border-focus`)           |
+| `colors-line-positive`  | Success state borders                                                                       | `--cdp-web-colors-line-positive` (inherited by e.g. `--cdp-web-colors-input-border-success`)        |
+| `colors-line-negative`  | Error borders                                                                               | `--cdp-web-colors-line-negative` (inherited by e.g. `--cdp-web-colors-input-border-error`)          |
+| **Typography**          |                                                                                             |                                                                                                     |
+| `font-family-sans`      | Sans-serif font family                                                                      | `--cdp-web-font-family-sans`                                                                        |
+| `font-family-mono`      | Monospace font family                                                                       | `--cdp-web-font-family-mono`                                                                        |
+| `font-size-base`        | Base font size                                                                              | `--cdp-web-font-size-base`                                                                          |
 
 <Accordion title="Smart color defaults">
   Some theme colors automatically derive from other theme values, reducing the need for manual configuration:
@@ -240,8 +241,9 @@ Then define these CSS variables in your stylesheet:
 
 ## What to read next
 
-* [**CDP Web SDK Documentation**](/sdks/cdp-sdks-v2/react): Comprehensive API reference for the CDP Web SDK
+* [**CDP Web SDK Documentation**](/sdks/cdp-sdks-v2/frontend): Comprehensive API reference for the CDP Web SDK
 * [**Embedded Wallet - React Hooks**](/embedded-wallets/react-hooks): Use CDP hooks for custom implementations
+* [**Embedded Wallet - Theming**](/embedded-wallets/theming): Explore all semantic and component theme tokens
 * [**Embedded Wallet - Wagmi Integration**](/embedded-wallets/wagmi): Combine CDP components with wagmi
 * [**Embedded Wallet - Next.js**](/embedded-wallets/nextjs): Special considerations for Next.js applications
 * [**Security & Export**](/embedded-wallets/security-export): Learn about private key export security considerations and implementation

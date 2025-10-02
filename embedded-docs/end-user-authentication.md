@@ -71,6 +71,55 @@ SMS-based one-time passwords are available as an additional authentication metho
   * You should weigh the convenience of logging in with SMS with the potential for a user's wallet to be taken control of.
 </Warning>
 
+## Session management
+
+Understanding how user sessions work with Embedded Wallets is crucial for building secure applications with proper authentication flows.
+
+### Session duration
+
+User sessions are managed through a dual-token system designed to balance security and user experience:
+
+* **Maximum session length**: 7 days
+* **Access token expiry**: 15 minutes
+* **Refresh token expiry**: 7 days
+
+### How session tokens work
+
+When a user successfully authenticates, they receive:
+
+1. **Access token**: Short-lived (15 minutes) token used for API requests
+2. **Refresh token**: Long-lived (7 days) token used to obtain new access tokens
+
+The refresh token automatically generates new access tokens as needed, providing seamless authentication for up to 7 days. After 7 days, users must re-authenticate.
+
+### Session lifecycle
+
+<AccordionGroup>
+  <Accordion title="Initial authentication">
+    1. User completes email/SMS OTP verification or other authentication method
+    2. System issues both access and refresh tokens
+    3. User gains immediate access to their wallet
+    4. Session remains active for up to 7 days with automatic token refresh
+  </Accordion>
+
+  <Accordion title="Automatic token refresh">
+    * Access tokens are automatically refreshed using the refresh token
+    * Applications continue working without interruption
+  </Accordion>
+
+  <Accordion title="Session expiration">
+    * After 7 days, the refresh token expires
+    * User must complete authentication again
+  </Accordion>
+</AccordionGroup>
+
+### Implementation considerations
+
+* Monitor authentication state using `onAuthStateChange()` to handle session expiration
+* Implement graceful fallback when tokens expire
+* Consider showing session timeout warnings to users approaching the 7-day limit
+* Test your application's behavior when refresh tokens expire
+
 ## Implementation approaches
 
 There are three ways to implement authentication in your application:
@@ -93,29 +142,25 @@ For the fastest integration, `@coinbase/cdp-react` provides a pre-built `AuthBut
 <Note>
   For more CDP React components and styling options, see the [React Components documentation](/embedded-wallets/react-components).
 
-  By default, email authentication is the only method enabled. For enabling additional methods, refer to the [AppConfig documentation](/sdks/cdp-sdks-v2/react/@coinbase/cdp-react#appconfig)
+  By default, email authentication is the only method enabled. For enabling additional methods, refer to the [AppConfig documentation](/sdks/cdp-sdks-v2/frontend/@coinbase/cdp-react#appconfig)
 </Note>
 
 <CodeGroup>
   ```tsx Basic setup
-  import { type AppConfig, CDPReactProvider } from "@coinbase/cdp-react";
+  import { type Config, CDPReactProvider } from "@coinbase/cdp-react";
   import { AuthButton } from "@coinbase/cdp-react/components/AuthButton";
-  import { type Config } from "@coinbase/cdp-core";
 
   const config: Config = {
     projectId: "your-project-id"
-  };
-
-  const appConfig: AppConfig = {
-    name: "React Library Demo",
-    logoUrl: "https://picsum.photos/64",
+    appName: "React Library Demo",
+    appLogoUrl: "https://picsum.photos/64",
     // Enabled authentication methods
     authMethods: ["email", "sms"],
   };
 
   function App() {
     return (
-      <CDPReactProvider app={appConfig} config={config}>
+      <CDPReactProvider config={config}>
         <YourApp />
       </CDPReactProvider>
     );
@@ -762,4 +807,4 @@ Some developers take additional action (fetching additional data, starting async
 * **[React hooks](/embedded-wallets/react-hooks)**: Pre-built hooks for authentication and wallet management
 * **[React components](/embedded-wallets/react-components)**: Ready-to-use UI components including `AuthButton`
 * **[Security configuration](/embedded-wallets/domains)**: Configure domain allowlisting and security settings
-* **[API reference](/sdks/cdp-sdks-v2/react)**: Complete documentation for the CDP Web SDK
+* **[API reference](/sdks/cdp-sdks-v2/frontend)**: Complete documentation for the CDP Web SDK

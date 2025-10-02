@@ -1,5 +1,6 @@
 import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { RefreshCw, ShieldCheck } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { cn } from '../../lib/utils';
 
 interface BalanceCardProps {
@@ -16,46 +17,50 @@ function formatUSDCWithSymbol(balance: string): string {
 
 export function BalanceCard({ balance, isLoading, onRefresh }: BalanceCardProps) {
   return (
-    <View className="relative bg-gray-800/60 rounded-2xl p-6 border border-white/40 shadow-2xl overflow-hidden">
-      {/* Gradient overlay for depth */}
-      <View className="absolute inset-0 bg-black/20 rounded-2xl" />
-      
-      <View className="relative z-10">
-        <View className="flex-row items-center justify-between mb-6">
-          <Text className="text-lg font-semibold text-white">USDC Balance</Text>
-          
-          <TouchableOpacity
-            onPress={onRefresh}
-            disabled={isLoading}
-            className={cn(
-              'p-2 rounded-lg bg-white/20 active:bg-white/30',
-              isLoading && 'opacity-50'
-            )}
-            accessibilityLabel="Refresh balance"
-          >
+    <View style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 16, elevation: 8 }}>
+      <LinearGradient
+        colors={['rgba(31, 41, 55, 0.6)', 'rgba(55, 65, 81, 0.4)', 'rgba(17, 24, 39, 0.6)']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={{ borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.4)', borderRadius: 24 }}
+      >
+        <View className="px-8 pt-8 pb-8">
+          <View className="flex-row items-center justify-between mb-10">
+            <Text className="text-sm font-medium text-white/60 tracking-wide uppercase">USDC Balance</Text>
+
+            <TouchableOpacity
+              onPress={onRefresh}
+              disabled={isLoading}
+              className={cn(
+                'w-11 h-11 items-center justify-center rounded-full bg-white/10 active:bg-white/20 border border-white/10',
+                isLoading && 'opacity-50'
+              )}
+              accessibilityLabel="Refresh balance"
+            >
+              {isLoading ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <RefreshCw size={20} color="#FFFFFF" strokeWidth={2} />
+              )}
+            </TouchableOpacity>
+          </View>
+
+          <View className="mb-8">
             {isLoading ? (
-              <ActivityIndicator size="small" color="#B8B8B8" />
+              <View className="h-14 bg-white/20 rounded-xl w-52" />
             ) : (
-              <RefreshCw size={20} color="#B8B8B8" />
+              <Text className="text-5xl font-bold text-white tracking-tight" style={{ letterSpacing: -1 }}>
+                {formatUSDCWithSymbol(balance)}
+              </Text>
             )}
-          </TouchableOpacity>
-        </View>
+          </View>
 
-        <View className="mb-6">
-          {isLoading ? (
-            <View className="h-12 bg-white/30 rounded-lg w-48" />
-          ) : (
-            <Text className="text-4xl font-bold text-white mb-1">
-              {formatUSDCWithSymbol(balance)}
-            </Text>
-          )}
+          <View className="flex-row items-center">
+            <ShieldCheck size={16} color="rgba(255,255,255,0.6)" />
+            <Text className="text-white/60 text-sm ml-2">Secured by Coinbase</Text>
+          </View>
         </View>
-
-        <View className="flex-row items-center">
-          <ShieldCheck size={16} color="rgba(255,255,255,0.7)" />
-          <Text className="text-white/70 text-sm ml-2">Secured by CDP</Text>
-        </View>
-      </View>
+      </LinearGradient>
     </View>
   );
 }

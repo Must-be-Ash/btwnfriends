@@ -67,68 +67,68 @@ export default function ReceiveScreen() {
     <SafeAreaView className="flex-1 bg-[#222222]" edges={['top']}>
       <ScrollView className="flex-1">
         <View className="px-4 pt-8 pb-6">
-          <View className="max-w-md mx-auto">
-            {/* Amount Input */}
-            <View className="bg-[#3B3B3B] rounded-2xl p-6 border border-white/30 shadow-2xl mb-4">
-              <Text className="text-lg font-semibold text-white mb-4">Request Specific Amount</Text>
+          {/* Amount Input */}
+          <View className="bg-[#3B3B3B] rounded-2xl p-6 border border-white/30 shadow-2xl mb-4">
+            <Text className="text-lg font-semibold text-white mb-4">Request Specific Amount</Text>
 
-              <View className="flex flex-row items-center bg-white/10 rounded-xl p-4 border border-white/20">
-                <Text className="text-white/70 text-lg flex-shrink-0">$</Text>
-                <TextInput
-                  value={amount}
-                  onChangeText={handleAmountChange}
-                  placeholder="0.00"
-                  placeholderTextColor="rgba(255,255,255,0.4)"
-                  keyboardType="decimal-pad"
-                  className="flex-1 min-w-0 text-lg font-medium text-white ml-2"
-                />
-                <Text className="text-sm text-white/70 flex-shrink-0 ml-2">USDC</Text>
-              </View>
+            <View className="flex flex-row items-center bg-white/10 rounded-xl px-4 py-3 border border-white/20">
+              <Text className="text-lg text-white/70 flex-shrink-0">$</Text>
+              <TextInput
+                value={amount}
+                onChangeText={handleAmountChange}
+                placeholder="0.00"
+                placeholderTextColor="rgba(255,255,255,0.4)"
+                keyboardType="decimal-pad"
+                textAlignVertical="center"
+                style={{ padding: 0, margin: 0, height: 24 }}
+                className="flex-1 min-w-0 text-lg font-medium text-white ml-2"
+              />
+              <Text className="text-sm text-white/70 flex-shrink-0 ml-2">USDC</Text>
             </View>
-
-            {/* QR Code & Wallet Address */}
-            <View className="bg-white/20 backdrop-blur-xl rounded-2xl p-6 border border-white/30 shadow-2xl mb-4">
-              <View className="items-center">
-                <View className="bg-white rounded-2xl p-4 mb-2">
-                  <QRCode
-                    value={paymentUrl}
-                    size={192}
-                    backgroundColor="white"
-                    color="#111827"
-                  />
-                </View>
-                <Text className="text-sm text-white/70 mb-4 text-center">
-                  {amount && parseFloat(amount) > 0
-                    ? `Scan to send ${formatUSDCWithSymbol(amount)}`
-                    : 'Scan to send USDC'
-                  }
-                </Text>
-
-                {/* Wallet Address - clickable to copy */}
-                <TouchableOpacity
-                  onPress={handleCopyAddress}
-                  className="w-full p-3 bg-white/10 rounded-xl border border-white/20"
-                >
-                  <Text className="text-sm font-mono text-white/90 mb-1 text-center">
-                    {formatAddress(walletAddress)}
-                  </Text>
-                  <Text className="text-xs text-white/60 text-center">
-                    {copiedAddress ? 'Copied!' : 'Tap to copy address'}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {/* Share Button */}
-            <TouchableOpacity
-              onPress={handleShare}
-              className="bg-[#5CB0FF] rounded-2xl p-4 shadow-lg"
-            >
-              <Text className="text-white text-center font-semibold text-lg">
-                Share Payment Request
-              </Text>
-            </TouchableOpacity>
           </View>
+
+          {/* QR Code & Wallet Address */}
+          <View className="bg-[#3B3B3B] rounded-2xl p-6 border border-white/30 shadow-2xl mb-4">
+            <View className="items-center">
+              <View className="bg-white rounded-2xl p-4 mb-2">
+                <QRCode
+                  value={paymentUrl}
+                  size={192}
+                  backgroundColor="white"
+                  color="#111827"
+                />
+              </View>
+              <Text className="text-sm text-white/70 mb-4 text-center">
+                {amount && parseFloat(amount) > 0
+                  ? `Scan to send ${formatUSDCWithSymbol(amount)}`
+                  : 'Scan to send USDC'
+                }
+              </Text>
+
+              {/* Wallet Address - clickable to copy */}
+              <TouchableOpacity
+                onPress={handleCopyAddress}
+                className="w-full p-3 bg-white/10 rounded-xl border border-white/20"
+              >
+                <Text className="text-sm font-mono text-white/90 mb-1 text-center">
+                  {formatAddress(walletAddress)}
+                </Text>
+                <Text className="text-xs text-white/60 text-center">
+                  {copiedAddress ? 'Copied!' : 'Tap to copy address'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Share Button */}
+          <TouchableOpacity
+            onPress={handleShare}
+            className="bg-[#5CB0FF] rounded-2xl p-4 shadow-lg"
+          >
+            <Text className="text-white text-center font-semibold text-lg">
+              Share Payment Request
+            </Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>

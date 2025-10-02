@@ -133,8 +133,6 @@ export default function HistoryScreen() {
   return (
     <SafeAreaView className="flex-1 bg-[#222222]" edges={['top']}>
       <View className="px-4 pt-8 pb-4">
-        <Text className="text-2xl font-bold text-white mb-4">Transaction History</Text>
-        
         <TransactionFilters
           currentType={filterType}
           currentStatus={filterStatus}

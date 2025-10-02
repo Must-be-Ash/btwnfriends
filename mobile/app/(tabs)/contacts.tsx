@@ -85,10 +85,8 @@ export default function ContactsScreen() {
         }
       >
         <View className="px-4 pt-8 pb-6">
-          <Text className="text-2xl font-bold text-white mb-6 text-center">Contacts</Text>
-
           {/* Search */}
-          <View className="bg-white/20 backdrop-blur-xl rounded-2xl p-4 border border-white/30 mb-4">
+          <View className="bg-[#3B3B3B] rounded-2xl p-4 border border-white/30 shadow-2xl mb-4">
             <Text className="text-lg font-semibold text-white mb-3">Search</Text>
             <View className="relative">
               <TextInput
@@ -148,7 +146,7 @@ export default function ContactsScreen() {
           </View>
 
           {/* Content */}
-          <View className="bg-white/20 backdrop-blur-xl rounded-2xl p-4 border border-white/30">
+          <View className="bg-[#3B3B3B] rounded-2xl p-4 border border-white/30 shadow-2xl">
             {error && (
               <View className="mb-4 p-4 bg-red-500/20 border border-red-400/30 rounded-xl">
                 <Text className="text-sm text-red-300">{error}</Text>

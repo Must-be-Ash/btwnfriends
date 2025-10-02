@@ -8,17 +8,27 @@ Built on Coinbase's [trusted infrastructure](/server-wallets/v2/introduction/sec
 
 <Frame>
   <div className="wallet-comparison-wrapper">
-    <img src="https://mintcdn.com/coinbase-prod/54QcwrnR3tmkrVsF/images/wallet-experience-comparison.svg?fit=max&auto=format&n=54QcwrnR3tmkrVsF&q=85&s=ae9c6742366a3d4cba73babb545aa981" alt="Comparison showing traditional wallets require 6 steps including seed phrase management, while embedded wallets only need 3 simple steps" width="1200" height="700" data-path="images/wallet-experience-comparison.svg" srcset="https://mintcdn.com/coinbase-prod/54QcwrnR3tmkrVsF/images/wallet-experience-comparison.svg?w=280&fit=max&auto=format&n=54QcwrnR3tmkrVsF&q=85&s=0913e4272263c6a623f614d147efc706 280w, https://mintcdn.com/coinbase-prod/54QcwrnR3tmkrVsF/images/wallet-experience-comparison.svg?w=560&fit=max&auto=format&n=54QcwrnR3tmkrVsF&q=85&s=617da397d63ede4c95d6bc94cd63afc4 560w, https://mintcdn.com/coinbase-prod/54QcwrnR3tmkrVsF/images/wallet-experience-comparison.svg?w=840&fit=max&auto=format&n=54QcwrnR3tmkrVsF&q=85&s=29bc864a83153a8b887c19975e58294a 840w, https://mintcdn.com/coinbase-prod/54QcwrnR3tmkrVsF/images/wallet-experience-comparison.svg?w=1100&fit=max&auto=format&n=54QcwrnR3tmkrVsF&q=85&s=8c8bffeacee0dfca480688906f73c968 1100w, https://mintcdn.com/coinbase-prod/54QcwrnR3tmkrVsF/images/wallet-experience-comparison.svg?w=1650&fit=max&auto=format&n=54QcwrnR3tmkrVsF&q=85&s=6b417dcdb3ad722de5bfb4fc4613633d 1650w, https://mintcdn.com/coinbase-prod/54QcwrnR3tmkrVsF/images/wallet-experience-comparison.svg?w=2500&fit=max&auto=format&n=54QcwrnR3tmkrVsF&q=85&s=6b29ca8bfccb8d488fb1040415a44df3 2500w" data-optimize="true" data-opv="2" />
+    <img src="https://mintcdn.com/coinbase-prod/54QcwrnR3tmkrVsF/images/wallet-experience-comparison.svg?fit=max&auto=format&n=54QcwrnR3tmkrVsF&q=85&s=ae9c6742366a3d4cba73babb545aa981" alt="Comparison showing traditional wallets require 6 steps including seed phrase management, while embedded wallets only need 3 simple steps" data-og-width="1200" width="1200" data-og-height="700" height="700" data-path="images/wallet-experience-comparison.svg" data-optimize="true" data-opv="3" srcset="https://mintcdn.com/coinbase-prod/54QcwrnR3tmkrVsF/images/wallet-experience-comparison.svg?w=280&fit=max&auto=format&n=54QcwrnR3tmkrVsF&q=85&s=0913e4272263c6a623f614d147efc706 280w, https://mintcdn.com/coinbase-prod/54QcwrnR3tmkrVsF/images/wallet-experience-comparison.svg?w=560&fit=max&auto=format&n=54QcwrnR3tmkrVsF&q=85&s=617da397d63ede4c95d6bc94cd63afc4 560w, https://mintcdn.com/coinbase-prod/54QcwrnR3tmkrVsF/images/wallet-experience-comparison.svg?w=840&fit=max&auto=format&n=54QcwrnR3tmkrVsF&q=85&s=29bc864a83153a8b887c19975e58294a 840w, https://mintcdn.com/coinbase-prod/54QcwrnR3tmkrVsF/images/wallet-experience-comparison.svg?w=1100&fit=max&auto=format&n=54QcwrnR3tmkrVsF&q=85&s=8c8bffeacee0dfca480688906f73c968 1100w, https://mintcdn.com/coinbase-prod/54QcwrnR3tmkrVsF/images/wallet-experience-comparison.svg?w=1650&fit=max&auto=format&n=54QcwrnR3tmkrVsF&q=85&s=6b417dcdb3ad722de5bfb4fc4613633d 1650w, https://mintcdn.com/coinbase-prod/54QcwrnR3tmkrVsF/images/wallet-experience-comparison.svg?w=2500&fit=max&auto=format&n=54QcwrnR3tmkrVsF&q=85&s=6b29ca8bfccb8d488fb1040415a44df3 2500w" />
   </div>
 </Frame>
+
+## Try the interactive demo
+
+Experience Embedded Wallets firsthand with our interactive demo at [demo.cdp.coinbase.com](https://demo.cdp.coinbase.com). The demo lets you:
+
+* **Explore the user experience**: See how smooth onboarding can be with web2-friendly authentication
+* **Test customization options**: Preview how embedded wallets can match your app's look and feel
+* **Try core features**: Experience wallet creation, transactions, and key management in action
+
+Perfect for developers who want to understand the product before diving into implementation.
 
 ## Supported networks
 
 Embedded Wallets support a wide range of blockchain networks:
 
 * **All EVM-compatible networks**: Including Base, Ethereum, Arbitrum, Polygon, Optimism, and more
-* **Solana**: Full support for Solana mainnet and devnet (coming soon!)
-* **Testnet support**: Base Sepolia, Ethereum Sepolia, and other test networks for development
+* **Solana**
+* **Testnet support**: Base Sepolia, Ethereum Sepolia, Solana Devnet, and other test networks for development
 
 For a complete list of supported networks and features, see our [Supported Networks](/get-started/supported-networks) page.
 

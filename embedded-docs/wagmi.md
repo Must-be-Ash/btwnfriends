@@ -9,7 +9,7 @@ The NPM package @coinbase/cdp-wagmi is a bridge that connects Coinbase’s CDP (
 You'll learn how to install the package, set up the provider, and render your first component.
 
 <Tip>
-  Check out the [CDP Web SDK reference](/sdks/cdp-sdks-v2/react) for comprehensive method signatures, types, and examples.
+  Check out the [CDP Web SDK reference](/sdks/cdp-sdks-v2/frontend) for comprehensive method signatures, types, and examples.
 </Tip>
 
 ## Prerequisites
@@ -263,6 +263,6 @@ export default function WagmiTransaction() {
 
 ## What to read next
 
-* [**CDP Web SDK Documentation**](/sdks/cdp-sdks-v2/react): Comprehensive API reference for the CDP Web SDK
+* [**CDP Web SDK Documentation**](/sdks/cdp-sdks-v2/frontend): Comprehensive API reference for the CDP Web SDK
 * [**Embedded Wallets - React Hooks**](/embedded-wallets/react-hooks): Learn about available CDP hooks that complement Wagmi
 * [**Wagmi Documentation**](https://wagmi.sh): Explore the full Wagmi documentation for advanced usage

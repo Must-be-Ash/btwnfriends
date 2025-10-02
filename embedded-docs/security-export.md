@@ -92,106 +92,213 @@ Here are common scenarios where users might need to export their private keys fr
 
 ### 1. Add the hook
 
-Use the `useExportEvmAccount` hook from `@coinbase/cdp-hooks`:
+<Tabs groupId="export-account-hooks">
+  <Tab value="EVM" title="exportEvmAccount.tsx">
+    Use the `useExportEvmAccount` hook from `@coinbase/cdp-hooks`:
 
-```tsx
-import { useExportEvmAccount, useEvmAddress } from "@coinbase/cdp-hooks";
-```
+    ```tsx
+    import { useExportEvmAccount, useEvmAddress } from "@coinbase/cdp-hooks";
+    ```
+  </Tab>
+
+  <Tab value="Solana" title="exportSolanaAccount.tsx">
+    Use the `useExportSolanaAccount` hook from `@coinbase/cdp-hooks`:
+
+    ```tsx
+    import { useExportSolanaAccount, useSolanaAddress } from "@coinbase/cdp-hooks";
+    ```
+  </Tab>
+</Tabs>
 
 ### 2. Implement export with security measures
 
-```tsx
-import { useExportEvmAccount, useEvmAddress } from "@coinbase/cdp-hooks";
-import { useState } from "react";
+<Tabs groupId="export-account-components">
+  <Tab value="EVM" title="exportEvmAccount.tsx">
+    ```tsx
+    import { useExportEvmAccount, useEvmAddress } from "@coinbase/cdp-hooks";
+    import { useState } from "react";
 
-function SecureExportKey() {
-  const { exportEvmAccount } = useExportEvmAccount();
-  const { evmAddress } = useEvmAddress();
-  const [isExporting, setIsExporting] = useState(false);
-  const [showConfirmation, setShowConfirmation] = useState(false);
+    function SecureExportKey() {
+      const { exportEvmAccount } = useExportEvmAccount();
+      const { evmAddress } = useEvmAddress();
+      const [isExporting, setIsExporting] = useState(false);
+      const [showConfirmation, setShowConfirmation] = useState(false);
 
-  const handleExportRequest = () => {
-    // Show security warning and confirmation dialog
-    setShowConfirmation(true);
-  };
+      const handleExportRequest = () => {
+        // Show security warning and confirmation dialog
+        setShowConfirmation(true);
+      };
 
-  const handleConfirmedExport = async () => {
-    if (!evmAddress) return;
+      const handleConfirmedExport = async () => {
+        if (!evmAddress) return;
 
-    setIsExporting(true);
-    try {
-      const { privateKey } = await exportEvmAccount({
-        evmAccount: evmAddress
-      });
+        setIsExporting(true);
+        try {
+          const { privateKey } = await exportEvmAccount({
+            evmAccount: evmAddress
+          });
 
-      // Securely handle the private key
-      // Option 1: Copy to clipboard (recommended)
-      await navigator.clipboard.writeText(privateKey);
-      
-      // Option 2: Show in secure modal (alternative)
-      // showSecureModal(privateKey);
-      
-      // Note: In JavaScript, strings are immutable so we can't truly clear from memory
-      // The browser's garbage collector will handle cleanup
-      
-      alert("Private key copied to clipboard. Please store it securely and clear your clipboard.");
-      
-    } catch (error) {
-      console.error("Export failed:", error);
-      alert("Export failed. Please try again.");
-    } finally {
-      setIsExporting(false);
-      setShowConfirmation(false);
+          // Securely handle the private key
+          // Option 1: Copy to clipboard (recommended)
+          await navigator.clipboard.writeText(privateKey);
+
+          // Option 2: Show in secure modal (alternative)
+          // showSecureModal(privateKey);
+
+          // Note: In JavaScript, strings are immutable so we can't truly clear from memory
+          // The browser's garbage collector will handle cleanup
+
+          alert("Private key copied to clipboard. Please store it securely and clear your clipboard.");
+
+        } catch (error) {
+          console.error("Export failed:", error);
+          alert("Export failed. Please try again.");
+        } finally {
+          setIsExporting(false);
+          setShowConfirmation(false);
+        }
+      };
+
+      if (showConfirmation) {
+        return (
+          <div className="security-warning-modal">
+            <h3>⚠️ Security Warning</h3>
+            <div className="warning-content">
+              <p><strong>Exporting your private key is a high-risk operation.</strong></p>
+              <ul>
+                <li>Anyone with your private key has complete control of your wallet</li>
+                <li>Never share your private key with anyone</li>
+                <li>Store it securely (see [Coinbase's guide on private key security](https://www.coinbase.com/learn/crypto-basics/what-is-a-private-key) for best practices)</li>
+                <li>Clear your clipboard after copying</li>
+              </ul>
+              <p>Do you understand these risks and want to proceed?</p>
+            </div>
+            <div className="actions">
+              <button
+                onClick={() => setShowConfirmation(false)}
+                className="cancel-button"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmedExport}
+                disabled={isExporting}
+                className="danger-button"
+              >
+                {isExporting ? "Exporting..." : "Yes, Export Private Key"}
+              </button>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <button
+          onClick={handleExportRequest}
+          className="export-button"
+        >
+          Export Private Key
+        </button>
+      );
     }
-  };
+    ```
+  </Tab>
 
-  if (showConfirmation) {
-    return (
-      <div className="security-warning-modal">
-        <h3>⚠️ Security Warning</h3>
-        <div className="warning-content">
-          <p><strong>Exporting your private key is a high-risk operation.</strong></p>
-          <ul>
-            <li>Anyone with your private key has complete control of your wallet</li>
-            <li>Never share your private key with anyone</li>
-            <li>Store it securely (see [Coinbase's guide on private key security](https://www.coinbase.com/learn/crypto-basics/what-is-a-private-key) for best practices)</li>
-            <li>Clear your clipboard after copying</li>
-          </ul>
-          <p>Do you understand these risks and want to proceed?</p>
-        </div>
-        <div className="actions">
-          <button 
-            onClick={() => setShowConfirmation(false)}
-            className="cancel-button"
-          >
-            Cancel
-          </button>
-          <button 
-            onClick={handleConfirmedExport}
-            disabled={isExporting}
-            className="danger-button"
-          >
-            {isExporting ? "Exporting..." : "Yes, Export Private Key"}
-          </button>
-        </div>
-      </div>
-    );
-  }
+  <Tab value="Solana" title="exportSolanaAccount.tsx">
+    ```tsx
+    import { useExportSolanaAccount, useSolanaAddress } from "@coinbase/cdp-hooks";
+    import { useState } from "react";
 
-  return (
-    <button 
-      onClick={handleExportRequest}
-      className="export-button"
-    >
-      Export Private Key
-    </button>
-  );
-}
-```
+    function SecureExportKey() {
+      const { exportSolanaAccount } = useExportSolanaAccount();
+      const { solanaAddress } = useSolanaAddress();
+      const [isExporting, setIsExporting] = useState(false);
+      const [showConfirmation, setShowConfirmation] = useState(false);
+
+      const handleExportRequest = () => {
+        // Show security warning and confirmation dialog
+        setShowConfirmation(true);
+      };
+
+      const handleConfirmedExport = async () => {
+        if (!solanaAddress) return;
+
+        setIsExporting(true);
+        try {
+          const { privateKey } = await exportSolanaAccount({
+            solanaAccount: solanaAddress
+          });
+
+          // Securely handle the private key
+          // Option 1: Copy to clipboard (recommended)
+          await navigator.clipboard.writeText(privateKey);
+
+          // Option 2: Show in secure modal (alternative)
+          // showSecureModal(privateKey);
+
+          // Note: In JavaScript, strings are immutable so we can't truly clear from memory
+          // The browser's garbage collector will handle cleanup
+
+          alert("Private key copied to clipboard. Please store it securely and clear your clipboard.");
+
+        } catch (error) {
+          console.error("Export failed:", error);
+          alert("Export failed. Please try again.");
+        } finally {
+          setIsExporting(false);
+          setShowConfirmation(false);
+        }
+      };
+
+      if (showConfirmation) {
+        return (
+          <div className="security-warning-modal">
+            <h3>⚠️ Security Warning</h3>
+            <div className="warning-content">
+              <p><strong>Exporting your private key is a high-risk operation.</strong></p>
+              <ul>
+                <li>Anyone with your private key has complete control of your wallet</li>
+                <li>Never share your private key with anyone</li>
+                <li>Store it securely (see [Coinbase's guide on private key security](https://www.coinbase.com/learn/crypto-basics/what-is-a-private-key) for best practices)</li>
+                <li>Clear your clipboard after copying</li>
+              </ul>
+              <p>Do you understand these risks and want to proceed?</p>
+            </div>
+            <div className="actions">
+              <button
+                onClick={() => setShowConfirmation(false)}
+                className="cancel-button"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmedExport}
+                disabled={isExporting}
+                className="danger-button"
+              >
+                {isExporting ? "Exporting..." : "Yes, Export Private Key"}
+              </button>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <button
+          onClick={handleExportRequest}
+          className="export-button"
+        >
+          Export Private Key
+        </button>
+      );
+    }
+    ```
+  </Tab>
+</Tabs>
 
 ## What to read next
 
 * **[React Hooks](/embedded-wallets/react-hooks)** - Learn about all available hooks for embedded wallet operations
-* **[CDP SDK Documentation](/sdks/cdp-sdks-v2/react)** - Complete SDK reference and API documentation
+* **[CDP SDK Documentation](/sdks/cdp-sdks-v2/frontend)** - Complete SDK reference and API documentation
 * **[Smart Accounts](/embedded-wallets/smart-accounts)** - Explore account abstraction as an alternative to private key management
 * **[End User Authentication](/embedded-wallets/end-user-authentication)** - Understand authentication flows and security models

@@ -43,7 +43,9 @@ function App() {
     <CDPHooksProvider
       config={{
         projectId: "your-project-id",
-        createAccountOnLogin: "evm-smart", // Automatically create Smart Accounts
+        ethereum: {
+          createOnLogin: "smart", // Automatically create Smart Accounts
+        }
       }}
     >
       <YourApp />
@@ -52,7 +54,7 @@ function App() {
 }
 ```
 
-* When `createAccountOnLogin` is set to `"evm-smart"`, new users receive both an EOA and a smart account.
+* When `ethereum.createOnLogin` is set to `"smart"`, new users receive both an EOA and a smart account.
 
 Other config keys supported by the SDK provider:
 
@@ -240,16 +242,16 @@ await sendUserOperation({
 
 ## Reference
 
-| Resource                                                                                                    | Description                                              |
-| ----------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| [`useCurrentUser`](https://github.com/coinbase/cdp-web/blob/main/packages/hooks/src/hooks.ts#L349)          | Get the current authenticated user                       |
-| [`useEvmAddress`](https://github.com/coinbase/cdp-web/blob/main/packages/hooks/src/hooks.ts#L434)           | Primary EVM address (Smart Account if present, else EOA) |
-| [`useSendUserOperation`](https://github.com/coinbase/cdp-web/blob/main/packages/hooks/src/hooks.ts#L917)    | Send a user operation; hook returns status/data          |
-| [`sendUserOperationOptions`](https://github.com/coinbase/cdp-web/blob/main/packages/core/src/types.ts#L309) | Options for sending a user operation                     |
-| [`sendUserOperationResult`](https://github.com/coinbase/cdp-web/blob/main/packages/core/src/types.ts#L325)  | Result fields for sendUserOperation                      |
-| [`createAccountOnLogin`](https://github.com/coinbase/cdp-web/blob/main/packages/core/src/types.ts#L39)      | Config: "evm-eoa" or "evm-smart"                         |
-| [User type](https://github.com/coinbase/cdp-web/blob/main/packages/core/src/types.ts#L56)                   | `user.evmAccounts[]`, `user.evmSmartAccounts[]`          |
-| [Hooks README](https://github.com/coinbase/cdp-web/blob/main/packages/hooks/README.md)                      | Package overview and usage                               |
+| Resource                                                                                                                                        | Description                                              |
+| ----------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| [`useCurrentUser`](https://github.com/coinbase/cdp-web/blob/d2bf487d1ba29cfbeec73123a14b104a35819368/packages/hooks/src/hooks.ts#L362)          | Get the current authenticated user                       |
+| [`useEvmAddress`](https://github.com/coinbase/cdp-web/blob/d2bf487d1ba29cfbeec73123a14b104a35819368/packages/hooks/src/hooks.ts#L447)           | Primary EVM address (Smart Account if present, else EOA) |
+| [`useSendUserOperation`](https://github.com/coinbase/cdp-web/blob/d2bf487d1ba29cfbeec73123a14b104a35819368/packages/hooks/src/hooks.ts#L1118)   | Send a user operation; hook returns status/data          |
+| [`sendUserOperationOptions`](https://github.com/coinbase/cdp-web/blob/d2bf487d1ba29cfbeec73123a14b104a35819368/packages/core/src/types.ts#L403) | Options for sending a user operation                     |
+| [`sendUserOperationResult`](https://github.com/coinbase/cdp-web/blob/d2bf487d1ba29cfbeec73123a14b104a35819368/packages/core/src/types.ts#L419)  | Result fields for sendUserOperation                      |
+| [`ethereum.createOnLogin`](https://github.com/coinbase/cdp-web/blob/d2bf487d1ba29cfbeec73123a14b104a35819368/packages/core/src/types.ts#L47)    | Config: "eoa" or "smart"                                 |
+| [User type](https://github.com/coinbase/cdp-web/blob/main/packages/core/src/types.ts#L56)                                                       | `user.evmAccounts[]`, `user.evmSmartAccounts[]`          |
+| [Hooks README](https://github.com/coinbase/cdp-web/blob/main/packages/hooks/README.md)                                                          | Package overview and usage                               |
 
 ## What to read next
 

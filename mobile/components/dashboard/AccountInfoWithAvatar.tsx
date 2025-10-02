@@ -1,7 +1,7 @@
-import { View, Text, TouchableOpacity, Modal } from 'react-native';
-import { useState } from 'react';
+import { View, Text, TouchableOpacity, Modal, Animated } from 'react-native';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'expo-router';
-import { LogOut, Key, Settings, Copy, Check } from 'lucide-react-native';
+import { LogOut, Key, Copy, Check, Settings } from 'lucide-react-native';
 import * as Clipboard from 'expo-clipboard';
 
 interface UserProfile {
@@ -38,16 +38,28 @@ export function AccountInfoWithAvatar({
   const router = useRouter();
   const [showMenu, setShowMenu] = useState(false);
   const [copiedAddress, setCopiedAddress] = useState(false);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (showMenu) {
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [showMenu]);
 
   const handleCopyAddress = async () => {
     await Clipboard.setStringAsync(walletAddress);
     setCopiedAddress(true);
     setTimeout(() => setCopiedAddress(false), 2000);
-  };
-
-  const handleSettings = () => {
-    setShowMenu(false);
-    router.push('/settings');
   };
 
   const handleExportKeys = () => {
@@ -71,59 +83,69 @@ export function AccountInfoWithAvatar({
           className="w-10 h-10 bg-white/20 rounded-full items-center justify-center border border-white/30"
           accessibilityLabel="User menu"
         >
-          <Text className="text-white font-semibold">
-            {(user?.displayName || currentUser?.userId || 'U').charAt(0).toUpperCase()}
-          </Text>
+          <Settings size={18} color="#FFFFFF" />
         </TouchableOpacity>
       </View>
 
-      {/* User Menu Modal */}
+      {/* User Menu Bottom Drawer */}
       <Modal
         visible={showMenu}
         transparent
-        animationType="fade"
+        animationType="none"
         onRequestClose={() => setShowMenu(false)}
       >
-        <TouchableOpacity
-          activeOpacity={1}
-          onPress={() => setShowMenu(false)}
-          className="flex-1 bg-black/50 justify-center items-center"
-        >
+        <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+          <Animated.View
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              opacity: fadeAnim,
+            }}
+          />
           <TouchableOpacity
             activeOpacity={1}
-            className="bg-white rounded-2xl shadow-2xl w-64 overflow-hidden"
+            onPress={() => setShowMenu(false)}
+            style={{ flex: 1 }}
+          />
+          <Animated.View
+            style={{
+              transform: [{
+                translateY: fadeAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [300, 0]
+                })
+              }],
+              paddingBottom: 34
+            }}
+            className="bg-white rounded-t-3xl shadow-2xl overflow-hidden"
           >
-            <View className="px-4 py-3 border-b border-gray-200">
-              <Text className="text-sm font-medium text-gray-900">
+            <View className="px-6 py-4 border-b border-gray-200">
+              <Text className="text-base font-semibold text-gray-900">
                 {user?.displayName || 'User'}
               </Text>
             </View>
 
             <TouchableOpacity
-              onPress={handleSettings}
-              className="flex-row items-center px-4 py-3 active:bg-gray-100"
-            >
-              <Settings size={18} color="#6B7280" />
-              <Text className="ml-3 text-sm text-gray-700">Settings</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
               onPress={handleExportKeys}
-              className="flex-row items-center px-4 py-3 active:bg-gray-100"
+              className="flex-row items-center px-6 py-4 active:bg-gray-100"
             >
-              <Key size={18} color="#6B7280" />
-              <Text className="ml-3 text-sm text-gray-700">Export Private Key</Text>
+              <Key size={20} color="#6B7280" />
+              <Text className="ml-4 text-base text-gray-700">Export Private Key</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               onPress={handleLogoutPress}
-              className="flex-row items-center px-4 py-3 active:bg-gray-100 border-t border-gray-200"
+              className="flex-row items-center px-6 py-4 active:bg-gray-100"
             >
-              <LogOut size={18} color="#EF4444" />
-              <Text className="ml-3 text-sm text-red-600">Logout</Text>
+              <LogOut size={20} color="#EF4444" />
+              <Text className="ml-4 text-base text-red-600">Logout</Text>
             </TouchableOpacity>
-          </TouchableOpacity>
-        </TouchableOpacity>
+          </Animated.View>
+        </View>
       </Modal>
 
       <View className="gap-4">
