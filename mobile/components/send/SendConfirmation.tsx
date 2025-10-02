@@ -6,7 +6,7 @@ import { AlertCircle } from 'lucide-react-native';
 import { SendButton3D } from '../ui/SendButton3D';
 import { formatUSDCWithSymbol } from '../../lib/utils';
 import { getCDPNetworkName, prepareUSDCTransferCall, prepareUSDCApprovalCall, prepareEscrowDepositCall, SmartAccountCall } from '../../lib/cdp';
-import { api, createAuthenticatedApi } from '../../lib/api';
+import { createAuthenticatedApi } from '../../lib/api';
 
 interface RecipientInfo {
   email: string;
@@ -96,7 +96,10 @@ export function SendConfirmation({ transferData, currentUser, onSuccess, onBack 
 
     setCurrentStep('Creating escrow deposit...');
 
-    const approvalResponse = await api.post('/api/send', {
+    const accessToken = await getAccessToken();
+    const authenticatedApi = createAuthenticatedApi(accessToken);
+
+    const approvalResponse = await authenticatedApi.post('/api/send', {
       userId: currentUser.userId,
       senderAddress: smartAccount,
       recipientEmail: recipient.email,
@@ -130,7 +133,7 @@ export function SendConfirmation({ transferData, currentUser, onSuccess, onBack 
       useCdpPaymaster: true
     });
 
-    await api.put('/api/send', {
+    await authenticatedApi.put('/api/send', {
       transferId: transferId,
       txHash: result.userOperationHash,
       transferType: 'escrow'

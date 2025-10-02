@@ -97,14 +97,15 @@ export default function SendScreen() {
       // Refresh balance when screen is focused
       fetchBalance();
 
-      // Reset to initial state when screen is focused, unless coming from params
-      if (!preSelectedContact && currentStep !== 'success') {
+      // Reset to initial state after successful send
+      if (currentStep === 'success') {
         setCurrentStep('input');
         setRecipientInputStep('select_contact');
         setPendingTransferData(null);
         setTxHash('');
       }
-    }, [preSelectedContact, currentStep])
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
   );
 
   const handleTopBackButton = () => {

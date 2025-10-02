@@ -108,19 +108,28 @@ export function RecipientInput({
     onStepChange('enter_amount');
 
     try {
+      console.log('🔍 MOBILE: Looking up recipient:', contact.contactEmail);
       const response = await api.post('/api/recipients/lookup', {
         email: contact.contactEmail
       });
 
+      console.log('🔍 MOBILE: Lookup response:', JSON.stringify(response.data, null, 2));
       const recipientInfo = response.data?.recipient;
 
       if (!recipientInfo || !recipientInfo.email) {
+        console.error('🔍 MOBILE: Invalid recipient data - recipientInfo:', recipientInfo);
         throw new Error('Invalid recipient data received');
       }
 
+      console.log('🔍 MOBILE: Setting recipient info:', recipientInfo);
       setRecipient(recipientInfo);
-    } catch (error) {
-      console.error('Recipient lookup error:', error);
+    } catch (error: any) {
+      console.error('🔍 MOBILE: Recipient lookup error:', error);
+      console.error('🔍 MOBILE: Error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
       setLookupError('Failed to lookup recipient. Please try again.');
       // Go back to contact selection on error
       onStepChange('select_contact');
