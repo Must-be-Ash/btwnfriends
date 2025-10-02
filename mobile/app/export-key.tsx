@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, TextInput, ScrollView, Alert, AppState, AppStateStatus } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useCurrentUser, useExportEvmAccount } from '@coinbase/cdp-hooks';
 import * as Clipboard from 'expo-clipboard';
@@ -161,8 +162,9 @@ export default function ExportKeyScreen() {
 
   if (step === 'exported' && privateKey) {
     return (
-      <ScrollView className="flex-1 bg-[#222222]">
-        <View className="px-4 pt-12 pb-24">
+      <SafeAreaView className="flex-1 bg-[#222222]" edges={['top']}>
+        <ScrollView className="flex-1">
+          <View className="px-4 pt-8 pb-24">
           {/* Back Button */}
           <TouchableOpacity
             onPress={() => router.back()}
@@ -240,13 +242,15 @@ export default function ExportKeyScreen() {
             </View>
           </View>
         </View>
-      </ScrollView>
+        </ScrollView>
+      </SafeAreaView>
     );
   }
 
   return (
-    <ScrollView className="flex-1 bg-[#222222]">
-      <View className="px-4 pt-12 pb-24">
+    <SafeAreaView className="flex-1 bg-[#222222]" edges={['top']}>
+      <ScrollView className="flex-1">
+        <View className="px-4 pt-8 pb-24">
         {/* Back Button */}
         <TouchableOpacity
           onPress={() => router.back()}
@@ -300,6 +304,7 @@ export default function ExportKeyScreen() {
           </View>
         </View>
       </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
