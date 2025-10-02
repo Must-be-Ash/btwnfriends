@@ -94,6 +94,9 @@ export default function SendScreen() {
 
   useFocusEffect(
     useCallback(() => {
+      // Refresh balance when screen is focused
+      fetchBalance();
+
       // Reset to initial state when screen is focused, unless coming from params
       if (!preSelectedContact && currentStep !== 'success') {
         setCurrentStep('input');
@@ -101,7 +104,7 @@ export default function SendScreen() {
         setPendingTransferData(null);
         setTxHash('');
       }
-    }, [preSelectedContact])
+    }, [preSelectedContact, currentStep])
   );
 
   const handleTopBackButton = () => {

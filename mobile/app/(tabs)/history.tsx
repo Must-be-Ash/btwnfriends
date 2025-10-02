@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { View, Text, FlatList, RefreshControl, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, RefreshControl, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCurrentUser } from '@coinbase/cdp-hooks';
+import { useFocusEffect } from 'expo-router';
+import { RefreshCw } from 'lucide-react-native';
 import { TransactionItem } from '../../components/history/TransactionItem';
 import { TransactionFilters } from '../../components/history/TransactionFilters';
 import { LoadingScreen } from '../../components/ui/LoadingScreen';
@@ -103,6 +105,15 @@ export default function HistoryScreen() {
     }
   }, [currentUser?.userId, filterType, filterStatus, searchQuery, isApiReady]);
 
+  useFocusEffect(
+    useCallback(() => {
+      // Refresh transactions when tab comes into focus
+      if (isApiReady) {
+        fetchTransactions(true);
+      }
+    }, [isApiReady])
+  );
+
   const handleRefresh = () => {
     setIsRefreshing(true);
     setOffset(0);
@@ -133,6 +144,22 @@ export default function HistoryScreen() {
   return (
     <SafeAreaView className="flex-1 bg-[#222222]" edges={['top']}>
       <View className="px-4 pt-8 pb-4">
+        <View className="flex-row items-center justify-between mb-4">
+          <Text className="text-2xl font-bold text-white">Transaction History</Text>
+          <TouchableOpacity
+            onPress={handleRefresh}
+            disabled={isRefreshing}
+            className="w-11 h-11 items-center justify-center rounded-full bg-white/10 active:bg-white/20 border border-white/10"
+            accessibilityLabel="Refresh transactions"
+          >
+            {isRefreshing ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <RefreshCw size={20} color="#FFFFFF" strokeWidth={2} />
+            )}
+          </TouchableOpacity>
+        </View>
+
         <TransactionFilters
           currentType={filterType}
           currentStatus={filterStatus}

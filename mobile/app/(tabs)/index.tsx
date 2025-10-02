@@ -2,7 +2,7 @@ import { View, ScrollView, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useEffect, useCallback } from 'react';
 import { useEvmAddress, useCurrentUser, useSignOut } from '@coinbase/cdp-hooks';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { useApi } from '../../lib/use-api';
 import { getUSDCBalance } from '../../lib/usdc';
 import {
@@ -54,6 +54,14 @@ export default function HomeScreen() {
     fetchBalance();
     fetchUserProfile();
   }, [fetchBalance, fetchUserProfile]);
+
+  useFocusEffect(
+    useCallback(() => {
+      // Refresh balance and profile when dashboard tab comes into focus
+      fetchBalance();
+      fetchUserProfile();
+    }, [fetchBalance, fetchUserProfile])
+  );
 
   const onRefresh = async () => {
     setRefreshing(true);

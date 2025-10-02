@@ -1,6 +1,5 @@
 import { View, Text, TouchableOpacity, ScrollView, Linking } from 'react-native';
-import { CheckCircle, Mail, ExternalLink } from 'lucide-react-native';
-import { Button3D } from '../ui/Button3D';
+import { CheckCircle } from 'lucide-react-native';
 import { formatUSDCWithSymbol } from '../../lib/utils';
 import { getBlockExplorerUrl } from '../../lib/cdp';
 
@@ -39,99 +38,94 @@ export function SendSuccess({ transferData, txHash, onSendAnother, onGoToDashboa
 
   return (
     <ScrollView className="flex-1 bg-[#222222]">
-      <View className="p-6 space-y-6">
-        <View className="items-center">
-          <View className="w-16 h-16 rounded-full mb-6 bg-[#4A4A4A] border border-[#6B6B6B] items-center justify-center">
-            {isDirect ? (
-              <CheckCircle size={32} color="#B8B8B8" />
-            ) : (
-              <Mail size={32} color="#B8B8B8" />
-            )}
+      <View className="px-4 pt-12 pb-32">
+        <View className="items-center mb-10">
+          <View className="w-24 h-24 rounded-full mb-8 bg-[#3B3B3B] border border-white/20 items-center justify-center">
+            <CheckCircle size={48} color="#10b981" />
           </View>
-          
-          <Text className="text-2xl font-bold text-white mb-2 text-center">
-            {isDirect ? 'Transfer Complete!' : 'Sent!'}
+
+          <Text className="text-3xl font-bold text-white text-center">
+            Transfer Complete!
           </Text>
         </View>
 
-        <View className="bg-[#2A2A2A] rounded-2xl p-6 border border-[#4A4A4A]">
-          <Text className="text-lg font-semibold text-white mb-4">Transfer Details</Text>
-          
-          <View className="space-y-4">
+        <View className="bg-[#3B3B3B] rounded-2xl p-6 border border-white/30 mb-6">
+          <Text className="text-xl font-semibold text-white mb-8">Transfer Details</Text>
+
+          <View className="gap-6">
             <View className="flex flex-row justify-between items-center">
-              <Text className="text-[#B8B8B8]">Amount</Text>
-              <Text className="font-semibold text-white">
+              <Text className="text-white/70 text-lg">Amount</Text>
+              <Text className="font-bold text-white text-3xl">
                 {formatUSDCWithSymbol(amount)}
               </Text>
             </View>
-            
+
             <View className="flex flex-row justify-between items-start">
-              <Text className="text-[#B8B8B8]">Recipient</Text>
+              <Text className="text-white/70 text-lg">Recipient</Text>
               <View className="flex-1 items-end">
-                <Text className="font-medium text-white text-right">
+                <Text className="font-semibold text-white text-right text-xl">
                   {recipient.displayName || recipient.email}
                 </Text>
                 {recipient.displayName && (
-                  <Text className="text-sm text-[#999999] text-right">{recipient.email}</Text>
+                  <Text className="text-base text-white/70 mt-2 text-right">{recipient.email}</Text>
                 )}
               </View>
             </View>
-            
+
             <View className="flex flex-row justify-between items-center">
-              <Text className="text-[#B8B8B8]">Status</Text>
-              <View className={`px-3 py-1 rounded-full ${
-                isDirect 
-                  ? 'bg-[#4A5A4A] border border-[#6B8B6B]' 
-                  : 'bg-[#5A5A4A] border border-[#8B8B6B]'
-              }`}>
-                <Text className={isDirect ? 'text-[#B8D8B8]' : 'text-[#D8D8B8]'}>
-                  {isDirect ? 'Completed' : 'Pending Claim'}
-                </Text>
+              <Text className="text-white/70 text-lg">Status</Text>
+              <View className="px-5 py-2.5 rounded-full bg-green-500/20 border border-green-500/30">
+                <Text className="text-green-400 font-semibold text-base">✓ Completed</Text>
               </View>
+            </View>
+
+            <View className="pt-6 border-t border-white/10">
+              <Text className="text-white/70 text-lg mb-3">Transaction Hash</Text>
+              <TouchableOpacity
+                onPress={handleViewOnExplorer}
+                className="flex flex-row items-center justify-between bg-[#2A2A2A] rounded-xl p-5 border border-white/10"
+              >
+                <Text className="text-white/90 text-base flex-1 mr-4" numberOfLines={1}>
+                  {txHash}
+                </Text>
+                <Text className="text-[#5CB0FF] text-base font-semibold">View ↗</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
 
-        {!isDirect && (
-          <View className="bg-[#3A3A2A] rounded-2xl p-6 border border-[#5A5A3A]">
-            <View className="flex flex-row items-start mb-2">
-              <Mail size={20} color="#D8D8B8" className="mt-0.5" />
-              <View className="flex-1 ml-3">
-                <Text className="font-medium text-[#E8E8C8] mb-1">Email Sent</Text>
-                <Text className="text-sm text-[#B8B8A8]">
-                  {recipient.email} will receive an email with instructions to claim their USDC.
-                </Text>
-              </View>
-            </View>
-          </View>
-        )}
-
-        <View className="bg-[#2A2A2A] rounded-xl p-4 border border-[#4A4A4A]">
-          <TouchableOpacity 
-            onPress={handleViewOnExplorer}
-            className="flex flex-row items-center justify-between"
+        <View className="gap-4">
+          <TouchableOpacity
+            onPress={onGoToDashboard}
+            className="w-full py-5 px-6 bg-[#3B3B3B] border border-white/30 rounded-2xl"
+            style={{
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.3,
+              shadowRadius: 8,
+              elevation: 4,
+            }}
           >
-            <View className="flex-1">
-              <Text className="text-white font-medium mb-1">Transaction Hash</Text>
-              <Text className="text-[#B8B8B8] text-xs" numberOfLines={1}>
-                {txHash}
-              </Text>
-            </View>
-            <ExternalLink size={20} color="#B8B8B8" />
+            <Text className="text-white font-semibold text-lg text-center">
+              Share Receipt
+            </Text>
           </TouchableOpacity>
-        </View>
 
-        <View className="flex flex-row gap-3">
-          <View className="flex-1">
-            <Button3D onPress={onGoToDashboard}>
-              Dashboard
-            </Button3D>
-          </View>
-          <View className="flex-1">
-            <Button3D onPress={onSendAnother}>
-              Send Again
-            </Button3D>
-          </View>
+          <TouchableOpacity
+            onPress={onSendAnother}
+            className="w-full py-5 px-6 bg-[#3B3B3B] border border-white/30 rounded-2xl"
+            style={{
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.3,
+              shadowRadius: 8,
+              elevation: 4,
+            }}
+          >
+            <Text className="text-white font-semibold text-lg text-center">
+              Send Another Payment
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
     </ScrollView>

@@ -6,7 +6,7 @@ import { AlertCircle } from 'lucide-react-native';
 import { SendButton3D } from '../ui/SendButton3D';
 import { formatUSDCWithSymbol } from '../../lib/utils';
 import { getCDPNetworkName, prepareUSDCTransferCall, prepareUSDCApprovalCall, prepareEscrowDepositCall, SmartAccountCall } from '../../lib/cdp';
-import { api } from '../../lib/api';
+import { api, createAuthenticatedApi } from '../../lib/api';
 
 interface RecipientInfo {
   email: string;
@@ -38,13 +38,14 @@ export function SendConfirmation({ transferData, currentUser, onSuccess, onBack 
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState<string>('');
-  
+
   const { recipient, amount } = transferData;
   const isDirect = recipient.transferType === 'direct';
-  
+
   const { currentUser: cdpUser } = useCurrentUser();
   const { sendUserOperation } = useSendUserOperation();
-  
+  const { getAccessToken } = useGetAccessToken();
+
   const smartAccount = cdpUser?.evmSmartAccounts?.[0];
 
   const handleConfirmSend = async () => {
@@ -141,7 +142,10 @@ export function SendConfirmation({ transferData, currentUser, onSuccess, onBack 
 
   const recordTransactionHistory = async (txHash: string, transferType: 'direct' | 'escrow', transferId?: string) => {
     try {
-      await api.post('/api/send/complete', {
+      const accessToken = await getAccessToken();
+      const authenticatedApi = createAuthenticatedApi(accessToken);
+
+      await authenticatedApi.post('/api/send/complete', {
         userId: currentUser.userId,
         txHash: txHash,
         transferType: transferType,
