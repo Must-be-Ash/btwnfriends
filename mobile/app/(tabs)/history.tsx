@@ -165,6 +165,7 @@ export default function HistoryScreen() {
               <TransactionItem transaction={item} />
             </View>
           )}
+          contentContainerStyle={{ paddingBottom: 128 }}
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}

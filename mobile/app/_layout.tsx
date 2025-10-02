@@ -18,12 +18,12 @@ export default function RootLayout() {
         <Stack.Screen name="index" />
         <Stack.Screen name="auth" />
         <Stack.Screen name="(tabs)" />
-        <Stack.Screen 
-          name="scan" 
+        <Stack.Screen
+          name="scan"
           options={{
             headerShown: true,
             title: 'Scan QR Code',
-            presentation: 'modal',
+            presentation: 'fullScreenModal',
           }}
         />
         <Stack.Screen 

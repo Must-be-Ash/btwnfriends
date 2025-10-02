@@ -103,7 +103,7 @@ export default function SendScreen() {
   return (
     <View className="flex-1 bg-[#222222]">
       <ScrollView className="flex-1">
-        <View className="px-4 pt-10 pb-6">
+        <View className="px-4 pt-10 pb-32">
           <View className="max-w-md mx-auto space-y-6">
             {currentStep !== 'confirmation' && (
               <View className="flex flex-row items-center justify-between mb-8">

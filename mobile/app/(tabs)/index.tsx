@@ -84,7 +84,7 @@ export default function HomeScreen() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        <View className="px-4 pt-8 pb-8 gap-4">
+        <View className="px-4 pt-8 pb-32 gap-4">
         <BalanceCard
           balance={balance}
           isLoading={isLoadingBalance}

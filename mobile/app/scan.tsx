@@ -114,7 +114,7 @@ export default function ScanScreen() {
 
   const handleScannerClose = useCallback(() => {
     console.log('📱 Scanner closed, redirecting to dashboard');
-    router.push('/(tabs)');
+    router.back();
   }, [router]);
 
   const handleRetry = useCallback(() => {
