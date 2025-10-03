@@ -1,0 +1,15 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "f1fdaff4-7e61-4147-82cb-bcbca97db8f9"
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "com.mustbeash.betweenfriends",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    }
+  }
+}
