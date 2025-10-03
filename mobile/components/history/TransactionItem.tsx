@@ -1,6 +1,5 @@
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity , Linking } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
-import { Linking } from 'react-native';
 import { useState } from 'react';
 import { formatUSDCWithSymbol } from '../../lib/utils';
 import { getBlockExplorerUrl } from '../../lib/cdp';

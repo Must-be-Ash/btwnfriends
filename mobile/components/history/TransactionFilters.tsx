@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { Text, ScrollView, TouchableOpacity } from 'react-native';
 
 type FilterType = 'all' | 'sent' | 'received' | 'pending';
 type FilterStatus = 'all' | 'confirmed' | 'pending' | 'failed';

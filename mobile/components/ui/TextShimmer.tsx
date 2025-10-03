@@ -1,4 +1,4 @@
-import { Text, Animated, StyleSheet } from 'react-native';
+import { Animated } from 'react-native';
 import { useEffect, useRef } from 'react';
 import { cn } from '../../lib/utils';
 

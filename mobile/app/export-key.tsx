@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, TextInput, ScrollView, Alert, AppState, A
 import { useRouter } from 'expo-router';
 import { useCurrentUser, useExportEvmAccount } from '@coinbase/cdp-hooks';
 import * as Clipboard from 'expo-clipboard';
-import { ArrowLeft, AlertTriangle, Copy, CheckCircle, Shield, Trash2 } from 'lucide-react-native';
+import { ArrowLeft, AlertTriangle, Copy, CheckCircle } from 'lucide-react-native';
 import { LoadingScreen } from '../components/ui/LoadingScreen';
 import { biometricAuth } from '../lib/biometric-auth';
 
@@ -112,7 +112,7 @@ export default function ExportKeyScreen() {
         } catch (err) {
           console.warn('Failed to auto-clear clipboard:', err);
         }
-      }, CLIPBOARD_AUTO_CLEAR_SECONDS * 1000);
+      }, CLIPBOARD_AUTO_CLEAR_SECONDS * 1000) as unknown as NodeJS.Timeout;
 
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {

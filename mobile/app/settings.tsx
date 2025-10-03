@@ -6,9 +6,6 @@ import * as Clipboard from 'expo-clipboard';
 import Constants from 'expo-constants';
 import {
   ArrowLeft,
-  User,
-  Mail,
-  Wallet,
   Shield,
   Key,
   Info,

@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 import { Home, Send, QrCode, History } from 'lucide-react-native';
-import { View, Platform } from 'react-native';
+import { View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 export default function TabsLayout() {
@@ -35,19 +35,6 @@ export default function TabsLayout() {
           shadowRadius: 12,
           elevation: 16,
         },
-        tabBarIcon: ({ color, size, focused }) => ({ icon: Icon }) => (
-          <View
-            style={{
-              padding: 12,
-              borderRadius: 12,
-              borderWidth: 1,
-              borderColor: focused ? '#404040' : 'transparent',
-              backgroundColor: focused ? '#030303' : 'transparent',
-            }}
-          >
-            <Icon size={size} color={color} />
-          </View>
-        ),
       }}
     >
       <Tabs.Screen

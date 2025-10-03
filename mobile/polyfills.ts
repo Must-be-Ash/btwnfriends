@@ -1,3 +1,4 @@
+// @ts-ignore - no types available for @ungap/structured-clone
 import structuredClone from "@ungap/structured-clone";
 import { install } from "react-native-quick-crypto";
 import "react-native-get-random-values";

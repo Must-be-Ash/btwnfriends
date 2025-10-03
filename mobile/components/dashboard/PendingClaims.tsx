@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { useState, useEffect, useCallback } from 'react';
 import * as Clipboard from 'expo-clipboard';
 import { AlertTriangle } from 'lucide-react-native';

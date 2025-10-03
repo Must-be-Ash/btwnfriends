@@ -170,7 +170,7 @@ export function ContactSearch({
                 <Plus size={24} color="white" />
               </View>
               <View className="flex-1">
-                <Text className="font-medium text-white">Add "{query}"</Text>
+                <Text className="font-medium text-white">Add &quot;{query}&quot;</Text>
                 <Text className="text-sm text-white/70">Add as new contact</Text>
               </View>
             </TouchableOpacity>

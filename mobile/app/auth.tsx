@@ -88,7 +88,7 @@ export default function AuthScreen() {
               <Text className="text-[#5CB0FF] italic" style={{ fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif' }}>
                 Pal
               </Text>
-              <Text className="text-[#B8B8B8]"> shouldn't be taxing you</Text>
+              <Text className="text-[#B8B8B8]"> shouldn&apos;t be taxing you</Text>
             </View>
           </View>
 
@@ -260,7 +260,7 @@ export default function AuthScreen() {
 
                 <View>
                   <Text className="text-sm text-[#999999] text-center">
-                    Didn't receive the code?{' '}
+                    Didn&apos;t receive the code?{' '}
                     <Text
                       className="text-[#B8B8B8] font-medium"
                       onPress={() => !loading && setStep('email')}

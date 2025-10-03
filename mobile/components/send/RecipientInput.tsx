@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, ActivityIndicator } from 'react-native';
 import { AlertCircle } from 'lucide-react-native';
 import { AmountInput } from './AmountInput';
 import { ContactSearch } from '../contacts/ContactSearch';

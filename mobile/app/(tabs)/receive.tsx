@@ -12,18 +12,7 @@ export default function ReceiveScreen() {
   const [amount, setAmount] = useState('');
   const [copiedAddress, setCopiedAddress] = useState(false);
 
-  if (!evmAddress?.evmAddress) {
-    return <LoadingScreen message="Loading wallet..." />;
-  }
-
-  const walletAddress = evmAddress.evmAddress;
-
-  const handleAmountChange = (value: string) => {
-    const regex = /^\d*\.?\d{0,6}$/;
-    if (value === '' || regex.test(value)) {
-      setAmount(value);
-    }
-  };
+  const walletAddress = evmAddress?.evmAddress || '';
 
   // Generate web URL that updates reactively when amount changes
   // This works for both camera scanning AND in-app scanning
@@ -35,6 +24,17 @@ export default function ReceiveScreen() {
 
     return `${baseUrl}/pay?${params.toString()}`;
   }, [walletAddress, amount]);
+
+  if (!evmAddress?.evmAddress) {
+    return <LoadingScreen message="Loading wallet..." />;
+  }
+
+  const handleAmountChange = (value: string) => {
+    const regex = /^\d*\.?\d{0,6}$/;
+    if (value === '' || regex.test(value)) {
+      setAmount(value);
+    }
+  };
 
   const handleCopyAddress = async () => {
     try {

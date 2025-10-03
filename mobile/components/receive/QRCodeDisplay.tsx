@@ -106,7 +106,7 @@ export function QRCodeDisplay({ walletAddress, amount, message }: QRCodeDisplayP
           {message && (
             <View className="bg-[#3A3A4A] rounded-lg p-3 mt-4 w-full">
               <Text className="text-[#D8D8D8] text-sm font-medium">Message:</Text>
-              <Text className="text-[#B8B8B8] text-sm italic mt-1">"{message}"</Text>
+              <Text className="text-[#B8B8B8] text-sm italic mt-1">&quot;{message}&quot;</Text>
             </View>
           )}
         </View>

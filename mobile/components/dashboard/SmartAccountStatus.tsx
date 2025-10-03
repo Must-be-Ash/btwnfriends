@@ -1,6 +1,6 @@
 import { View, Text } from 'react-native';
 import { useCurrentUser } from '@coinbase/cdp-hooks';
-import { Shield, Wallet, Zap, Globe } from 'lucide-react-native';
+import { Wallet, Globe } from 'lucide-react-native';
 
 // Simplified version - mobile app will use the same hook logic as web
 export function SmartAccountStatus() {

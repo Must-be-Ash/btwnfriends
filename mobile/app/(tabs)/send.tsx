@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect , useCallback, useRef } from 'react';
 import { View, ScrollView, TouchableOpacity, Text } from 'react-native';
 import { useCurrentUser, useEvmAddress } from '@coinbase/cdp-hooks';
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { ArrowLeft } from 'lucide-react-native';
-import { useCallback } from 'react';
 import { RecipientInput } from '../../components/send/RecipientInput';
 import { SendConfirmation } from '../../components/send/SendConfirmation';
 import { SendSuccess } from '../../components/send/SendSuccess';
@@ -38,6 +37,7 @@ export default function SendScreen() {
   const { currentUser } = useCurrentUser();
   const evmAddress = useEvmAddress();
   const router = useRouter();
+  const hasResetRef = useRef(false);
 
   const contactEmail = Array.isArray(params.contactEmail) ? params.contactEmail[0] : params.contactEmail;
   const displayName = Array.isArray(params.displayName) ? params.displayName[0] : params.displayName;
@@ -98,14 +98,18 @@ export default function SendScreen() {
       fetchBalance();
 
       // Reset to initial state after successful send
-      if (currentStep === 'success') {
+      if (currentStep === 'success' && !hasResetRef.current) {
+        hasResetRef.current = true;
         setCurrentStep('input');
         setRecipientInputStep('select_contact');
         setPendingTransferData(null);
         setTxHash('');
+      } else if (currentStep !== 'success') {
+        // Reset the flag when not on success screen
+        hasResetRef.current = false;
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [currentStep])
   );
 
   const handleTopBackButton = () => {
