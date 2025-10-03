@@ -37,7 +37,7 @@ export default function SendScreen() {
   const { currentUser } = useCurrentUser();
   const evmAddress = useEvmAddress();
   const router = useRouter();
-  const hasResetRef = useRef(false);
+  const currentStepRef = useRef<CurrentStep>('input');
 
   const contactEmail = Array.isArray(params.contactEmail) ? params.contactEmail[0] : params.contactEmail;
   const displayName = Array.isArray(params.displayName) ? params.displayName[0] : params.displayName;
@@ -92,24 +92,26 @@ export default function SendScreen() {
     fetchBalance();
   }, [evmAddress?.evmAddress]);
 
+  // Keep ref in sync with currentStep
+  useEffect(() => {
+    currentStepRef.current = currentStep;
+  }, [currentStep]);
+
   useFocusEffect(
     useCallback(() => {
       // Refresh balance when screen is focused
       fetchBalance();
 
-      // Reset to initial state after successful send
-      if (currentStep === 'success' && !hasResetRef.current) {
-        hasResetRef.current = true;
+      // Reset to initial state after successful send when returning to screen
+      // Read from ref to get latest value without adding to dependencies
+      if (currentStepRef.current === 'success') {
         setCurrentStep('input');
         setRecipientInputStep('select_contact');
         setPendingTransferData(null);
         setTxHash('');
-      } else if (currentStep !== 'success') {
-        // Reset the flag when not on success screen
-        hasResetRef.current = false;
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentStep])
+    }, [])
   );
 
   const handleTopBackButton = () => {
@@ -125,7 +127,7 @@ export default function SendScreen() {
     <View className="flex-1 bg-[#222222]">
       <ScrollView className="flex-1">
         <View className="px-4 pt-16 pb-32">
-          {currentStep !== 'confirmation' && (
+          {currentStep === 'input' && (
             <TouchableOpacity
               onPress={handleTopBackButton}
               className="flex flex-row items-center gap-2 mb-12"
