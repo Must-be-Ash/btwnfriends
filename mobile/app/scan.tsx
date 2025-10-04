@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { useCurrentUser } from '@coinbase/cdp-hooks';
 import { QRScanner } from '../components/scanner/QRScanner';
 import { LoadingScreen } from '../components/ui/LoadingScreen';
-import { api } from '../lib/api';
+import { useApi } from '../lib/use-api';
 import { AlertTriangle } from 'lucide-react-native';
 
 interface QRScanResult {
@@ -29,6 +29,7 @@ interface UserLookupResult {
 export default function ScanScreen() {
   const router = useRouter();
   const { currentUser } = useCurrentUser();
+  const { api, isReady: isApiReady } = useApi();
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,6 +38,8 @@ export default function ScanScreen() {
       console.log('🔍 Looking up user by wallet address:', walletAddress);
 
       const response = await api.get(`/api/users/lookup-by-address?address=${encodeURIComponent(walletAddress)}`);
+
+      console.log('📦 API Response:', response.data);
 
       if (response.data.success) {
         return response.data;
@@ -53,10 +56,16 @@ export default function ScanScreen() {
         message: 'Failed to lookup user information'
       };
     }
-  }, []);
+  }, [api]);
 
   const handleScanSuccess = useCallback(async (result: QRScanResult) => {
     console.log('🎯 QR Scan successful:', result);
+
+    if (!isApiReady) {
+      console.warn('⚠️ API not ready, ignoring scan');
+      return;
+    }
+
     setIsProcessing(true);
     setError(null);
 
@@ -78,8 +87,6 @@ export default function ScanScreen() {
       }
 
       if (userLookup.user) {
-        console.log('✅ Redirecting to send page with user:', userLookup.user.email);
-        
         const params: Record<string, string> = {
           contactEmail: userLookup.user.email,
           displayName: userLookup.user.displayName
@@ -93,8 +100,11 @@ export default function ScanScreen() {
           params.message = message;
         }
 
-        router.push({
-          pathname: '/(tabs)/send',
+        console.log('✅ User found! Navigating to send page with params:', params);
+
+        // Use replace for cleaner navigation from scanner
+        router.replace({
+          pathname: '/send',
           params
         });
       } else {
@@ -110,7 +120,7 @@ export default function ScanScreen() {
     } finally {
       setIsProcessing(false);
     }
-  }, [router, lookupUserByWalletAddress]);
+  }, [router, lookupUserByWalletAddress, isApiReady]);
 
   const handleScannerClose = useCallback(() => {
     console.log('📱 Scanner closed, redirecting to dashboard');
@@ -125,6 +135,10 @@ export default function ScanScreen() {
   if (!currentUser) {
     router.push('/(tabs)');
     return <LoadingScreen message="Redirecting..." />;
+  }
+
+  if (!isApiReady) {
+    return <LoadingScreen message="Initializing scanner..." />;
   }
 
   if (error) {
