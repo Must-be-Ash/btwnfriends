@@ -64,7 +64,7 @@
         "origin": false
       },
       "cdpProjectId": "f37a551c-90fb-41e4-ad9e-b10da2d0a73c",
-      "apiUrl": "http://localhost:3000",
+      "apiUrl": "https://btwnfriends.com",
       "eas": {
         "projectId": "0adc0cca-4c4a-4b31-bfcb-93791bb6d56e"
       }
