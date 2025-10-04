@@ -162,7 +162,11 @@ export function AccountInfoWithAvatar({
         <View>
           <View className="flex-row items-center justify-between mb-1">
             <Text className="text-sm text-white/70">Wallet Address</Text>
-            <TouchableOpacity onPress={handleCopyAddress} className="active:opacity-70">
+            <TouchableOpacity
+              onPress={handleCopyAddress}
+              className="active:opacity-70"
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
               {copiedAddress ? (
                 <View className="flex-row items-center">
                   <Check size={14} color="#4ADE80" />
