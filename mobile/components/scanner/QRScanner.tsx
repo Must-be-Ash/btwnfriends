@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, ActivityIndicator } from 'react-native';
 import { CameraView, Camera, BarcodeScanningResult } from 'expo-camera';
 import { X } from 'lucide-react-native';
 
@@ -14,11 +14,12 @@ interface QRScanResult {
 interface QRScannerProps {
   onScanSuccess: (result: QRScanResult) => void;
   onClose: () => void;
+  isProcessing?: boolean;
 }
 
 const { width, height } = Dimensions.get('window');
 
-export function QRScanner({ onScanSuccess, onClose }: QRScannerProps) {
+export function QRScanner({ onScanSuccess, onClose, isProcessing = false }: QRScannerProps) {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [lastScanTime, setLastScanTime] = useState(0);
 
@@ -161,6 +162,19 @@ export function QRScanner({ onScanSuccess, onClose }: QRScannerProps) {
           </Text>
         </View>
       </View>
+
+      {/* Processing Overlay */}
+      {isProcessing && (
+        <View
+          style={StyleSheet.absoluteFillObject}
+          className="bg-black/70 items-center justify-center z-30"
+        >
+          <View className="bg-[#2A2A2A]/95 border border-[#4A4A4A] rounded-3xl p-8 items-center">
+            <ActivityIndicator size="large" color="#B8B8B8" className="mb-4" />
+            <Text className="text-white text-lg font-semibold">Processing QR Code...</Text>
+          </View>
+        </View>
+      )}
     </View>
   );
 }

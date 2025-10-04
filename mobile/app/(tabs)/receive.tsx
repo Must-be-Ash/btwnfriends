@@ -1,13 +1,16 @@
 import { useState, useMemo } from 'react';
 import { View, Text, TextInput, ScrollView, TouchableOpacity, Share, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { useEvmAddress } from '@coinbase/cdp-hooks';
+import { ScanLine } from 'lucide-react-native';
 import { LoadingScreen } from '../../components/ui/LoadingScreen';
 import QRCode from 'react-native-qrcode-svg';
 import * as Clipboard from 'expo-clipboard';
 import { formatUSDCWithSymbol, formatAddress } from '../../lib/utils';
 
 export default function ReceiveScreen() {
+  const router = useRouter();
   const evmAddress = useEvmAddress();
   const [amount, setAmount] = useState('');
   const [copiedAddress, setCopiedAddress] = useState(false);
@@ -61,6 +64,10 @@ export default function ReceiveScreen() {
     } catch (error) {
       console.error('Error sharing:', error);
     }
+  };
+
+  const handleOpenScanner = () => {
+    router.push('/scan');
   };
 
   return (
@@ -122,10 +129,21 @@ export default function ReceiveScreen() {
           {/* Share Button */}
           <TouchableOpacity
             onPress={handleShare}
-            className="bg-[#5CB0FF] rounded-2xl p-4 shadow-lg"
+            className="bg-[#5CB0FF] rounded-2xl p-4 shadow-lg mb-3"
           >
             <Text className="text-white text-center font-semibold text-lg">
               Share Payment Request
+            </Text>
+          </TouchableOpacity>
+
+          {/* Scan QR Code Button */}
+          <TouchableOpacity
+            onPress={handleOpenScanner}
+            className="bg-[#3B3B3B] rounded-2xl p-4 shadow-lg flex-row items-center justify-center gap-2 border border-white/30"
+          >
+            <ScanLine size={20} color="#FFFFFF" />
+            <Text className="text-white text-center font-semibold text-lg">
+              Scan QR Code
             </Text>
           </TouchableOpacity>
         </View>

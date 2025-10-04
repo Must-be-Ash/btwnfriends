@@ -127,10 +127,6 @@ export default function ScanScreen() {
     return <LoadingScreen message="Redirecting..." />;
   }
 
-  if (isProcessing) {
-    return <LoadingScreen message="Processing QR code..." />;
-  }
-
   if (error) {
     return (
       <View className="flex-1 bg-[#222222] items-center justify-center p-4">
@@ -174,6 +170,7 @@ export default function ScanScreen() {
     <QRScanner
       onScanSuccess={handleScanSuccess}
       onClose={handleScannerClose}
+      isProcessing={isProcessing}
     />
   );
 }
