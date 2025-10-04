@@ -14,16 +14,17 @@ export const CONTRACT_ADDRESSES = {
 export const CURRENT_NETWORK = (() => {
   const configuredChainId = process.env.EXPO_PUBLIC_BASE_CHAIN_ID;
   const configuredRpcUrl = process.env.EXPO_PUBLIC_BASE_RPC_URL;
-  
+
   if (configuredChainId) {
     return parseInt(configuredChainId);
   }
-  
+
   if (configuredRpcUrl?.includes('sepolia')) {
     return 84532;
   }
-  
-  return __DEV__ ? 84532 : 8453;
+
+  // Always use Base Sepolia (testnet) for now
+  return 84532;
 })();
 
 export function getCDPNetworkName(chainId?: number): 'base' | 'base-sepolia' {
