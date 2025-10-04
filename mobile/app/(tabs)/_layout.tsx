@@ -12,7 +12,7 @@ export default function TabsLayout() {
         tabBarInactiveTintColor: '#808080',
         tabBarShowLabel: false,
         tabBarBackground: () => (
-          <View style={{ flex: 1, backgroundColor: '#222222', borderTopLeftRadius: 20, borderTopRightRadius: 20 }}>
+          <View style={{ flex: 1, backgroundColor: '#222222', borderTopLeftRadius: 20, borderTopRightRadius: 20, marginBottom: -10 }}>
             <LinearGradient
               colors={['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0.2)', 'rgba(255, 255, 255, 0.6)', 'rgba(255, 255, 255, 0.2)', 'rgba(255, 255, 255, 0)']}
               start={{ x: 0, y: 0 }}
@@ -26,9 +26,10 @@ export default function TabsLayout() {
           backgroundColor: 'transparent',
           borderTopWidth: 0,
           height: 88,
-          paddingBottom: 24,
-          paddingTop: 16,
+          paddingBottom: 40,
+          paddingTop: 20,
           position: 'absolute',
+          bottom: 10,
           shadowColor: '#000',
           shadowOffset: { width: 0, height: -8 },
           shadowOpacity: 0.5,

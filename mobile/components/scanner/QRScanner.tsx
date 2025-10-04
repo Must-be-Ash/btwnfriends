@@ -20,7 +20,7 @@ const { width, height } = Dimensions.get('window');
 
 export function QRScanner({ onScanSuccess, onClose }: QRScannerProps) {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-  const [isScanning, setIsScanning] = useState(true);
+  const [lastScanTime, setLastScanTime] = useState(0);
 
   useEffect(() => {
     requestCameraPermission();
@@ -64,10 +64,15 @@ export function QRScanner({ onScanSuccess, onClose }: QRScannerProps) {
   };
 
   const handleBarCodeScanned = ({ data }: BarcodeScanningResult) => {
-    if (!isScanning) return;
+    const now = Date.now();
+    // Cooldown: Only process scans if 2 seconds have passed since last scan
+    if (now - lastScanTime < 2000) {
+      console.log('⏱️ Scan cooldown active, ignoring duplicate scan');
+      return;
+    }
 
     console.log('📷 QR Code scanned:', data);
-    setIsScanning(false);
+    setLastScanTime(now);
 
     const parsedData = parseQRData(data);
     onScanSuccess(parsedData);
@@ -108,7 +113,7 @@ export function QRScanner({ onScanSuccess, onClose }: QRScannerProps) {
         barcodeScannerSettings={{
           barcodeTypes: ['qr'],
         }}
-        onBarcodeScanned={isScanning ? handleBarCodeScanned : undefined}
+        onBarcodeScanned={handleBarCodeScanned}
       />
 
       {/* Overlay with scanning frame */}
