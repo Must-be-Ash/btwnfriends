@@ -81,7 +81,7 @@ export function PendingClaims({ userId }: PendingClaimsProps) {
   };
 
   const handleCopyLink = async (transferId: string) => {
-    const baseUrl = process.env.EXPO_PUBLIC_WEB_URL || 'https://between-friends.replit.app';
+    const baseUrl = process.env.EXPO_PUBLIC_WEB_URL || 'https://btwnfriends.com/';
     const claimUrl = `${baseUrl}/claim?id=${transferId}`;
     
     await Clipboard.setStringAsync(claimUrl);
