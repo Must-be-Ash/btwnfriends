@@ -498,7 +498,7 @@ npm run dev -- -p 3000
 
 ---
 
-## 🚀 Get Started Now
+## 🚀 Get Started Now!
 
 
 ### ⚡ 2-Minute Setup Challenge ⚡
