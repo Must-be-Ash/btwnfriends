@@ -1,23 +1,32 @@
+import '../polyfills'; // Import polyfills first, before any other code
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { CDPProvider } from '../components/providers/CDPProvider';
+import { ErrorBoundary } from '../components/ErrorBoundary';
 import '../global.css';
 
+console.log('[App] ====== App Starting ======');
+console.log('[App] Polyfills loaded');
+console.log('[App] Environment:', __DEV__ ? 'Development' : 'Production');
+
 export default function RootLayout() {
+  console.log('[App] RootLayout rendering...');
+
   return (
-    <SafeAreaProvider>
-      <CDPProvider>
-        <StatusBar style="auto" />
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: { backgroundColor: '#fff' },
-          }}
-        >
-        <Stack.Screen name="index" />
-        <Stack.Screen name="auth" />
-        <Stack.Screen name="(tabs)" />
+    <ErrorBoundary>
+      <SafeAreaProvider>
+        <CDPProvider>
+          <StatusBar style="auto" />
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              contentStyle: { backgroundColor: '#fff' },
+            }}
+          >
+          <Stack.Screen name="index" />
+          <Stack.Screen name="auth" />
+          <Stack.Screen name="(tabs)" />
         <Stack.Screen
           name="scan"
           options={{
@@ -60,8 +69,9 @@ export default function RootLayout() {
             title: 'Terms of Service',
           }}
         />
-      </Stack>
-      </CDPProvider>
-    </SafeAreaProvider>
+        </Stack>
+        </CDPProvider>
+      </SafeAreaProvider>
+    </ErrorBoundary>
   );
 }
