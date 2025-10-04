@@ -126,7 +126,7 @@ export default function SendScreen() {
   return (
     <View className="flex-1 bg-[#222222]">
       <ScrollView className="flex-1">
-        <View className="px-4 pt-16 pb-32">
+        <View className="px-4 pt-16 pb-40">
           {currentStep === 'input' && (
             <TouchableOpacity
               onPress={handleTopBackButton}

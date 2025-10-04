@@ -66,7 +66,7 @@ export default function ReceiveScreen() {
   return (
     <SafeAreaView className="flex-1 bg-[#222222]" edges={['top']}>
       <ScrollView className="flex-1">
-        <View className="px-4 pt-8 pb-32">
+        <View className="px-4 pt-8 pb-40">
           {/* Amount Input */}
           <View className="bg-[#3B3B3B] rounded-2xl p-6 border border-white/30 shadow-2xl mb-4">
             <Text className="text-lg font-semibold text-white mb-4">Request Amount</Text>

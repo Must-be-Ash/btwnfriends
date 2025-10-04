@@ -76,7 +76,7 @@ export default function ContactsScreen() {
     <SafeAreaView className="flex-1 bg-[#222222]" edges={['top']}>
       <ScrollView
         className="flex-1"
-        contentContainerStyle={{ paddingBottom: 128 }}
+        contentContainerStyle={{ paddingBottom: 160 }}
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
