@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Between Friends",
-    "slug": "between-friends",
+    "slug": "btwn-friends",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,11 +15,12 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.betweenfriends.app",
+      "bundleIdentifier": "com.mustbeash.betweenfriends",
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to scan QR codes for payments.",
         "NSPhotoLibraryUsageDescription": "This app needs access to your photos to select QR codes.",
-        "NSFaceIDUsageDescription": "Use Face ID to securely access your wallet."
+        "NSFaceIDUsageDescription": "Use Face ID to securely access your wallet.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -31,7 +32,8 @@
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.USE_BIOMETRIC",
-        "android.permission.USE_FINGERPRINT"
+        "android.permission.USE_FINGERPRINT",
+        "android.permission.RECORD_AUDIO"
       ],
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
@@ -61,11 +63,12 @@
       "router": {
         "origin": false
       },
-      "eas": {
-        "projectId": "your-eas-project-id"
-      },
       "cdpProjectId": "f37a551c-90fb-41e4-ad9e-b10da2d0a73c",
-      "apiUrl": "http://localhost:3000"
-    }
+      "apiUrl": "http://localhost:3000",
+      "eas": {
+        "projectId": "0adc0cca-4c4a-4b31-bfcb-93791bb6d56e"
+      }
+    },
+    "owner": "must_be_ash"
   }
 }
