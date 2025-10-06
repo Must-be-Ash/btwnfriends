@@ -168,7 +168,7 @@ export function ContactSearch({
               <h4 className="text-sm font-medium text-white/70 mb-3">
                 {query ? 'Search Results' : 'Your Contacts'}
               </h4>
-              <div className="space-y-2 max-h-60 overflow-y-auto">
+              <div className="space-y-2 max-h-80 overflow-y-auto">
                 <ContactList
                   contacts={displayContacts}
                   onContactSelect={handleContactSelect}
