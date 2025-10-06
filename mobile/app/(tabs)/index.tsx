@@ -42,13 +42,29 @@ export default function HomeScreen() {
   }, [evmAddress?.evmAddress]);
 
   const fetchUserProfile = useCallback(async () => {
-    if (!currentUser?.userId || !isApiReady) return;
+    if (!currentUser?.userId || !isApiReady) {
+      console.log('[Home] Cannot fetch profile:', { hasUserId: !!currentUser?.userId, isApiReady });
+      return;
+    }
 
     try {
+      console.log('[Home] Fetching user profile for userId:', currentUser.userId);
       const response = await api.get(`/api/users?userId=${encodeURIComponent(currentUser.userId)}`);
+
+      console.log('[Home] User profile response:', {
+        status: response.status,
+        hasUser: !!response.data?.user,
+        userData: response.data?.user,
+        fullResponseData: response.data
+      });
+
       setUser(response.data?.user || null);
     } catch (error) {
-      console.error('Error fetching user profile:', error);
+      console.error('[Home] Error fetching user profile:', error);
+      console.error('[Home] Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        name: error instanceof Error ? error.name : 'Unknown'
+      });
       setUser(null);
     }
   }, [currentUser?.userId, api, isApiReady]);

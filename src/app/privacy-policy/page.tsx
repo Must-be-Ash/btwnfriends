@@ -15,7 +15,7 @@ export default function PrivacyPolicy() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-white mb-4">1. Introduction</h2>
               <p className="text-gray-300 leading-relaxed">
-                Between Friends ("we," "our," or "us") is a peer-to-peer payment application that enables users to send and receive USDC (USD Coin) payments using email addresses. This Privacy Policy explains how we collect, use, and protect your information when you use our service.
+                Between Friends (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is a peer-to-peer payment application that enables users to send and receive USDC (USD Coin) payments using email addresses. This Privacy Policy explains how we collect, use, and protect your information when you use our service.
               </p>
             </section>
 
@@ -101,7 +101,7 @@ export default function PrivacyPolicy() {
               </p>
               <ul className="list-disc pl-6 text-gray-300 space-y-2">
                 <li>End-to-end encryption for sensitive data</li>
-                <li>Secure authentication through Coinbase's infrastructure</li>
+                <li>Secure authentication through Coinbase&apos;s infrastructure</li>
                 <li>Regular security audits and monitoring</li>
                 <li>Access controls and employee training</li>
                 <li>Secure cloud storage with encryption at rest</li>
@@ -137,7 +137,7 @@ export default function PrivacyPolicy() {
             </section>
 
             <section className="mb-8">
-              <h2 className="text-2xl font-semibold text-white mb-4">9. Children's Privacy</h2>
+              <h2 className="text-2xl font-semibold text-white mb-4">9. Children&apos;s Privacy</h2>
               <p className="text-gray-300 leading-relaxed">
                 Our service is not intended for users under 18 years of age. We do not knowingly collect personal information from children under 18. If you become aware that a child has provided us with personal information, please contact us immediately.
               </p>
@@ -146,7 +146,7 @@ export default function PrivacyPolicy() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-white mb-4">10. Changes to This Policy</h2>
               <p className="text-gray-300 leading-relaxed">
-                We may update this Privacy Policy from time to time. We will notify you of any material changes by posting the new Privacy Policy on this page and updating the "Last updated" date. Your continued use of our service after any changes constitutes acceptance of the updated policy.
+                We may update this Privacy Policy from time to time. We will notify you of any material changes by posting the new Privacy Policy on this page and updating the &quot;Last updated&quot; date. Your continued use of our service after any changes constitutes acceptance of the updated policy.
               </p>
             </section>
 
@@ -159,7 +159,7 @@ export default function PrivacyPolicy() {
                 <p className="text-gray-300">
                   <strong>Email:</strong> info@btwnfriends.com<br/>
                   <strong>Website:</strong> btwnfriends.com<br/>
-                  <strong>Support:</strong> Available through our app's help section
+                  <strong>Support:</strong> Available through our app&apos;s help section
                 </p>
               </div>
             </section>

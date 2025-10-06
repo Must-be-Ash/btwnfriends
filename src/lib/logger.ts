@@ -11,7 +11,7 @@ export const logger = {
   /**
    * Info-level logs - suppressed in production to prevent PII exposure
    */
-  info: (...args: any[]) => {
+  info: (...args: unknown[]) => {
     if (!isProduction) {
       console.log(...args)
     }
@@ -20,7 +20,7 @@ export const logger = {
   /**
    * Warning-level logs - suppressed in production to prevent PII exposure
    */
-  warn: (...args: any[]) => {
+  warn: (...args: unknown[]) => {
     if (!isProduction) {
       console.warn(...args)
     }
@@ -30,14 +30,14 @@ export const logger = {
    * Error-level logs - always logged as errors need visibility
    * Be cautious not to include PII in error messages
    */
-  error: (...args: any[]) => {
+  error: (...args: unknown[]) => {
     console.error(...args)
   },
 
   /**
    * Debug-level logs - suppressed in production
    */
-  debug: (...args: any[]) => {
+  debug: (...args: unknown[]) => {
     if (!isProduction) {
       console.log(...args)
     }

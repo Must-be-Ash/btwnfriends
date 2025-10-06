@@ -26,7 +26,7 @@ export function TestnetWarningModal({ onClose }: TestnetWarningModalProps) {
               This app runs on <span className="text-white font-medium">Sepolia</span> and uses <span className="text-white font-medium">testnet USDC</span>.
             </p>
             <p>
-              It does <span className="text-white font-medium">not handle real funds</span> and is for demonstration purposes only, showcasing CDP's embedded wallets and stablecoin payments.
+              It does <span className="text-white font-medium">not handle real funds</span> and is for demonstration purposes only, showcasing CDP&apos;s embedded wallets and stablecoin payments.
             </p>
           </div>
 

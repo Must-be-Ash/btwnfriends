@@ -22,6 +22,7 @@ export function useApi(): { api: AxiosInstance; isReady: boolean } {
   // Fetch access token when user signs in
   useEffect(() => {
     if (!isSignedIn) {
+      console.log('[useApi] User not signed in, clearing token');
       setAccessToken(null);
       setIsReady(false);
       return;
@@ -29,11 +30,20 @@ export function useApi(): { api: AxiosInstance; isReady: boolean } {
 
     const fetchToken = async () => {
       try {
+        console.log('[useApi] Fetching access token...');
         const token = await getAccessToken();
-        setAccessToken(token);
-        setIsReady(true);
+
+        if (token) {
+          console.log('[useApi] ✓ Access token received:', token.substring(0, 20) + '...');
+          setAccessToken(token);
+          setIsReady(true);
+        } else {
+          console.warn('[useApi] ⚠️ No access token returned from CDP');
+          setAccessToken(null);
+          setIsReady(false);
+        }
       } catch (error) {
-        console.error('Failed to get access token:', error);
+        console.error('[useApi] ❌ Failed to get access token:', error);
         setAccessToken(null);
         setIsReady(false);
       }

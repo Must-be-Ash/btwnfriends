@@ -64,9 +64,19 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response) {
-      console.error('API Error:', error.response.data);
+      console.error('[API] Response Error:', {
+        status: error.response.status,
+        statusText: error.response.statusText,
+        data: error.response.data,
+        url: error.config?.url
+      });
     } else if (error.request) {
-      console.error('Network Error:', error.message);
+      console.error('[API] Network Error:', {
+        message: error.message,
+        url: error.config?.url
+      });
+    } else {
+      console.error('[API] Unknown Error:', error.message);
     }
     return Promise.reject(error);
   }
@@ -86,14 +96,49 @@ export function createAuthenticatedApi(accessToken: string | null) {
     },
   });
 
-  // Add error handling
+  // Add request logging
+  authenticatedApi.interceptors.request.use(
+    (config) => {
+      console.log('[API Request]', {
+        method: config.method?.toUpperCase(),
+        url: config.url,
+        hasAuth: !!config.headers?.Authorization,
+        authPrefix: config.headers?.Authorization ? String(config.headers.Authorization).substring(0, 20) + '...' : 'NONE'
+      });
+      return config;
+    },
+    (error) => {
+      console.error('[API Request Error]:', error);
+      return Promise.reject(error);
+    }
+  );
+
+  // Add response/error handling
   authenticatedApi.interceptors.response.use(
-    (response) => response,
+    (response) => {
+      console.log('[API Response]', {
+        status: response.status,
+        url: response.config.url,
+        hasData: !!response.data
+      });
+      return response;
+    },
     async (error) => {
       if (error.response) {
-        console.error('API Error:', error.response.data);
+        console.error('[API] Authenticated Error:', {
+          status: error.response.status,
+          statusText: error.response.statusText,
+          data: error.response.data,
+          url: error.config?.url,
+          hadAuth: !!error.config?.headers?.Authorization
+        });
       } else if (error.request) {
-        console.error('Network Error:', error.message);
+        console.error('[API] Authenticated Network Error:', {
+          message: error.message,
+          url: error.config?.url
+        });
+      } else {
+        console.error('[API] Authenticated Unknown Error:', error.message);
       }
       return Promise.reject(error);
     }

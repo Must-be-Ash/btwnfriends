@@ -1,9 +1,14 @@
+import { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Send, Download, History, QrCode, ChevronRight } from 'lucide-react-native';
+import { useEvmAddress } from '@coinbase/cdp-hooks';
+import { Send, Download, History, QrCode, Coins, ChevronRight } from 'lucide-react-native';
+import { TopUpModal } from '../modals/TopUpModal';
 
 export function QuickActions() {
   const router = useRouter();
+  const evmAddress = useEvmAddress();
+  const [showTopUpModal, setShowTopUpModal] = useState(false);
 
   const actions = [
     {
@@ -19,6 +24,13 @@ export function QuickActions() {
       description: 'Get USDC',
       icon: Download,
       onPress: () => router.push('/receive')
+    },
+    {
+      id: 'topup',
+      label: 'Top Up',
+      description: 'Get testnet USDC',
+      icon: Coins,
+      onPress: () => setShowTopUpModal(true)
     },
     {
       id: 'scan',
@@ -63,6 +75,15 @@ export function QuickActions() {
           );
         })}
       </View>
+
+      {/* Top Up Modal */}
+      {evmAddress?.evmAddress && (
+        <TopUpModal
+          visible={showTopUpModal}
+          walletAddress={evmAddress.evmAddress}
+          onClose={() => setShowTopUpModal(false)}
+        />
+      )}
     </View>
   );
 }

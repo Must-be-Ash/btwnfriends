@@ -73,6 +73,15 @@ export default function HistoryScreen() {
         return;
       }
 
+      console.log('[History] Transaction response:', {
+        status: response.status,
+        hasSuccess: response.data?.success,
+        hasTransactions: !!response.data?.transactions,
+        transactionCount: response.data?.transactions?.length,
+        error: response.data?.error,
+        fullResponseData: response.data
+      });
+
       if (response.data.success) {
         if (reset) {
           setTransactions(response.data.transactions);
@@ -82,13 +91,19 @@ export default function HistoryScreen() {
         setHasMore(response.data.hasMore);
         setOffset(prev => (reset ? 0 : prev) + response.data.transactions.length);
       } else {
-        throw new Error(response.data.error || 'Failed to fetch transactions');
+        const errorMessage = response.data.error || 'Failed to fetch transactions';
+        console.error('[History] Backend returned error:', errorMessage);
+        throw new Error(errorMessage);
       }
     } catch (err) {
       if (currentRequestId !== requestIdRef.current) {
         return;
       }
-      console.error('Error fetching transactions:', err);
+      console.error('[History] Error fetching transactions:', err);
+      console.error('[History] Error details:', {
+        message: err instanceof Error ? err.message : 'Unknown error',
+        name: err instanceof Error ? err.name : 'Unknown',
+      });
       setError('Failed to load transactions');
     } finally {
       if (currentRequestId === requestIdRef.current) {

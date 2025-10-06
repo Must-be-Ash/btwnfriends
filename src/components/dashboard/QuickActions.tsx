@@ -1,10 +1,15 @@
 "use client";
 
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Send, Download, Users, History, ChevronRight } from 'lucide-react'
+import { useEvmAddress } from '@coinbase/cdp-hooks'
+import { Send, Download, Users, History, Coins, ChevronRight } from 'lucide-react'
+import { TopUpModal } from '@/components/modals/TopUpModal'
 
 export function QuickActions() {
   const router = useRouter()
+  const evmAddress = useEvmAddress()
+  const [showTopUpModal, setShowTopUpModal] = useState(false)
 
   const actions = [
     {
@@ -20,6 +25,13 @@ export function QuickActions() {
       description: 'Get USDC',
       icon: <Download className="w-5 h-5 text-white" />,
       onClick: () => router.push('/receive')
+    },
+    {
+      id: 'topup',
+      label: 'Top Up',
+      description: 'Get testnet USDC',
+      icon: <Coins className="w-5 h-5 text-white" />,
+      onClick: () => setShowTopUpModal(true)
     },
     {
       id: 'contacts',
@@ -61,6 +73,14 @@ export function QuickActions() {
           </button>
         ))}
       </div>
+
+      {/* Top Up Modal */}
+      {showTopUpModal && evmAddress?.evmAddress && (
+        <TopUpModal
+          walletAddress={evmAddress.evmAddress}
+          onClose={() => setShowTopUpModal(false)}
+        />
+      )}
     </div>
   )
 }

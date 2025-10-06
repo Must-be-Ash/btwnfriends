@@ -21,7 +21,7 @@ export default function MarketingPage() {
               />
             </div>
             <h1 className="text-3xl font-bold text-white mb-2">Between Friends</h1>
-            <p className="text-gray-300">Send stablecoins to your friend'sçç email</p>
+            <p className="text-gray-300">Send stablecoins to your friend&apos;s email</p>
           </div>
 
           {/* Key Features - Minimal Cards */}
