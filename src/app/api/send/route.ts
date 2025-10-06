@@ -33,7 +33,7 @@ const SendRequestSchema = z.object({
   userId: z.string().min(1, 'User ID is required'),
   senderAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/, 'Invalid sender address'),
   recipientEmail: z.string().email('Invalid recipient email'),
-  amount: z.string().regex(/^\d+(\.\d{1,6})?$/, 'Invalid amount format'),
+  amount: z.string().regex(/^(\d+(\.\d{1,6})?|\.\d{1,6})$/, 'Invalid amount format'), // Allows .5, 0.5, 5, 5.5
   smartAccountMode: z.boolean().optional(), // Flag to indicate smart account usage
 })
 

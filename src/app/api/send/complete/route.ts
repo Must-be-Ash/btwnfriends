@@ -18,7 +18,7 @@ const CompleteTransferSchema = z.object({
     displayName: z.string().optional(),
     exists: z.boolean(),
   }),
-  amount: z.string().regex(/^\d+(\.\d{1,6})?$/, 'Invalid amount format'),
+  amount: z.string().regex(/^(\d+(\.\d{1,6})?|\.\d{1,6})$/, 'Invalid amount format'), // Allows .5, 0.5, 5, 5.5
   transferId: z.string().optional(), // For escrow transfers
 })
 
