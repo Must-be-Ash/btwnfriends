@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createTransaction, getUserByUserId, getUserByEmail, getPendingTransfer } from '@/lib/models'
 import { sendClaimNotificationEmail, sendDirectTransferNotificationEmail } from '@/lib/email'
 import { validateCDPAuth, extractUserIdFromCDPUser } from '@/lib/auth'
+import { logger } from '@/lib/logger'
 import { z } from 'zod'
 
 // Force dynamic rendering for this API route
@@ -70,7 +71,7 @@ export async function POST(request: NextRequest) {
       status: transferType === 'direct' ? 'confirmed' : 'pending',
     })
     
-    console.log(`✅ TRANSACTION HISTORY CREATED FOR SENDER:`, {
+    logger.info(`✅ TRANSACTION HISTORY CREATED FOR SENDER:`, {
       userEmail: '[EMAIL_REDACTED]',
       type: 'sent',
       recipientEmail: '[EMAIL_REDACTED]',
@@ -94,7 +95,7 @@ export async function POST(request: NextRequest) {
             status: 'confirmed',
           })
           
-          console.log(`✅ TRANSACTION HISTORY CREATED FOR RECIPIENT:`, {
+          logger.info(`✅ TRANSACTION HISTORY CREATED FOR RECIPIENT:`, {
             userEmail: '[EMAIL_REDACTED]',
             type: 'received',
             senderEmail: '[EMAIL_REDACTED]',
@@ -105,7 +106,7 @@ export async function POST(request: NextRequest) {
           
           // Send email notification for direct transfer
           try {
-            console.log('📧 SENDING DIRECT TRANSFER NOTIFICATION EMAIL:', {
+            logger.info('📧 SENDING DIRECT TRANSFER NOTIFICATION EMAIL:', {
               recipientEmail,
               senderEmail,
               amount,
@@ -121,7 +122,7 @@ export async function POST(request: NextRequest) {
             })
             
             if (emailResult.success) {
-              console.log('✅ DIRECT TRANSFER EMAIL NOTIFICATION SENT SUCCESSFULLY')
+              logger.info('✅ DIRECT TRANSFER EMAIL NOTIFICATION SENT SUCCESSFULLY')
             } else {
               console.error('❌ FAILED TO SEND DIRECT TRANSFER EMAIL NOTIFICATION:', emailResult.error)
             }
@@ -145,7 +146,7 @@ export async function POST(request: NextRequest) {
           // Use main domain URL (no unique parameters needed)
           const claimUrl = 'https://www.btwnfriends.com'
           
-          console.log('📧 SENDING ESCROW NOTIFICATION EMAIL:', {
+          logger.info('📧 SENDING ESCROW NOTIFICATION EMAIL:', {
             recipientEmail,
             senderEmail,
             amount,
@@ -164,7 +165,7 @@ export async function POST(request: NextRequest) {
           })
           
           if (emailResult.success) {
-            console.log('✅ ESCROW EMAIL NOTIFICATION SENT SUCCESSFULLY')
+            logger.info('✅ ESCROW EMAIL NOTIFICATION SENT SUCCESSFULLY')
           } else {
             console.error('❌ FAILED TO SEND ESCROW EMAIL NOTIFICATION:', emailResult.error)
           }
