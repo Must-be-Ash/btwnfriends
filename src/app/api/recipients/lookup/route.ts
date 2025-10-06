@@ -71,9 +71,18 @@ export async function POST(request: NextRequest) {
 // GET - Quick existence check via query params
 export async function GET(request: NextRequest) {
   try {
+    // Validate CDP authentication
+    const authResult = await validateCDPAuth(request)
+    if (authResult.error || !authResult.user) {
+      return NextResponse.json(
+        { error: authResult.error || 'Authentication required' },
+        { status: authResult.status || 401 }
+      )
+    }
+
     const { searchParams } = new URL(request.url)
     const email = searchParams.get('email')
-    
+
     if (!email) {
       return NextResponse.json(
         { error: 'Email parameter is required' },
@@ -84,7 +93,7 @@ export async function GET(request: NextRequest) {
     // Validate email format
     const emailSchema = z.string().email()
     const validatedEmail = emailSchema.parse(email)
-    
+
     const result = await lookupRecipientServer(validatedEmail)
 
     return NextResponse.json({
