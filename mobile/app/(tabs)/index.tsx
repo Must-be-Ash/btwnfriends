@@ -5,17 +5,20 @@ import { useEvmAddress, useCurrentUser, useSignOut } from '@coinbase/cdp-hooks';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useApi } from '../../lib/use-api';
 import { getUSDCBalance } from '../../lib/usdc';
+import { getStorageItem, setStorageItem } from '../../lib/storage';
 import {
   BalanceCard,
   QuickActions,
   AccountInfoWithAvatar
 } from '../../components/dashboard';
+import { TestnetWarningModal } from '../../components/modals';
 
 export default function HomeScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [balance, setBalance] = useState('0');
   const [isLoadingBalance, setIsLoadingBalance] = useState(true);
   const [user, setUser] = useState(null);
+  const [showTestnetWarning, setShowTestnetWarning] = useState(false);
 
   const evmAddress = useEvmAddress();
   const { currentUser } = useCurrentUser();
@@ -55,6 +58,19 @@ export default function HomeScreen() {
     fetchUserProfile();
   }, [fetchBalance, fetchUserProfile]);
 
+  // Check if user has seen testnet warning
+  useEffect(() => {
+    const checkTestnetWarning = async () => {
+      if (currentUser) {
+        const hasSeenWarning = await getStorageItem('testnet_warning_seen');
+        if (!hasSeenWarning) {
+          setShowTestnetWarning(true);
+        }
+      }
+    };
+    checkTestnetWarning();
+  }, [currentUser]);
+
   useFocusEffect(
     useCallback(() => {
       // Refresh balance and profile when dashboard tab comes into focus
@@ -84,6 +100,11 @@ export default function HomeScreen() {
     }
   };
 
+  const handleCloseTestnetWarning = async () => {
+    await setStorageItem('testnet_warning_seen', 'true');
+    setShowTestnetWarning(false);
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-[#222222]" edges={['top']}>
       <ScrollView
@@ -109,6 +130,11 @@ export default function HomeScreen() {
         />
         </View>
       </ScrollView>
+
+      <TestnetWarningModal
+        visible={showTestnetWarning}
+        onClose={handleCloseTestnetWarning}
+      />
     </SafeAreaView>
   );
 }

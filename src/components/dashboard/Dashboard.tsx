@@ -10,7 +10,8 @@ import { NavigationDock } from '@/components/navigation/NavigationDock'
 import { QuickActions } from './QuickActions'
 import { LoadingScreen } from '@/components/shared/LoadingScreen'
 import { ClaimOnboarding } from '@/components/onboarding/ClaimOnboarding'
-import { getStorageItem, removeStorageItem } from '@/lib/storage'
+import { TestnetWarningModal } from '@/components/modals/TestnetWarningModal'
+import { getStorageItem, removeStorageItem, setStorageItem } from '@/lib/storage'
 
 interface UserProfile {
   userId: string
@@ -41,6 +42,7 @@ export function Dashboard() {
   const [showLogoutMenu, setShowLogoutMenu] = useState(false)
   const [pendingClaims, setPendingClaims] = useState<DashboardPendingClaim[]>([])
   const [showClaimOnboarding, setShowClaimOnboarding] = useState(false)
+  const [showTestnetWarning, setShowTestnetWarning] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
   const createUserProfile = useCallback(async (email: string) => {
@@ -155,6 +157,16 @@ export function Dashboard() {
     }
   }, [currentUser, fetchUserProfile, fetchBalance])
 
+  // Check if user has seen testnet warning
+  useEffect(() => {
+    if (currentUser) {
+      const hasSeenWarning = getStorageItem('testnet_warning_seen')
+      if (!hasSeenWarning) {
+        setShowTestnetWarning(true)
+      }
+    }
+  }, [currentUser])
+
   // Click outside to close menu
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -186,6 +198,11 @@ export function Dashboard() {
     } finally {
       setShowLogoutMenu(false)
     }
+  }
+
+  const handleCloseTestnetWarning = () => {
+    setStorageItem('testnet_warning_seen', 'true')
+    setShowTestnetWarning(false)
   }
 
   // Show claim onboarding for new users with pending transfers
@@ -246,6 +263,11 @@ export function Dashboard() {
 
       {/* Bottom spacing for mobile navigation */}
       <div className="h-32 md:h-16"></div>
+
+      {/* Testnet Warning Modal */}
+      {showTestnetWarning && (
+        <TestnetWarningModal onClose={handleCloseTestnetWarning} />
+      )}
     </div>
   )
 }
