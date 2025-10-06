@@ -2,9 +2,17 @@ import { NextRequest, NextResponse } from 'next/server'
 // import { generateClaimEmail } from '@/lib/email'
 
 export async function GET(request: NextRequest) {
+  // Block access in production - dev-only endpoint for template testing
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json(
+      { error: 'Not found' },
+      { status: 404 }
+    )
+  }
+
   const { searchParams } = new URL(request.url)
   const type = searchParams.get('type') || 'direct'
-  
+
   try {
     if (type === 'direct') {
       // Create sample direct transfer email HTML
