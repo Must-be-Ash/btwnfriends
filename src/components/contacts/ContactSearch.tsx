@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { Search, X, Plus } from 'lucide-react'
+import { Search, X, Plus, Users, Star } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Contact } from '@/types'
 import { ContactList } from './ContactList'
@@ -25,6 +25,7 @@ export function ContactSearch({
   const [query, setQuery] = useState('')
   const [isOpen, setIsOpen] = useState(false)
   const [isValidEmail, setIsValidEmail] = useState(false)
+  const [view, setView] = useState<'all' | 'favorites'>('all')
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -104,11 +105,16 @@ export function ContactSearch({
 
 
   // Sort contacts alphabetically by display name
-  const sortedContacts = [...contacts].sort((a, b) => 
+  const sortedContacts = [...contacts].sort((a, b) =>
     a.displayName.toLowerCase().localeCompare(b.displayName.toLowerCase())
   )
-  
-  const displayContacts = query.trim() ? searchResults : sortedContacts
+
+  const favoriteContacts = sortedContacts.filter(c => c.favorite)
+  const displayContacts = query.trim()
+    ? searchResults
+    : view === 'favorites'
+      ? favoriteContacts
+      : sortedContacts
 
   return (
     <div ref={containerRef} className={cn('relative', className)}>
@@ -139,6 +145,36 @@ export function ContactSearch({
       {/* Always show contacts if available or if searching */}
       {(displayContacts.length > 0 || isOpen) && (
         <div className="mt-4">
+          {/* View Switcher - only show when not searching */}
+          {!query && (
+            <div className="bg-[#2A2A2A] rounded-2xl p-1 border border-[#3B3B3B] mb-4">
+              <div className="grid grid-cols-2 gap-1">
+                <button
+                  onClick={() => setView('all')}
+                  className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                    view === 'all'
+                      ? 'bg-[#3B3B3B] text-white shadow-lg'
+                      : 'text-white/70 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  <Users className="w-4 h-4" />
+                  <span>All ({sortedContacts.length})</span>
+                </button>
+                <button
+                  onClick={() => setView('favorites')}
+                  className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                    view === 'favorites'
+                      ? 'bg-[#3B3B3B] text-white shadow-lg'
+                      : 'text-white/70 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  <Star className="w-4 h-4" />
+                  <span>Favorites ({favoriteContacts.length})</span>
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Add new contact option when searching */}
           {allowAddNew && query && isValidEmail && (
             <button
@@ -166,14 +202,14 @@ export function ContactSearch({
           {!isLoading && !isSearching && displayContacts.length > 0 && (
             <div>
               <h4 className="text-sm font-medium text-white/70 mb-3">
-                {query ? 'Search Results' : 'Your Contacts'}
+                {query ? 'Search Results' : view === 'favorites' ? 'Favorite Contacts' : 'Your Contacts'}
               </h4>
-              <div className="space-y-2 max-h-80 overflow-y-auto">
+              <div className="space-y-2">
                 <ContactList
                   contacts={displayContacts}
                   onContactSelect={handleContactSelect}
                   onToggleFavorite={(contact) => toggleFavorite(contact.contactEmail)}
-                  showFavoriteAction={false}
+                  showFavoriteAction={true}
                   emptyMessage={query ? 'No contacts found' : 'No contacts yet'}
                 />
               </div>
