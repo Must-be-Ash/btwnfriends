@@ -1,12 +1,43 @@
 import { useState } from 'react';
 import { View, Text, ActivityIndicator, Pressable } from 'react-native';
 import { useGetAccessToken, useSendUserOperation, useCurrentUser } from '@coinbase/cdp-hooks';
+import { getUserOperation } from '@coinbase/cdp-core';
 import { keccak256, toBytes } from 'viem';
 import { AlertCircle } from 'lucide-react-native';
 import { SendButton3D } from '../ui/SendButton3D';
 import { formatUSDCWithSymbol } from '../../lib/utils';
 import { getCDPNetworkName, prepareUSDCTransferCall, prepareUSDCApprovalCall, prepareEscrowDepositCall, SmartAccountCall } from '../../lib/cdp';
 import { createAuthenticatedApi } from '../../lib/api';
+
+// Helper function to poll for user operation completion
+async function waitForUserOperationComplete(
+  userOperationHash: string,
+  smartAccount: string,
+  network: string,
+  maxAttempts = 60,
+  pollInterval = 2000
+): Promise<{ transactionHash: string }> {
+  for (let i = 0; i < maxAttempts; i++) {
+    const userOp = await getUserOperation({
+      userOperationHash: userOperationHash as `0x${string}`,
+      evmSmartAccount: smartAccount as `0x${string}`,
+      network: network as any
+    });
+
+    if (userOp.status === 'complete' && userOp.transactionHash) {
+      return { transactionHash: userOp.transactionHash };
+    }
+
+    if (userOp.status === 'failed') {
+      throw new Error('User operation failed');
+    }
+
+    // Wait before next poll
+    await new Promise(resolve => setTimeout(resolve, pollInterval));
+  }
+
+  throw new Error('Transaction confirmation timeout');
+}
 
 interface RecipientInfo {
   email: string;
@@ -85,8 +116,20 @@ export function SendConfirmation({ transferData, currentUser, onSuccess, onBack 
       useCdpPaymaster: true
     });
 
-    await recordTransactionHistory(result.userOperationHash, 'direct');
-    onSuccess(result.userOperationHash);
+    console.log('✅ Smart Account Direct Transfer - User Operation Hash:', result.userOperationHash);
+
+    // Wait for the operation to complete and get the real transaction hash
+    setCurrentStep('Waiting for confirmation...');
+    const { transactionHash } = await waitForUserOperationComplete(
+      result.userOperationHash,
+      smartAccount,
+      getCDPNetworkName()
+    );
+
+    console.log('✅ Smart Account Direct Transfer - Transaction Hash:', transactionHash);
+
+    await recordTransactionHistory(transactionHash, 'direct');
+    onSuccess(transactionHash);
   };
 
   const handleEscrowTransfer = async () => {
@@ -133,14 +176,26 @@ export function SendConfirmation({ transferData, currentUser, onSuccess, onBack 
       useCdpPaymaster: true
     });
 
+    console.log('✅ Smart Account Escrow Deposit - User Operation Hash:', result.userOperationHash);
+
+    // Wait for the operation to complete and get the real transaction hash
+    setCurrentStep('Waiting for confirmation...');
+    const { transactionHash } = await waitForUserOperationComplete(
+      result.userOperationHash,
+      smartAccount,
+      getCDPNetworkName()
+    );
+
+    console.log('✅ Smart Account Escrow Deposit - Transaction Hash:', transactionHash);
+
     await authenticatedApi.put('/api/send', {
       transferId: transferId,
-      txHash: result.userOperationHash,
+      txHash: transactionHash,
       transferType: 'escrow'
     });
 
-    await recordTransactionHistory(result.userOperationHash, 'escrow', transferId);
-    onSuccess(result.userOperationHash);
+    await recordTransactionHistory(transactionHash, 'escrow', transferId);
+    onSuccess(transactionHash);
   };
 
   const recordTransactionHistory = async (txHash: string, transferType: 'direct' | 'escrow', transferId?: string) => {

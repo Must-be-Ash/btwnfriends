@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ScrollView, Linking } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Linking, Share } from 'react-native';
 import { CheckCircle } from 'lucide-react-native';
 import { formatUSDCWithSymbol } from '../../lib/utils';
 import { getBlockExplorerUrl } from '../../lib/cdp';
@@ -33,6 +33,20 @@ export function SendSuccess({ transferData, txHash, onSendAnother, onGoToDashboa
       await Linking.openURL(explorerUrl);
     } catch (error) {
       console.error('Failed to open explorer URL:', error);
+    }
+  };
+
+  const handleShareReceipt = async () => {
+    try {
+      const baseScanUrl = getBlockExplorerUrl(txHash);
+      const shareText = `I just sent you ${formatUSDCWithSymbol(amount)} USDC${isDirect ? '' : '. Check your email to claim it!'}\n\nTransaction: ${txHash}\nView on BaseScan: ${baseScanUrl}`;
+
+      await Share.share({
+        message: shareText,
+        title: 'Transfer Receipt'
+      });
+    } catch (error) {
+      console.error('Failed to share receipt:', error);
     }
   };
 
@@ -96,7 +110,7 @@ export function SendSuccess({ transferData, txHash, onSendAnother, onGoToDashboa
 
         <View className="gap-4">
           <TouchableOpacity
-            onPress={onGoToDashboard}
+            onPress={handleShareReceipt}
             className="w-full py-5 px-6 bg-[#3B3B3B] border border-white/30 rounded-2xl"
             style={{
               shadowColor: '#000',

@@ -2,10 +2,41 @@
 
 import { useState } from 'react'
 import { useGetAccessToken, useSendUserOperation, useCurrentUser } from '@coinbase/cdp-hooks'
+import { getUserOperation } from '@coinbase/cdp-core'
 import { formatUSDCWithSymbol } from '@/lib/utils'
 import { getCDPNetworkName, prepareUSDCTransferCall, prepareUSDCApprovalCall, prepareEscrowDepositCall } from '@/lib/cdp'
 import { keccak256, toBytes } from 'viem'
 import { useSmartAccount } from '@/hooks/useSmartAccount'
+
+// Helper function to poll for user operation completion
+async function waitForUserOperationComplete(
+  userOperationHash: string,
+  smartAccount: string,
+  network: 'base' | 'base-sepolia',
+  maxAttempts = 60,
+  pollInterval = 2000
+): Promise<{ transactionHash: string }> {
+  for (let i = 0; i < maxAttempts; i++) {
+    const userOp = await getUserOperation({
+      userOperationHash: userOperationHash as `0x${string}`,
+      evmSmartAccount: smartAccount as `0x${string}`,
+      network
+    })
+
+    if (userOp.status === 'complete' && userOp.transactionHash) {
+      return { transactionHash: userOp.transactionHash }
+    }
+
+    if (userOp.status === 'failed') {
+      throw new Error('User operation failed')
+    }
+
+    // Wait before next poll
+    await new Promise(resolve => setTimeout(resolve, pollInterval))
+  }
+
+  throw new Error('Transaction confirmation timeout')
+}
 
 interface RecipientInfo {
   email: string
@@ -121,12 +152,22 @@ export function SendConfirmation({ transferData, currentUser, onSuccess, onBack 
         useCdpPaymaster: true // Enable gas sponsoring
       })
 
-      console.log('✅ Smart Account Direct Transfer Result:', result)
+      console.log('✅ Smart Account Direct Transfer - User Operation Hash:', result.userOperationHash)
 
-      // Record transaction in history
-      await recordTransactionHistory(result.userOperationHash, 'direct')
+      // Wait for the operation to complete and get the real transaction hash
+      setCurrentStep('Waiting for transaction confirmation...')
+      const { transactionHash } = await waitForUserOperationComplete(
+        result.userOperationHash,
+        smartAccount,
+        getCDPNetworkName()
+      )
 
-      onSuccess(result.userOperationHash)
+      console.log('✅ Smart Account Direct Transfer - Transaction Hash:', transactionHash)
+
+      // Record transaction in history with the REAL transaction hash
+      await recordTransactionHistory(transactionHash, 'direct')
+
+      onSuccess(transactionHash)
     } else {
       // Escrow deposit using smart account
       setCurrentStep('Creating escrow deposit via smart account...')
@@ -195,9 +236,19 @@ export function SendConfirmation({ transferData, currentUser, onSuccess, onBack 
         useCdpPaymaster: true // Enable gas sponsoring
       })
 
-      console.log('✅ Smart Account Escrow Deposit Result:', result)
+      console.log('✅ Smart Account Escrow Deposit - User Operation Hash:', result.userOperationHash)
 
-      // Update the transfer status in database
+      // Wait for the operation to complete and get the real transaction hash
+      setCurrentStep('Waiting for transaction confirmation...')
+      const { transactionHash } = await waitForUserOperationComplete(
+        result.userOperationHash,
+        smartAccount,
+        getCDPNetworkName()
+      )
+
+      console.log('✅ Smart Account Escrow Deposit - Transaction Hash:', transactionHash)
+
+      // Update the transfer status in database with the REAL transaction hash
       await fetch('/api/send', {
         method: 'PUT',
         headers: {
@@ -206,15 +257,15 @@ export function SendConfirmation({ transferData, currentUser, onSuccess, onBack 
         },
         body: JSON.stringify({
           transferId: transferId,
-          txHash: result.userOperationHash,
+          txHash: transactionHash,
           transferType: 'escrow'
         }),
       })
 
-      // Record transaction in history
-      await recordTransactionHistory(result.userOperationHash, 'escrow', transferId)
+      // Record transaction in history with the REAL transaction hash
+      await recordTransactionHistory(transactionHash, 'escrow', transferId)
 
-      onSuccess(result.userOperationHash)
+      onSuccess(transactionHash)
     }
   }
 

@@ -90,7 +90,9 @@ export const CURRENT_NETWORK = (() => {
 export const CDP_CONFIG = {
   projectId: process.env.NEXT_PUBLIC_CDP_PROJECT_ID || '',
   // Enable smart accounts for new users - this creates both EOA and smart account
-  createAccountOnLogin: "evm-smart" as const,
+  ethereum: {
+    createOnLogin: "smart" as const,
+  },
   // Optional: Enable debugging for development
   debugging: process.env.NODE_ENV === 'development',
   // Mobile-specific configuration for better session persistence

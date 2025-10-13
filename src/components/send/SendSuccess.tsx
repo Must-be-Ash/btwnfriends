@@ -126,7 +126,8 @@ export function SendSuccess({ transferData, txHash, onSendAnother }: SendSuccess
         {/* Primary CTA - Share Receipt */}
         <SendButton3D
           onClick={() => {
-            const text = `I just sent you ${formatUSDCWithSymbol(amount)} USDC${isDirect ? '' : '. Check your email to claim it!'}`
+            const baseScanUrl = getBlockExplorerUrl(txHash)
+            const text = `I just sent you ${formatUSDCWithSymbol(amount)} USDC${isDirect ? '' : '. Check your email to claim it!'}\n\nTransaction: ${txHash}\nView on BaseScan: ${baseScanUrl}`
             if (typeof navigator !== 'undefined') {
               if (navigator.share) {
                 navigator.share({ text })
