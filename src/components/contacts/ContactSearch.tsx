@@ -116,6 +116,11 @@ export function ContactSearch({
       ? favoriteContacts
       : sortedContacts
 
+  // Check if email already exists (case-insensitive) to prevent duplicates
+  const emailAlreadyExists = contacts.some(
+    contact => contact.contactEmail.toLowerCase() === query.toLowerCase().trim()
+  )
+
   return (
     <div ref={containerRef} className={cn('relative', className)}>
       <div className="relative">
@@ -176,7 +181,7 @@ export function ContactSearch({
           )}
 
           {/* Add new contact option when searching */}
-          {allowAddNew && query && isValidEmail && (
+          {allowAddNew && query && isValidEmail && !emailAlreadyExists && (
             <button
               onClick={handleAddNew}
               className="w-full flex items-center gap-3 p-3 mb-2 bg-white/10 rounded-xl border border-white/20 hover:bg-white/20 transition-colors"

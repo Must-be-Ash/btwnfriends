@@ -84,6 +84,11 @@ export function ContactSearch({
   const filteredContacts = viewMode === 'favorites' ? favoriteContacts : sortedContacts;
   const displayContacts = query.trim() ? searchResults : filteredContacts;
 
+  // Check if email already exists (case-insensitive) to prevent duplicates
+  const emailAlreadyExists = contacts.some(
+    contact => contact.contactEmail.toLowerCase() === query.toLowerCase().trim()
+  );
+
   return (
     <View>
       <View className="relative mb-4">
@@ -160,7 +165,7 @@ export function ContactSearch({
 
       {(displayContacts.length > 0 || allowAddNew || isLoading || isSearching) && (
         <View>
-          {allowAddNew && query && isValidEmail && (
+          {allowAddNew && query && isValidEmail && !emailAlreadyExists && (
             <TouchableOpacity
               onPress={handleAddNew}
               className="w-full flex flex-row items-center gap-3 p-3 mb-2 bg-white/10 rounded-xl border border-white/20"
