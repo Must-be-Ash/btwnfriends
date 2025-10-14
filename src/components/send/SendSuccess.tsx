@@ -127,7 +127,7 @@ export function SendSuccess({ transferData, txHash, onSendAnother }: SendSuccess
         <SendButton3D
           onClick={() => {
             const baseScanUrl = getBlockExplorerUrl(txHash)
-            const text = `I just sent you ${formatUSDCWithSymbol(amount)} USDC${isDirect ? '' : '. Check your email to claim it!'}\n\nTransaction: ${txHash}\nView on BaseScan: ${baseScanUrl}`
+            const text = `I just sent you ${formatUSDCWithSymbol(amount)} USDC${isDirect ? '' : '. Check your email to claim it!'}\n\nTransaction: ${txHash}\nView on BaseScan: ${baseScanUrl}\n\nGet started with Between Friends:\niOS: https://testflight.apple.com/join/aZCPAjwZ\nWeb: https://btwnfriends.com/`
             if (typeof navigator !== 'undefined') {
               if (navigator.share) {
                 navigator.share({ text })

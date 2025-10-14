@@ -39,7 +39,7 @@ export function SendSuccess({ transferData, txHash, onSendAnother, onGoToDashboa
   const handleShareReceipt = async () => {
     try {
       const baseScanUrl = getBlockExplorerUrl(txHash);
-      const shareText = `I just sent you ${formatUSDCWithSymbol(amount)} USDC${isDirect ? '' : '. Check your email to claim it!'}\n\nTransaction: ${txHash}\nView on BaseScan: ${baseScanUrl}`;
+      const shareText = `I just sent you ${formatUSDCWithSymbol(amount)} USDC${isDirect ? '' : '. Check your email to claim it!'}\n\nTransaction: ${txHash}\nView on BaseScan: ${baseScanUrl}\n\nGet started with Between Friends:\niOS: https://testflight.apple.com/join/aZCPAjwZ\nWeb: https://btwnfriends.com/`;
 
       await Share.share({
         message: shareText,
